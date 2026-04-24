@@ -1,7 +1,7 @@
 export const site = {
   name: 'Au Platane',
-  label: 'Bistro de pays en Ardèche',
-  description: 'Cuisine locale de saison dans un lieu de village qui reprend vie en Ardèche.',
+  label: 'Lieu de vie en Ardèche',
+  description: 'Un lieu de vie et de partage autour d’une cuisine locale et de saison.',
   email: 'contact@platane.com',
   phoneDisplay: '06 89 89 06 50',
   phoneRaw: '0689890650',
@@ -14,7 +14,7 @@ export const site = {
     {
       title: 'Restaurant',
       icon: 'fork-knife',
-      description: 'Le coeur du lieu, autour d’une cuisine locale de saison.'
+      description: 'Le coeur du lieu, autour d’une cuisine locale et de saison.'
     },
     {
       title: 'Bar',
