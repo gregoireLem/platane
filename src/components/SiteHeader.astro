@@ -16,3 +16,23 @@ import { site } from '../data/site';
     </nav>
   </div>
 </header>
+
+<script is:inline>
+  (() => {
+    if (window.__auPlataneHeaderBound) return;
+    window.__auPlataneHeaderBound = true;
+
+    const syncHeaderState = () => {
+      const header = document.querySelector('.site-header');
+      if (!(header instanceof HTMLElement)) return;
+      header.classList.toggle('is-compact', window.scrollY > 24);
+    };
+
+    window.addEventListener('scroll', syncHeaderState, { passive: true });
+    window.addEventListener('resize', syncHeaderState);
+    window.addEventListener('load', syncHeaderState);
+    document.addEventListener('astro:page-load', syncHeaderState);
+
+    syncHeaderState();
+  })();
+</script>
