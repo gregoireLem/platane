@@ -132,9 +132,20 @@ import { site } from '../data/site';
             <span>{site.phoneDisplay}</span>
           </a>
 
-          <div>
-            <Icon name="map-pin" />
-            <span>{site.location}</span>
+          <div class="contact-location">
+            <div class="contact-location__line">
+              <Icon name="map-pin" />
+              <span>{site.location}</span>
+            </div>
+            <a
+              class="contact-location__map"
+              href={site.mapsUrl}
+              target="_blank"
+              rel="noreferrer"
+            >
+              <Icon name="map-pin" />
+              <span>Voir sur Maps</span>
+            </a>
           </div>
         </div>
       </aside>
@@ -142,6 +153,16 @@ import { site } from '../data/site';
       <div class="contact-form-card" data-reveal>
         <ContactForm />
       </div>
+    </div>
+
+    <div class="contact-map-card" data-reveal>
+      <iframe
+        src={site.mapsEmbedUrl}
+        title={`Carte de ${site.name}`}
+        loading="lazy"
+        referrerpolicy="no-referrer-when-downgrade"
+        allowfullscreen
+      ></iframe>
     </div>
   </section>
 </BaseLayout>

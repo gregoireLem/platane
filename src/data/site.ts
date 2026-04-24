@@ -5,7 +5,11 @@ export const site = {
   email: 'contact@platane.com',
   phoneDisplay: '06 89 89 06 50',
   phoneRaw: '0689890650',
-  location: 'Ardèche',
+  location: '87 rue de Largentiere, 07110 Montreal',
+  mapsUrl:
+    'https://www.google.com/maps/search/?api=1&query=87+rue+de+Largentiere,+07110+Montreal',
+  mapsEmbedUrl:
+    'https://www.google.com/maps?q=87+rue+de+Largentiere,+07110+Montreal&z=16&output=embed',
   spaces: [
     {
       title: 'Restaurant',
