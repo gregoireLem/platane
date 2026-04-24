@@ -1,0 +1,78 @@
+---
+import { site } from '../data/site';
+---
+
+<form class="contact-form" data-contact-form>
+  <div class="field">
+    <label for="name">Nom</label>
+    <input id="name" name="name" type="text" placeholder="Votre nom" required />
+  </div>
+
+  <div class="field-grid">
+    <div class="field">
+      <label for="email">Email</label>
+      <input id="email" name="email" type="email" placeholder="vous@email.fr" required />
+    </div>
+
+    <div class="field">
+      <label for="phone">Téléphone</label>
+      <input id="phone" name="phone" type="tel" placeholder="06 00 00 00 00" />
+    </div>
+  </div>
+
+  <div class="field">
+    <label for="message">Votre message</label>
+    <textarea
+      id="message"
+      name="message"
+      rows="6"
+      placeholder="Parlez-nous de votre demande, réservation de groupe, privatisation ou question."
+      required
+    ></textarea>
+  </div>
+
+  <button class="button button--primary" type="submit">Préparer le message</button>
+  <p class="form-note">
+    Le formulaire ouvre votre messagerie par défaut avec un email prérempli à destination de
+    <a href={`mailto:${site.email}`}>{site.email}</a>.
+  </p>
+</form>
+
+<script is:inline>
+  const initContactForm = () => {
+    const form = document.querySelector('[data-contact-form]');
+    if (!(form instanceof HTMLFormElement) || form.dataset.bound === 'true') return;
+
+    form.dataset.bound = 'true';
+
+    form.addEventListener('submit', (event) => {
+      event.preventDefault();
+
+      const data = new FormData(form);
+      const name = data.get('name')?.toString().trim() ?? '';
+      const email = data.get('email')?.toString().trim() ?? '';
+      const phone = data.get('phone')?.toString().trim() ?? '';
+      const message = data.get('message')?.toString().trim() ?? '';
+
+      const subject = encodeURIComponent(
+        name ? `Contact site Au Platane - ${name}` : 'Contact site Au Platane'
+      );
+
+      const body = encodeURIComponent(
+        [
+          `Nom : ${name || '-'}`,
+          `Email : ${email || '-'}`,
+          `Téléphone : ${phone || '-'}`,
+          '',
+          'Message :',
+          message || '-'
+        ].join('\n')
+      );
+
+      window.location.href = `mailto:${'contact@platane.com'}?subject=${subject}&body=${body}`;
+    });
+  };
+
+  document.addEventListener('astro:page-load', initContactForm);
+  initContactForm();
+</script>

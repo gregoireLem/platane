@@ -1,0 +1,23 @@
+{
+  "name": "au-platane",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "check": "astro check"
+  },
+  "dependencies": {
+    "@fontsource/cormorant-garamond": "^5.2.8",
+    "@fontsource/manrope": "^5.2.8",
+    "astro": "^5.18.1"
+  },
+  "devDependencies": {
+    "@astrojs/check": "^0.9.8",
+    "@types/node": "^24.9.2",
+    "typescript": "^5.9.3"
+  }
+}

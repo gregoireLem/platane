@@ -1,0 +1,17 @@
+---
+import Icon from './Icon.astro';
+
+const { title, description, icon } = Astro.props as {
+  title: string;
+  description: string;
+  icon: 'fork-knife' | 'glass' | 'cup' | 'sun';
+};
+---
+
+<article class="space-card" data-reveal>
+  <div class="space-card__icon">
+    <Icon name={icon} />
+  </div>
+  <h3>{title}</h3>
+  <p>{description}</p>
+</article>

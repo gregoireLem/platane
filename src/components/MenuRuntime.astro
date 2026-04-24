@@ -1,0 +1,53 @@
+---
+import { menuSource } from '../data/menu-source';
+
+const config = {
+  googleSheetId: menuSource.googleSheetId,
+  tabs: menuSource.tabs
+};
+---
+
+<script
+  is:inline
+  type="application/json"
+  id="menu-runtime-config"
+  set:html={JSON.stringify(config)}
+></script>
+
+<script>
+  import { initMenuRuntime } from '../lib/menu-runtime';
+
+  const readMenuRuntimeConfig = () => {
+    const element = document.getElementById('menu-runtime-config');
+
+    if (!(element instanceof HTMLScriptElement) || !element.textContent) {
+      return null;
+    }
+
+    return JSON.parse(element.textContent) as {
+      googleSheetId: string;
+      tabs: {
+        settings: string;
+        formulas: string;
+        items: string;
+      };
+    };
+  };
+
+  const bootMenuRuntime = () => {
+    const runtimeConfig = readMenuRuntimeConfig();
+    if (!runtimeConfig) return;
+    void initMenuRuntime(runtimeConfig);
+  };
+
+  const runtimeWindow = window as Window & {
+    __auPlataneMenuRuntimeBound?: boolean;
+  };
+
+  if (!runtimeWindow.__auPlataneMenuRuntimeBound) {
+    document.addEventListener('astro:page-load', bootMenuRuntime);
+    runtimeWindow.__auPlataneMenuRuntimeBound = true;
+  }
+
+  bootMenuRuntime();
+</script>

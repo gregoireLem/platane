@@ -1,0 +1,147 @@
+---
+import ContactForm from '../components/ContactForm.astro';
+import Icon from '../components/Icon.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+---
+
+<BaseLayout title="Bistro de pays" description={site.description}>
+  <section class="home-hero section">
+    <div class="home-hero__copy" data-reveal>
+      <p class="eyebrow">{site.label}</p>
+      <h1>Une cuisine locale de saison pour redonner vie à un lieu de village.</h1>
+      <p class="lead">
+        Au Platane prend racine autour du restaurant, puis s’ouvre au salon de thé, au bar, aux
+        événements et à l’épicerie.
+      </p>
+
+      <div class="button-row">
+        <a class="button button--primary" href="/menu">
+          Découvrir le menu
+          <Icon name="arrow-right" />
+        </a>
+        <a class="button button--secondary" href="#contact">Prendre contact</a>
+      </div>
+      <div class="home-hero__tags">
+        <span>Restaurant</span>
+        <span>Bar</span>
+        <span>Salon de thé</span>
+        <span>Terrasse</span>
+      </div>
+    </div>
+
+    <figure class="home-hero__media" data-reveal>
+      <img
+        src="/images/terrasse.png"
+        alt="Terrasse animée sous le platane à la tombée du jour"
+        loading="eager"
+      />
+      <figcaption class="home-hero__caption">
+        <strong>Terrasse sous le platane</strong>
+        <span>Du déjeuner aux soirées d’été.</span>
+      </figcaption>
+    </figure>
+  </section>
+
+  <section class="home-story section">
+    <figure class="home-story__media" data-reveal>
+      <img
+        src="/images/salon-the.png"
+        alt="Salon de thé chaleureux, voûté et intimiste"
+        loading="lazy"
+      />
+    </figure>
+
+    <div class="home-story__copy" data-reveal>
+      <p class="eyebrow">Le projet</p>
+      <h2>Un lieu simple, vivant, ancré dans le village.</h2>
+      <p>
+        L’idée est de faire revivre cette adresse avec une cuisine locale de saison, dans un esprit
+        direct et chaleureux.
+      </p>
+      <p>
+        Le restaurant en est la base. Autour, le lieu vivra avec le salon de thé, le bar, des
+        événements et une épicerie.
+      </p>
+      <div class="button-row">
+        <a class="button button--secondary" href="/menu">Voir le menu</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="photo-grid">
+      <figure class="photo-card photo-card--wide" data-reveal>
+        <img
+          src="/images/restaurant.png"
+          alt="Salle de restaurant lumineuse ouverte sur le paysage"
+          loading="lazy"
+        />
+        <figcaption>
+          <strong>Restaurant</strong>
+          <span>La base du lieu.</span>
+        </figcaption>
+      </figure>
+
+      <figure class="photo-card" data-reveal>
+        <img
+          src="/images/salon-the.png"
+          alt="Salon de thé chaleureux, voûté et intimiste"
+          loading="lazy"
+        />
+        <figcaption>
+          <strong>Salon de thé</strong>
+          <span>Une autre temporalité.</span>
+        </figcaption>
+      </figure>
+
+      <figure class="photo-card" data-reveal>
+        <img
+          src="/images/terrasse.png"
+          alt="Terrasse animée sous le platane à la tombée du jour"
+          loading="lazy"
+        />
+        <figcaption>
+          <strong>Terrasse</strong>
+          <span>Pour les beaux jours.</span>
+        </figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="section contact-section" id="contact">
+    <div class="section-heading" data-reveal>
+      <p class="eyebrow">Contact</p>
+      <h2>Une question ou une demande de groupe&nbsp;?</h2>
+    </div>
+
+    <div class="contact-grid">
+      <aside class="contact-card" data-reveal>
+        <p>
+          Utilisez le formulaire ou contactez-nous directement par email ou téléphone.
+        </p>
+
+        <div class="contact-list">
+          <a href={`mailto:${site.email}`}>
+            <Icon name="envelope" />
+            <span>{site.email}</span>
+          </a>
+
+          <a href={`tel:${site.phoneRaw}`}>
+            <Icon name="phone" />
+            <span>{site.phoneDisplay}</span>
+          </a>
+
+          <div>
+            <Icon name="map-pin" />
+            <span>{site.location}</span>
+          </div>
+        </div>
+      </aside>
+
+      <div class="contact-form-card" data-reveal>
+        <ContactForm />
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -1,0 +1,83 @@
+---
+import MenuRuntime from '../components/MenuRuntime.astro';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { weeklyMenu } from '../data/menu';
+import { menuSourceLabel } from '../data/menu-source';
+---
+
+<BaseLayout
+  title="Le menu"
+  description="Le menu du moment d’Au Platane, pensé pour évoluer au rythme des semaines et des produits."
+>
+  <section class="section menu-page">
+    <div class="menu-page__intro" data-reveal>
+      <p class="eyebrow">Le menu</p>
+      <h1 data-menu-title>{weeklyMenu.title}</h1>
+      <p class="lead" data-menu-intro>{weeklyMenu.intro}</p>
+    </div>
+
+    <div class="menu-page__meta" data-reveal>
+      <span data-menu-period>{weeklyMenu.period}</span>
+      <strong data-menu-updated-at>Mis à jour le {weeklyMenu.updatedAt}</strong>
+      <p data-menu-source-badge>{menuSourceLabel}</p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="menu-sheet" data-reveal>
+      <div class="menu-sheet__top">
+        <div>
+          <p class="eyebrow">Formules</p>
+          <div class="menu-formulas" data-menu-formulas>
+            {weeklyMenu.formulas.map((formula) => (
+              <article class="menu-formula">
+                <p class="menu-formula__name">{formula.name}</p>
+                <strong class="menu-formula__price">{formula.price}</strong>
+                <p class="menu-formula__description">{formula.description}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+
+        <div class="menu-sheet__notes">
+          <p class="eyebrow">Infos</p>
+          <ul class="notes-list" data-menu-notes>
+            {weeklyMenu.notes.map((note) => (
+              <li>{note}</li>
+            ))}
+          </ul>
+        </div>
+      </div>
+
+      <div class="menu-columns" data-menu-sections>
+        {weeklyMenu.sections.map((section) => (
+          <article class="menu-group">
+            <h2 class="menu-group__title">{section.title}</h2>
+            <ul class="menu-list">
+              {section.items.map((item) => (
+                <li class="menu-list__item">
+                  <div class="menu-list__head">
+                    <h3 class="menu-list__name">{item.name}</h3>
+                    {'price' in item && item.price && (
+                      <span class="menu-list__price">{item.price}</span>
+                    )}
+                  </div>
+                  {item.description && <p class="menu-list__description">{item.description}</p>}
+                </li>
+              ))}
+            </ul>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <section class="section menu-page__footer">
+    <div class="button-row" data-reveal>
+      <a class="button button--primary" href="/#contact">Prendre contact</a>
+      <a class="button button--secondary" href="/">Retour à l’accueil</a>
+    </div>
+  </section>
+
+  <MenuRuntime />
+</BaseLayout>
