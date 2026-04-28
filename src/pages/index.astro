@@ -27,6 +27,8 @@ import { site } from '../data/site';
         <span>Bar</span>
         <span>Salon de thé</span>
         <span>Terrasse</span>
+        <span>Epicerie fine locale</span>
+        <span>Glaces</span>
       </div>
     </div>
 
@@ -44,14 +46,6 @@ import { site } from '../data/site';
   </section>
 
   <section class="home-story section">
-    <figure class="home-story__media" data-reveal>
-      <img
-        src="/images/salon-the.png"
-        alt="Salon de thé chaleureux, voûté et intimiste"
-        loading="lazy"
-      />
-    </figure>
-
     <div class="home-story__copy" data-reveal>
       <p class="eyebrow">Le projet</p>
       <h2>Un lieu simple, vivant, ancré dans le village.</h2>
@@ -67,45 +61,42 @@ import { site } from '../data/site';
         <a class="button button--secondary" href="/menu">Voir le menu</a>
       </div>
     </div>
+
+    <div class="home-actions" data-reveal>
+      <a class="home-action home-action--strong" href="/menu">
+        <span>Menu du moment</span>
+        <strong>Voir la carte</strong>
+        <Icon name="arrow-right" />
+      </a>
+      <a class="home-action" href={`tel:${site.phoneRaw}`}>
+        <span>Téléphone</span>
+        <strong>{site.phoneDisplay}</strong>
+        <Icon name="phone" />
+      </a>
+      <a class="home-action" href={site.mapsUrl} target="_blank" rel="noreferrer">
+        <span>Adresse</span>
+        <strong>Ouvrir Maps</strong>
+        <Icon name="map-pin" />
+      </a>
+    </div>
   </section>
 
-  <section class="section">
-    <div class="photo-grid">
-      <figure class="photo-card photo-card--wide" data-reveal>
-        <img
-          src="/images/restaurant.png"
-          alt="Salle de restaurant lumineuse ouverte sur le paysage"
-          loading="lazy"
-        />
-        <figcaption>
-          <strong>Restaurant</strong>
-          <span>La base du lieu.</span>
-        </figcaption>
-      </figure>
+  <section class="section home-spaces">
+    <div class="section-heading" data-reveal>
+      <p class="eyebrow">Sur place</p>
+      <h2>Ce que l’on trouve au Platane.</h2>
+    </div>
 
-      <figure class="photo-card" data-reveal>
-        <img
-          src="/images/salon-the.png"
-          alt="Salon de thé chaleureux, voûté et intimiste"
-          loading="lazy"
-        />
-        <figcaption>
-          <strong>Salon de thé</strong>
-          <span>Une autre temporalité.</span>
-        </figcaption>
-      </figure>
-
-      <figure class="photo-card" data-reveal>
-        <img
-          src="/images/terrasse.png"
-          alt="Terrasse animée sous le platane à la tombée du jour"
-          loading="lazy"
-        />
-        <figcaption>
-          <strong>Terrasse</strong>
-          <span>Pour les beaux jours.</span>
-        </figcaption>
-      </figure>
+    <div class="space-grid space-grid--compact">
+      {site.spaces.map((space) => (
+        <article class="space-card" data-reveal>
+          <span class="space-card__icon">
+            <Icon name={space.icon} />
+          </span>
+          <h3>{space.title}</h3>
+          <p>{space.description}</p>
+        </article>
+      ))}
     </div>
   </section>
 

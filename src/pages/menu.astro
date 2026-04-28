@@ -25,19 +25,21 @@ import { menuSourceLabel } from '../data/menu-source';
 
   <section class="section">
     <div class="menu-sheet" data-reveal>
-      <div class="menu-sheet__top">
-        <div>
-          <p class="eyebrow">Formules</p>
-          <div class="menu-formulas" data-menu-formulas>
-            {weeklyMenu.formulas.map((formula) => (
-              <article class="menu-formula">
-                <p class="menu-formula__name">{formula.name}</p>
-                <strong class="menu-formula__price">{formula.price}</strong>
-                <p class="menu-formula__description">{formula.description}</p>
-              </article>
-            ))}
+      <div class:list={['menu-sheet__top', !weeklyMenu.formulas.length && 'menu-sheet__top--notes-only']}>
+        {weeklyMenu.formulas.length > 0 && (
+          <div>
+            <p class="eyebrow">Formules</p>
+            <div class="menu-formulas" data-menu-formulas>
+              {weeklyMenu.formulas.map((formula) => (
+                <article class="menu-formula">
+                  <p class="menu-formula__name">{formula.name}</p>
+                  <strong class="menu-formula__price">{formula.price}</strong>
+                  <p class="menu-formula__description">{formula.description}</p>
+                </article>
+              ))}
+            </div>
           </div>
-        </div>
+        )}
 
         <div class="menu-sheet__notes">
           <p class="eyebrow">Infos</p>

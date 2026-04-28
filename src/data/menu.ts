@@ -16,45 +16,54 @@ export type MenuSection = {
 };
 
 export const weeklyMenu = {
-  title: 'Menu du moment',
-  period: 'Semaine en cours',
-  updatedAt: '24 avril 2026',
-  intro: 'Une carte courte, de saison, pensée pour évoluer facilement.',
-  formulas: [
-    {
-      name: 'Formule déjeuner',
-      price: '24 €',
-      description: 'Entrée, plat, dessert. Disponible le midi selon le marché.'
-    },
-    {
-      name: 'Assiette à partager',
-      price: '19 €',
-      description: 'Sélection de bouchées salées, pain de campagne et condiments maison.'
-    },
-    {
-      name: 'Pause salon de thé',
-      price: '8 €',
-      description: 'Boisson chaude et douceur du jour.'
-    }
-  ] satisfies MenuFormula[],
+  title: 'La carte',
+  period: 'Carte du moment',
+  updatedAt: '28 avril 2026',
+  intro: 'Une cuisine faite sur place, inspirée des saisons et des produits locaux.',
+  formulas: [] as MenuFormula[],
   sections: [
     {
       title: 'Entrées',
       items: [
         {
-          name: 'Oeufs mimosa',
-          price: '8 €',
-          description: 'Paprika fumé et herbes fraîches'
+          name: 'Œuf mayo fermier',
+          price: '6,50 €',
+          description: 'Œuf fermier, mayonnaise du Platane'
         },
         {
-          name: 'Velouté de légumes de saison',
+          name: 'Croquette de bœuf bourguignonne',
           price: '9 €',
-          description: 'Huile d’olive et croûtons dorés'
+          description: 'Bœuf mijoté longuement, pané et croustillant, servi avec son jus acidulé'
         },
         {
-          name: 'Chèvre frais',
+          name: 'Tartare de truite',
           price: '10 €',
-          description: 'Pickles et salade croquante'
+          description: 'Truite de Font Rome, garniture de saison'
+        },
+        {
+          name: 'Gaspacho tomate ancienne, fraise et basilic',
+          description:
+            'Soupe froide estivale, fraîche et parfumée, entre douceur fruitée et acidité légère, huile d’olive ardéchoise'
+        }
+      ]
+    },
+    {
+      title: 'Salades',
+      items: [
+        {
+          name: 'Poulet du Velay',
+          price: '17 €',
+          description: 'Poulet IGP, légumes de saison, vinaigrette du Platane'
+        },
+        {
+          name: 'Halloumi grillé',
+          price: '16,50 €',
+          description: 'Halloumi pané, légumes de saison, vinaigrette du Platane'
+        },
+        {
+          name: 'La raviole',
+          price: '16,50 €',
+          description: 'Ravioles de Romans, légumes de saison, jus de saison'
         }
       ]
     },
@@ -62,19 +71,24 @@ export const weeklyMenu = {
       title: 'Plats',
       items: [
         {
-          name: 'Volaille rôtie',
+          name: 'Burger du Platane',
           price: '18 €',
-          description: 'Jus réduit et pommes grenaille'
+          description: 'Recette du moment, garniture de saison, pain artisanal du chef'
         },
         {
-          name: 'Poisson du moment',
+          name: 'Bœuf mijoté au vin rouge',
+          price: '23 €',
+          description: 'Bœuf mijoté au vin rouge, cuisson lente, légumes et purée de saison'
+        },
+        {
+          name: 'Poitrine de porc confite',
           price: '21 €',
-          description: 'Légumes braisés et beurre citronné'
+          description: 'Porc confit longuement, garniture de saison'
         },
         {
-          name: 'Assiette végétale',
-          price: '17 €',
-          description: 'Céréales, légumes rôtis et sauce aux herbes'
+          name: 'Burger des bois',
+          price: '18 €',
+          description: 'Champignon MYCA Ardèche rôti, garniture de saison, fromage, sauce, pain artisanal du chef'
         }
       ]
     },
@@ -82,42 +96,73 @@ export const weeklyMenu = {
       title: 'Desserts',
       items: [
         {
-          name: 'Tarte fine',
-          price: '8 €',
-          description: 'Fruits du jour'
+          name: 'Tiramisu du chef',
+          price: '6,50 €',
+          description: 'Biscuit maison, crème mascarpone'
         },
         {
-          name: 'Crème vanillée',
-          price: '7 €',
-          description: 'Éclats de noix'
+          name: 'Moelleux à la châtaigne',
+          price: '5 €',
+          description: 'Gâteau de Sylvie Biscuit & cie, crème anglaise'
         },
         {
-          name: 'Moelleux chocolat',
-          price: '8 €',
-          description: 'Pointe de sel'
+          name: 'Faisselle, crème de marron',
+          price: '4 €',
+          description: 'Faisselle artisanale, crème de marron d’Ardèche'
+        },
+        {
+          name: 'Choux façon profiterole au chocolat',
+          price: '7,50 €',
+          description: 'Choux garnis, glace, sauce chocolat chaud'
+        },
+        {
+          name: 'Glaces & sorbets',
+          price: '3,50 €',
+          description: 'Sélection de parfums'
         }
       ]
     },
     {
-      title: 'À boire',
+      title: 'À partager le soir',
       items: [
         {
-          name: 'Vins au verre',
-          description: 'Sélection du moment'
+          name: 'Les frites du bistrot',
+          price: '3,50 €'
         },
         {
-          name: 'Bières artisanales',
-          description: 'Et boissons fraîches'
+          name: 'Cromesqui de chèvre “Le Piqueberle”',
+          price: '6,50 €'
         },
         {
-          name: 'Thés, infusions, café',
-          description: 'À toute heure'
+          name: 'Planche des salaisons',
+          price: '16 €'
+        },
+        {
+          name: 'Fromage des fermes voisines',
+          price: '15 €'
+        },
+        {
+          name: 'Planche du pays',
+          price: '17,50 €'
+        },
+        {
+          name: 'Camembert rôti du terroir',
+          price: '10 €'
+        },
+        {
+          name: 'Feta rôtie',
+          price: '8 €',
+          description: 'Poivron confit, sauce tomate'
+        },
+        {
+          name: 'Tartinade du moment',
+          price: '6 €'
         }
       ]
     }
   ] satisfies MenuSection[],
   notes: [
-    'La carte évolue selon la semaine et les produits disponibles.',
-    'Le menu peut être mis à jour simplement, sans modifier le site.'
+    'La carte évolue selon les saisons et les produits disponibles.',
+    'Les plats sont faits sur place avec une attention particulière aux produits locaux.'
   ]
 } as const;
