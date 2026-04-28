@@ -3,6 +3,27 @@ import ContactForm from '../components/ContactForm.astro';
 import Icon from '../components/Icon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
+
+const hasReservationForm = site.reservationUrl.length > 0;
+const reservationFallbackUrl = `mailto:${site.email}?subject=${encodeURIComponent(
+  'Demande de réservation Au Platane'
+)}&body=${encodeURIComponent(
+  [
+    'Bonjour,',
+    '',
+    'Je souhaite faire une demande de réservation.',
+    '',
+    'Nom :',
+    'Téléphone :',
+    'Date souhaitée :',
+    'Heure souhaitée :',
+    'Nombre de personnes :',
+    'Message :',
+    '',
+    'Merci.'
+  ].join('\n')
+)}`;
+const reservationActionUrl = hasReservationForm ? site.reservationUrl : reservationFallbackUrl;
 ---
 
 <BaseLayout title="Lieu de vie" description={site.description}>
@@ -16,11 +37,19 @@ import { site } from '../data/site';
       </p>
 
       <div class="button-row">
-        <a class="button button--primary" href="/menu">
+        <a
+          class="button button--primary"
+          href={reservationActionUrl}
+          target={hasReservationForm ? '_blank' : undefined}
+          rel={hasReservationForm ? 'noreferrer' : undefined}
+        >
+          Réserver une table
+          <Icon name="calendar" />
+        </a>
+        <a class="button button--secondary" href="/menu">
           Découvrir le menu
           <Icon name="arrow-right" />
         </a>
-        <a class="button button--secondary" href="#contact">Prendre contact</a>
       </div>
       <div class="home-hero__tags">
         <span>Restaurant</span>
@@ -97,6 +126,48 @@ import { site } from '../data/site';
           <p>{space.description}</p>
         </article>
       ))}
+    </div>
+  </section>
+
+  <section class="section reservation-section" id="reservation">
+    <div class="reservation-panel" data-reveal>
+      <div class="reservation-panel__copy">
+        <p class="eyebrow">Réservation</p>
+        <h2>Réserver une table simplement.</h2>
+        <p>
+          Envoyez votre demande avec la date, l’heure et le nombre de personnes. L’équipe vous
+          confirme la réservation au plus vite.
+        </p>
+      </div>
+
+      {
+        hasReservationForm ? (
+          <div class="reservation-embed">
+            <iframe
+              src={site.reservationUrl}
+              title="Formulaire de réservation Au Platane"
+              loading="lazy"
+            ></iframe>
+          </div>
+        ) : (
+          <div class="reservation-card">
+            <p>
+              Le formulaire Tally sera intégré ici dès que son lien sera ajouté. En attendant,
+              vous pouvez préparer une demande par email ou appeler directement.
+            </p>
+            <div class="button-row">
+              <a class="button button--primary" href={reservationFallbackUrl}>
+                Demander par email
+                <Icon name="envelope" />
+              </a>
+              <a class="button button--secondary" href={`tel:${site.phoneRaw}`}>
+                Appeler
+                <Icon name="phone" />
+              </a>
+            </div>
+          </div>
+        )
+      }
     </div>
   </section>
 

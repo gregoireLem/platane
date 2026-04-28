@@ -5,6 +5,7 @@ export const site = {
   email: 'contact@platane.com',
   phoneDisplay: '06 89 89 06 50',
   phoneRaw: '0689890650',
+  reservationUrl: 'https://tally.so/r/GxoaNj',
   location: '32 chemin des bois, 07110 Montreal',
   mapsUrl:
     'https://www.google.com/maps/search/?api=1&query=32+chemin+des+bois,+07110+Montreal',

@@ -1,6 +1,7 @@
 ---
 type IconName =
   | 'arrow-right'
+  | 'calendar'
   | 'cup'
   | 'envelope'
   | 'fork-knife'
@@ -22,6 +23,10 @@ const icons: Record<IconName, { viewBox: string; path: string }> = {
   'arrow-right': {
     viewBox: '0 0 24 24',
     path: '<path d="M5 12h14M13 5l7 7-7 7" />'
+  },
+  calendar: {
+    viewBox: '0 0 24 24',
+    path: '<path d="M7 3v3M17 3v3M4 8h16M5 5h14a1 1 0 0 1 1 1v13a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" />'
   },
   cup: {
     viewBox: '0 0 24 24',
