@@ -91,6 +91,11 @@ PUBLIC_RESERVATION_API_URL=http://127.0.0.1:8787
 ```
 
 En production, cette variable doit pointer vers l'URL publique du backend reservations.
+Le workflow GitHub Pages du projet la renseigne actuellement avec :
+
+```bash
+https://platane-production.up.railway.app
+```
 
 ## Déploiement recommandé
 
@@ -145,6 +150,8 @@ L'URL du backend utilisee par le front se regle avec :
 ```bash
 PUBLIC_RESERVATION_API_URL=http://127.0.0.1:8787
 ```
+
+En production sur GitHub Pages, cette URL est injectee dans [`.github/workflows/deploy.yml`](./.github/workflows/deploy.yml).
 
 Si vous voulez, la prochaine étape peut être :
 

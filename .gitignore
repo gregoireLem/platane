@@ -4,3 +4,4 @@ dist/
 .DS_Store
 photo\ 
 photo_ok\ 
+backend/.env
