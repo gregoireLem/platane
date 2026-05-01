@@ -1307,6 +1307,7 @@ p {
 }
 
 .admin-token-form,
+.admin-manual-form,
 .admin-filters,
 .admin-reservations {
   display: grid;
@@ -1374,6 +1375,90 @@ p {
   display: flex;
   flex-wrap: wrap;
   gap: 0.55rem;
+}
+
+.admin-planning-toolbar {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: 1rem;
+}
+
+.admin-planning-toolbar .field {
+  width: min(16rem, 100%);
+}
+
+.admin-calendar {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.admin-calendar__weekdays,
+.admin-calendar__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
+.admin-calendar__weekdays span {
+  text-align: center;
+  font-size: 0.82rem;
+  font-weight: 800;
+  color: var(--muted);
+}
+
+.admin-calendar__cell {
+  min-height: 8.6rem;
+  padding: 0.75rem;
+  border: 1px solid rgba(122, 84, 63, 0.12);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 253, 249, 0.88);
+  display: grid;
+  gap: 0.7rem;
+  text-align: left;
+}
+
+.admin-calendar__cell--empty {
+  min-height: 8.6rem;
+  border-radius: var(--radius-lg);
+  background: rgba(122, 84, 63, 0.05);
+}
+
+.admin-calendar__cell-top {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  align-items: baseline;
+}
+
+.admin-calendar__cell-top strong {
+  font-size: 1.2rem;
+  line-height: 1;
+}
+
+.admin-calendar__cell-top span,
+.admin-calendar__service span,
+.admin-calendar__service small {
+  color: var(--muted);
+}
+
+.admin-calendar__services {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.admin-calendar__service {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: baseline;
+  gap: 0.5rem;
+  padding: 0.45rem 0.5rem;
+  border-radius: var(--radius-md);
+  background: rgba(255, 250, 243, 0.82);
+}
+
+.admin-calendar__service strong {
+  font-size: 1rem;
+  line-height: 1;
 }
 
 .admin-reservation-group {
@@ -1520,6 +1605,8 @@ p {
   .reservation-panel,
   .admin-grid,
   .admin-overview,
+  .admin-calendar__weekdays,
+  .admin-calendar__grid,
   .admin-capacity-grid,
   .menu-sections,
   .menu-columns,
@@ -1780,6 +1867,15 @@ p {
   .admin-overview-card__badges {
     display: grid;
     grid-template-columns: 1fr;
+  }
+
+  .admin-planning-toolbar {
+    justify-content: stretch;
+  }
+
+  .admin-planning-toolbar .field,
+  .admin-calendar__cell {
+    width: 100%;
   }
 
   .reservation-embed,

@@ -3,7 +3,12 @@ import { Router } from 'express';
 import { z } from 'zod';
 import { config } from '../config.js';
 import { prisma } from '../db.js';
-import { normalizeReservationDate, normalizeService } from '../lib/reservations.js';
+import {
+  getServiceAvailability,
+  normalizeReservationDate,
+  normalizeService,
+  serviceLabel
+} from '../lib/reservations.js';
 
 const adminTokenHeader = 'x-admin-token';
 
@@ -16,6 +21,20 @@ const listReservationsSchema = z.object({
 const updateStatusSchema = z.object({
   status: z.nativeEnum(ReservationStatus),
   notes: z.string().trim().max(1000).optional()
+});
+
+const createAdminReservationSchema = z.object({
+  name: z.string().trim().min(2),
+  phone: z.string().trim().min(8),
+  email: z.string().trim().email().optional().or(z.literal('')),
+  reservationDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  reservationTime: z.string().regex(/^\d{2}:\d{2}$/),
+  service: z.enum(['midi', 'soir']),
+  partySize: z.coerce.number().int().positive().max(20),
+  message: z.string().trim().max(1000).optional().or(z.literal('')),
+  notes: z.string().trim().max(1000).optional().or(z.literal('')),
+  source: z.string().trim().min(2).max(40).optional().default('telephone'),
+  status: z.nativeEnum(ReservationStatus).default(ReservationStatus.CONFIRMED)
 });
 
 const upsertCapacitySchema = z.object({
@@ -72,6 +91,52 @@ adminRouter.patch('/reservations/:id/status', async (req, res, next) => {
         }
       })
     );
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.post('/reservations', async (req, res, next) => {
+  try {
+    const payload = createAdminReservationSchema.parse(req.body);
+    const reservationDate = normalizeReservationDate(payload.reservationDate);
+    const service = normalizeService(payload.service);
+    const availability = await getServiceAvailability(reservationDate, service);
+    const blocksCapacity =
+      payload.status === ReservationStatus.PENDING || payload.status === ReservationStatus.CONFIRMED;
+
+    if (availability.isClosed && blocksCapacity) {
+      return res.status(409).json({
+        error: 'SERVICE_CLOSED',
+        message: `${serviceLabel(service)} est ferme pour cette date.`
+      });
+    }
+
+    if (blocksCapacity && payload.partySize > availability.remainingSeats) {
+      return res.status(409).json({
+        error: 'SERVICE_FULL',
+        message: `Il ne reste plus assez de places pour ${serviceLabel(service).toLowerCase()}.`,
+        availability
+      });
+    }
+
+    const reservation = await prisma.reservation.create({
+      data: {
+        name: payload.name,
+        phone: payload.phone,
+        email: payload.email || null,
+        reservationDate,
+        reservationTime: payload.reservationTime,
+        service,
+        partySize: payload.partySize,
+        message: payload.message || null,
+        notes: payload.notes || null,
+        source: payload.source,
+        status: payload.status
+      }
+    });
+
+    res.status(201).json({ reservation });
   } catch (error) {
     next(error);
   }

@@ -113,6 +113,110 @@ const apiUrl = site.reservationApiUrl;
 
     <section class="admin-card" data-reveal>
       <div class="admin-card__header">
+        <h2>Ajouter une réservation</h2>
+        <p>Saisissez à la main une demande reçue par téléphone, sur place ou par message.</p>
+      </div>
+
+      <form class="admin-manual-form" data-admin-manual-form>
+        <div class="field-grid">
+          <div class="field">
+            <label for="manual-date">Date</label>
+            <input id="manual-date" name="reservationDate" type="date" required />
+          </div>
+          <div class="field">
+            <label for="manual-time">Heure</label>
+            <input id="manual-time" name="reservationTime" type="time" required />
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="manual-service">Service</label>
+            <select id="manual-service" name="service">
+              <option value="midi">Midi</option>
+              <option value="soir" selected>Soir</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="manual-party">Nombre de personnes</label>
+            <input id="manual-party" name="partySize" type="number" min="1" max="20" value="2" required />
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="manual-name">Nom</label>
+            <input id="manual-name" name="name" type="text" placeholder="Nom du client" required />
+          </div>
+          <div class="field">
+            <label for="manual-phone">Téléphone</label>
+            <input id="manual-phone" name="phone" type="tel" placeholder="06..." required />
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="manual-email">Email</label>
+            <input id="manual-email" name="email" type="email" placeholder="Optionnel" />
+          </div>
+          <div class="field">
+            <label for="manual-source">Source</label>
+            <select id="manual-source" name="source">
+              <option value="telephone">Téléphone</option>
+              <option value="sur-place">Sur place</option>
+              <option value="sms">SMS</option>
+              <option value="instagram">Instagram</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field-grid">
+          <div class="field">
+            <label for="manual-status">Statut</label>
+            <select id="manual-status" name="status">
+              <option value="CONFIRMED" selected>Confirmée</option>
+              <option value="PENDING">En attente</option>
+              <option value="DECLINED">Refusée</option>
+              <option value="CANCELLED">Annulée</option>
+              <option value="NO_SHOW">No-show</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="manual-notes">Notes internes</label>
+            <input id="manual-notes" name="notes" type="text" placeholder="Allergie, terrasse, poussette..." />
+          </div>
+        </div>
+
+        <div class="field">
+          <label for="manual-message">Message</label>
+          <textarea id="manual-message" name="message" rows="3" placeholder="Demande client, précision d'horaire, occasion..."></textarea>
+        </div>
+
+        <div class="admin-token-form__actions">
+          <button class="button button--primary" type="submit">Ajouter la réservation</button>
+        </div>
+        <p class="admin-inline-feedback" data-admin-manual-feedback aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section class="admin-card" data-reveal>
+      <div class="admin-card__header">
+        <h2>Planning mensuel</h2>
+        <p>Repérez rapidement les jours calmes, les jours chargés et les services complets.</p>
+      </div>
+
+      <div class="admin-planning-toolbar">
+        <div class="field">
+          <label for="admin-month">Mois</label>
+          <input id="admin-month" type="month" data-admin-month />
+        </div>
+      </div>
+      <div class="admin-calendar" data-admin-calendar></div>
+    </section>
+
+    <section class="admin-card" data-reveal>
+      <div class="admin-card__header">
         <h2>Capacités du jour</h2>
         <p>Ajustez le nombre de places par service ou marquez un service complet.</p>
       </div>
@@ -158,10 +262,13 @@ const apiUrl = site.reservationApiUrl;
       const capacitiesNode = document.querySelector('[data-admin-capacities]');
       const summaryNode = document.querySelector('[data-admin-summary]');
       const overviewNode = document.querySelector('[data-admin-overview]');
+      const calendarNode = document.querySelector('[data-admin-calendar]');
       const reservationsNode = document.querySelector('[data-admin-reservations]');
       const tokenFeedback = document.querySelector('[data-admin-token-feedback]');
       const capacityFeedback = document.querySelector('[data-admin-capacity-feedback]');
       const reservationsFeedback = document.querySelector('[data-admin-reservations-feedback]');
+      const manualForm = document.querySelector('[data-admin-manual-form]');
+      const manualFeedback = document.querySelector('[data-admin-manual-feedback]');
 
       if (
         !(tokenForm instanceof HTMLFormElement) ||
@@ -169,10 +276,13 @@ const apiUrl = site.reservationApiUrl;
         !(capacitiesNode instanceof HTMLElement) ||
         !(summaryNode instanceof HTMLElement) ||
         !(overviewNode instanceof HTMLElement) ||
+        !(calendarNode instanceof HTMLElement) ||
         !(reservationsNode instanceof HTMLElement) ||
         !(tokenFeedback instanceof HTMLElement) ||
         !(capacityFeedback instanceof HTMLElement) ||
-        !(reservationsFeedback instanceof HTMLElement)
+        !(reservationsFeedback instanceof HTMLElement) ||
+        !(manualForm instanceof HTMLFormElement) ||
+        !(manualFeedback instanceof HTMLElement)
       ) {
         return;
       }
@@ -187,6 +297,7 @@ const apiUrl = site.reservationApiUrl;
       const statusInput = filtersForm.querySelector('#admin-status');
       const sortInput = filtersForm.querySelector('#admin-sort');
       const searchInput = filtersForm.querySelector('#admin-search');
+      const monthInput = document.querySelector('[data-admin-month]');
 
       if (
         !(tokenInput instanceof HTMLInputElement) ||
@@ -195,7 +306,8 @@ const apiUrl = site.reservationApiUrl;
         !(serviceInput instanceof HTMLSelectElement) ||
         !(statusInput instanceof HTMLSelectElement) ||
         !(sortInput instanceof HTMLSelectElement) ||
-        !(searchInput instanceof HTMLInputElement)
+        !(searchInput instanceof HTMLInputElement) ||
+        !(monthInput instanceof HTMLInputElement)
       ) {
         return;
       }
@@ -212,6 +324,7 @@ const apiUrl = site.reservationApiUrl;
         date.setDate(date.getDate() + 1);
         return date.toISOString().slice(0, 10);
       };
+      const currentMonth = () => new Date().toISOString().slice(0, 7);
 
       const formatDay = (value) =>
         new Intl.DateTimeFormat('fr-FR', {
@@ -321,6 +434,82 @@ const apiUrl = site.reservationApiUrl;
             `
           )
           .join('');
+      };
+
+      const renderCalendar = () => {
+        const monthValue = monthInput.value || currentMonth();
+        const [year, month] = monthValue.split('-').map(Number);
+        const firstDay = new Date(year, month - 1, 1);
+        const lastDay = new Date(year, month, 0);
+        const startWeekday = (firstDay.getDay() + 6) % 7;
+        const totalDays = lastDay.getDate();
+        const cells = [];
+        const reservationsByDate = new Map();
+
+        for (const reservation of state.reservations) {
+          const dateKey = reservation.reservationDate.slice(0, 10);
+          if (!dateKey.startsWith(monthValue)) continue;
+
+          const current = reservationsByDate.get(dateKey) ?? {
+            total: 0,
+            seats: 0,
+            services: {
+              midi: { total: 0, seats: 0 },
+              soir: { total: 0, seats: 0 }
+            }
+          };
+
+          const serviceKey = reservation.service.toLowerCase();
+          current.total += 1;
+          current.seats += reservation.partySize;
+          current.services[serviceKey].total += 1;
+          current.services[serviceKey].seats += reservation.partySize;
+          reservationsByDate.set(dateKey, current);
+        }
+
+        for (let i = 0; i < startWeekday; i += 1) {
+          cells.push('<div class="admin-calendar__cell admin-calendar__cell--empty"></div>');
+        }
+
+        for (let day = 1; day <= totalDays; day += 1) {
+          const date = new Date(year, month - 1, day);
+          const dateKey = date.toISOString().slice(0, 10);
+          const dayData = reservationsByDate.get(dateKey);
+
+          cells.push(`
+            <button class="admin-calendar__cell" type="button" data-calendar-date="${dateKey}">
+              <div class="admin-calendar__cell-top">
+                <strong>${day}</strong>
+                ${dayData ? `<span>${dayData.total} resa</span>` : '<span>Libre</span>'}
+              </div>
+              <div class="admin-calendar__services">
+                <div class="admin-calendar__service">
+                  <span>Midi</span>
+                  <strong>${dayData?.services.midi.total ?? 0}</strong>
+                  <small>${dayData?.services.midi.seats ?? 0} cvt</small>
+                </div>
+                <div class="admin-calendar__service">
+                  <span>Soir</span>
+                  <strong>${dayData?.services.soir.total ?? 0}</strong>
+                  <small>${dayData?.services.soir.seats ?? 0} cvt</small>
+                </div>
+              </div>
+            </button>
+          `);
+        }
+
+        calendarNode.innerHTML = `
+          <div class="admin-calendar__weekdays">
+            <span>Lun</span>
+            <span>Mar</span>
+            <span>Mer</span>
+            <span>Jeu</span>
+            <span>Ven</span>
+            <span>Sam</span>
+            <span>Dim</span>
+          </div>
+          <div class="admin-calendar__grid">${cells.join('')}</div>
+        `;
       };
 
       const applyClientFilters = () => {
@@ -551,6 +740,7 @@ const apiUrl = site.reservationApiUrl;
           applyClientFilters();
           renderSummary();
           renderOverview();
+          renderCalendar();
           renderReservations();
           setFeedback(
             reservationsFeedback,
@@ -562,12 +752,18 @@ const apiUrl = site.reservationApiUrl;
           state.filteredReservations = [];
           renderSummary();
           renderOverview();
+          renderCalendar();
           renderReservations();
           setFeedback(reservationsFeedback, 'Impossible de charger les reservations. Verifiez le token admin.', 'error');
         }
       };
 
       tokenInput.value = state.token;
+      monthInput.value = currentMonth();
+      const manualDateInput = manualForm.querySelector('#manual-date');
+      const manualTimeInput = manualForm.querySelector('#manual-time');
+      if (manualDateInput instanceof HTMLInputElement) manualDateInput.value = today();
+      if (manualTimeInput instanceof HTMLInputElement) manualTimeInput.value = '19:30';
 
       tokenForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -603,6 +799,7 @@ const apiUrl = site.reservationApiUrl;
         applyClientFilters();
         renderSummary();
         renderOverview();
+        renderCalendar();
         renderReservations();
       });
 
@@ -623,6 +820,10 @@ const apiUrl = site.reservationApiUrl;
 
         await renderCapacities();
         await loadReservations();
+      });
+
+      monthInput.addEventListener('change', () => {
+        renderCalendar();
       });
 
       capacitiesNode.addEventListener('submit', async (event) => {
@@ -669,6 +870,65 @@ const apiUrl = site.reservationApiUrl;
         } catch (_error) {
           setFeedback(capacityFeedback, 'Impossible de mettre a jour la capacite.', 'error');
         }
+      });
+
+      manualForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        if (!state.token) {
+          setFeedback(manualFeedback, 'Token admin requis pour ajouter une reservation.', 'error');
+          return;
+        }
+
+        const formData = new FormData(manualForm);
+        setFeedback(manualFeedback, 'Ajout de la reservation...', '');
+
+        try {
+          const response = await fetch(`${apiRoot}/admin/reservations`, {
+            method: 'POST',
+            headers: authHeaders(),
+            body: JSON.stringify({
+              name: formData.get('name')?.toString().trim(),
+              phone: formData.get('phone')?.toString().trim(),
+              email: formData.get('email')?.toString().trim(),
+              reservationDate: formData.get('reservationDate')?.toString().trim(),
+              reservationTime: formData.get('reservationTime')?.toString().trim(),
+              service: formData.get('service')?.toString().trim(),
+              partySize: formData.get('partySize')?.toString().trim(),
+              message: formData.get('message')?.toString().trim(),
+              notes: formData.get('notes')?.toString().trim(),
+              source: formData.get('source')?.toString().trim(),
+              status: formData.get('status')?.toString().trim()
+            })
+          });
+
+          if (!response.ok) {
+            throw new Error('manual');
+          }
+
+          manualForm.reset();
+          if (manualDateInput instanceof HTMLInputElement) manualDateInput.value = today();
+          if (manualTimeInput instanceof HTMLInputElement) manualTimeInput.value = '19:30';
+          setFeedback(manualFeedback, 'Reservation ajoutée.', 'success');
+          await renderCapacities();
+          await loadReservations();
+        } catch (_error) {
+          setFeedback(manualFeedback, "Impossible d'ajouter la reservation.", 'error');
+        }
+      });
+
+      calendarNode.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+
+        const calendarDateButton = target.closest('[data-calendar-date]');
+        if (!(calendarDateButton instanceof HTMLButtonElement)) return;
+        const clickedDate = calendarDateButton.dataset.calendarDate;
+        if (!clickedDate) return;
+
+        dateInput.value = clickedDate;
+        await renderCapacities();
+        await loadReservations();
       });
 
       reservationsNode.addEventListener('click', async (event) => {
