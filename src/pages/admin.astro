@@ -45,10 +45,16 @@ const apiUrl = site.reservationApiUrl;
       <section class="admin-card" data-reveal>
         <div class="admin-card__header">
           <h2>Filtres</h2>
-          <p>Choisissez une date, puis affinez si besoin par service ou statut.</p>
+          <p>Utilisez la vue globale, puis zoomez sur une date si vous devez ajuster les capacites.</p>
         </div>
 
         <form class="admin-filters" data-admin-filters>
+          <div class="admin-filter-presets">
+            <button class="button button--ghost" type="button" data-filter-preset="all">Tout voir</button>
+            <button class="button button--ghost" type="button" data-filter-preset="today">Aujourd'hui</button>
+            <button class="button button--ghost" type="button" data-filter-preset="tomorrow">Demain</button>
+          </div>
+
           <div class="field-grid">
             <div class="field">
               <label for="admin-date">Date</label>
@@ -64,16 +70,38 @@ const apiUrl = site.reservationApiUrl;
             </div>
           </div>
 
+          <div class="field-grid">
+            <div class="field">
+              <label for="admin-status">Statut</label>
+              <select id="admin-status" name="status">
+                <option value="">Tous</option>
+                <option value="PENDING">En attente</option>
+                <option value="CONFIRMED">Confirmée</option>
+                <option value="DECLINED">Refusée</option>
+                <option value="CANCELLED">Annulée</option>
+                <option value="NO_SHOW">No-show</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="admin-sort">Tri</label>
+              <select id="admin-sort" name="sort">
+                <option value="date-asc">Date la plus proche</option>
+                <option value="date-desc">Date la plus lointaine</option>
+                <option value="created-desc">Demande la plus récente</option>
+                <option value="party-desc">Plus grandes tables</option>
+              </select>
+            </div>
+          </div>
+
           <div class="field">
-            <label for="admin-status">Statut</label>
-            <select id="admin-status" name="status">
-              <option value="">Tous</option>
-              <option value="PENDING">En attente</option>
-              <option value="CONFIRMED">Confirmée</option>
-              <option value="DECLINED">Refusée</option>
-              <option value="CANCELLED">Annulée</option>
-              <option value="NO_SHOW">No-show</option>
-            </select>
+            <label for="admin-search">Recherche</label>
+            <input
+              id="admin-search"
+              name="search"
+              type="search"
+              placeholder="Nom, téléphone, email, note ou message"
+            />
           </div>
 
           <div class="admin-token-form__actions">
@@ -96,10 +124,11 @@ const apiUrl = site.reservationApiUrl;
     <section class="admin-card" data-reveal>
       <div class="admin-card__header">
         <h2>Réservations</h2>
-        <p>Les demandes se mettent à jour à partir des filtres ci-dessus.</p>
+        <p>Vue planning globale, puis cartes détaillées par date et par service.</p>
       </div>
 
       <div class="admin-summary" data-admin-summary></div>
+      <div class="admin-overview" data-admin-overview></div>
       <p class="admin-inline-feedback" data-admin-reservations-feedback aria-live="polite"></p>
       <div class="admin-reservations" data-admin-reservations></div>
     </section>
@@ -128,6 +157,7 @@ const apiUrl = site.reservationApiUrl;
       const filtersForm = document.querySelector('[data-admin-filters]');
       const capacitiesNode = document.querySelector('[data-admin-capacities]');
       const summaryNode = document.querySelector('[data-admin-summary]');
+      const overviewNode = document.querySelector('[data-admin-overview]');
       const reservationsNode = document.querySelector('[data-admin-reservations]');
       const tokenFeedback = document.querySelector('[data-admin-token-feedback]');
       const capacityFeedback = document.querySelector('[data-admin-capacity-feedback]');
@@ -138,6 +168,7 @@ const apiUrl = site.reservationApiUrl;
         !(filtersForm instanceof HTMLFormElement) ||
         !(capacitiesNode instanceof HTMLElement) ||
         !(summaryNode instanceof HTMLElement) ||
+        !(overviewNode instanceof HTMLElement) ||
         !(reservationsNode instanceof HTMLElement) ||
         !(tokenFeedback instanceof HTMLElement) ||
         !(capacityFeedback instanceof HTMLElement) ||
@@ -154,21 +185,48 @@ const apiUrl = site.reservationApiUrl;
       const dateInput = filtersForm.querySelector('#admin-date');
       const serviceInput = filtersForm.querySelector('#admin-service');
       const statusInput = filtersForm.querySelector('#admin-status');
+      const sortInput = filtersForm.querySelector('#admin-sort');
+      const searchInput = filtersForm.querySelector('#admin-search');
 
       if (
         !(tokenInput instanceof HTMLInputElement) ||
         !(clearButton instanceof HTMLButtonElement) ||
         !(dateInput instanceof HTMLInputElement) ||
         !(serviceInput instanceof HTMLSelectElement) ||
-        !(statusInput instanceof HTMLSelectElement)
+        !(statusInput instanceof HTMLSelectElement) ||
+        !(sortInput instanceof HTMLSelectElement) ||
+        !(searchInput instanceof HTMLInputElement)
       ) {
         return;
       }
 
       const state = {
         token: localStorage.getItem(tokenStorageKey) ?? '',
-        reservations: []
+        reservations: [],
+        filteredReservations: []
       };
+
+      const today = () => new Date().toISOString().slice(0, 10);
+      const tomorrow = () => {
+        const date = new Date();
+        date.setDate(date.getDate() + 1);
+        return date.toISOString().slice(0, 10);
+      };
+
+      const formatDay = (value) =>
+        new Intl.DateTimeFormat('fr-FR', {
+          weekday: 'short',
+          day: 'numeric',
+          month: 'short'
+        }).format(new Date(`${value}T12:00:00`));
+
+      const formatDateTime = (value) =>
+        new Intl.DateTimeFormat('fr-FR', {
+          day: '2-digit',
+          month: '2-digit',
+          hour: '2-digit',
+          minute: '2-digit'
+        }).format(new Date(value));
 
       const setFeedback = (node, message, tone = '') => {
         node.textContent = message;
@@ -181,19 +239,29 @@ const apiUrl = site.reservationApiUrl;
       });
 
       const renderSummary = () => {
-        if (!state.reservations.length) {
+        if (!state.filteredReservations.length) {
           summaryNode.innerHTML = '<p class="admin-empty">Aucune reservation pour ce filtre.</p>';
           return;
         }
 
-        const counters = state.reservations.reduce(
+        const counters = state.filteredReservations.reduce(
           (acc, reservation) => {
             acc.total += 1;
             acc.seats += reservation.partySize;
             acc[reservation.status] = (acc[reservation.status] ?? 0) + 1;
+            acc.dates.add(reservation.reservationDate.slice(0, 10));
             return acc;
           },
-          { total: 0, seats: 0, PENDING: 0, CONFIRMED: 0, DECLINED: 0, CANCELLED: 0, NO_SHOW: 0 }
+          {
+            total: 0,
+            seats: 0,
+            PENDING: 0,
+            CONFIRMED: 0,
+            DECLINED: 0,
+            CANCELLED: 0,
+            NO_SHOW: 0,
+            dates: new Set()
+          }
         );
 
         summaryNode.innerHTML = `
@@ -213,57 +281,183 @@ const apiUrl = site.reservationApiUrl;
             <strong>${counters.CONFIRMED}</strong>
             <span>confirmees</span>
           </div>
+          <div class="admin-summary-card">
+            <strong>${counters.dates.size}</strong>
+            <span>jour(s) affiché(s)</span>
+          </div>
         `;
       };
 
+      const renderOverview = () => {
+        if (!state.filteredReservations.length) {
+          overviewNode.innerHTML = '';
+          return;
+        }
+
+        const dayMap = new Map();
+        for (const reservation of state.filteredReservations) {
+          const dateKey = reservation.reservationDate.slice(0, 10);
+          const current = dayMap.get(dateKey) ?? { total: 0, seats: 0, pending: 0, confirmed: 0 };
+          current.total += 1;
+          current.seats += reservation.partySize;
+          if (reservation.status === 'PENDING') current.pending += 1;
+          if (reservation.status === 'CONFIRMED') current.confirmed += 1;
+          dayMap.set(dateKey, current);
+        }
+
+        overviewNode.innerHTML = Array.from(dayMap.entries())
+          .map(
+            ([dateKey, counts]) => `
+              <article class="admin-overview-card">
+                <div>
+                  <h3>${formatDay(dateKey)}</h3>
+                  <p>${counts.total} reservation(s) • ${counts.seats} couvert(s)</p>
+                </div>
+                <div class="admin-overview-card__badges">
+                  <span class="admin-status-badge" data-status="PENDING">${counts.pending} attente</span>
+                  <span class="admin-status-badge" data-status="CONFIRMED">${counts.confirmed} confirmees</span>
+                </div>
+              </article>
+            `
+          )
+          .join('');
+      };
+
+      const applyClientFilters = () => {
+        const search = searchInput.value.trim().toLowerCase();
+        const selectedDate = dateInput.value;
+        const selectedService = serviceInput.value;
+        const selectedStatus = statusInput.value;
+
+        const filtered = state.reservations.filter((reservation) => {
+          const dateKey = reservation.reservationDate.slice(0, 10);
+          const serviceKey = reservation.service.toLowerCase();
+
+          if (selectedDate && dateKey !== selectedDate) return false;
+          if (selectedService && serviceKey !== selectedService) return false;
+          if (selectedStatus && reservation.status !== selectedStatus) return false;
+
+          if (!search) return true;
+
+          const haystack = [
+            reservation.name,
+            reservation.phone,
+            reservation.email,
+            reservation.message,
+            reservation.notes,
+            reservation.reservationTime,
+            dateKey,
+            serviceLabels[reservation.service]
+          ]
+            .filter(Boolean)
+            .join(' ')
+            .toLowerCase();
+
+          return haystack.includes(search);
+        });
+
+        const sortValue = sortInput.value;
+        filtered.sort((left, right) => {
+          const leftDate = `${left.reservationDate.slice(0, 10)}T${left.reservationTime}`;
+          const rightDate = `${right.reservationDate.slice(0, 10)}T${right.reservationTime}`;
+
+          if (sortValue === 'date-desc') return rightDate.localeCompare(leftDate);
+          if (sortValue === 'created-desc') return new Date(right.createdAt) - new Date(left.createdAt);
+          if (sortValue === 'party-desc') return right.partySize - left.partySize || leftDate.localeCompare(rightDate);
+          return leftDate.localeCompare(rightDate);
+        });
+
+        state.filteredReservations = filtered;
+      };
+
       const renderReservations = () => {
-        if (!state.reservations.length) {
+        if (!state.filteredReservations.length) {
           reservationsNode.innerHTML = '<p class="admin-empty">Aucune reservation trouvee.</p>';
           return;
         }
 
-        reservationsNode.innerHTML = state.reservations
+        const groups = new Map();
+        for (const reservation of state.filteredReservations) {
+          const dateKey = reservation.reservationDate.slice(0, 10);
+          const serviceKey = reservation.service.toLowerCase();
+          const groupKey = `${dateKey}-${serviceKey}`;
+          const bucket = groups.get(groupKey) ?? {
+            dateKey,
+            serviceKey,
+            seats: 0,
+            items: []
+          };
+          bucket.seats += reservation.partySize;
+          bucket.items.push(reservation);
+          groups.set(groupKey, bucket);
+        }
+
+        reservationsNode.innerHTML = Array.from(groups.values())
           .map(
-            (reservation) => `
-              <article class="admin-reservation-card">
-                <div class="admin-reservation-card__top">
+            (group) => `
+              <section class="admin-reservation-group">
+                <div class="admin-reservation-group__header">
                   <div>
-                    <h3>${reservation.name}</h3>
-                    <p>${reservation.partySize} couvert(s) • ${serviceLabels[reservation.service]} • ${reservation.reservationTime}</p>
-                    <p>${reservation.phone}${reservation.email ? ` • ${reservation.email}` : ''}</p>
+                    <h3>${formatDay(group.dateKey)} • ${serviceLabels[group.serviceKey]}</h3>
+                    <p>${group.items.length} reservation(s) • ${group.seats} couvert(s)</p>
                   </div>
-                  <span class="admin-status-badge" data-status="${reservation.status}">
-                    ${statusLabels[reservation.status]}
-                  </span>
-                </div>
-
-                <p class="admin-reservation-card__message">${reservation.message || 'Aucun message.'}</p>
-
-                <div class="field-grid">
-                  <div class="field">
-                    <label for="status-${reservation.id}">Statut</label>
-                    <select id="status-${reservation.id}" data-reservation-status>
-                      ${Object.entries(statusLabels)
-                        .map(
-                          ([value, label]) =>
-                            `<option value="${value}"${reservation.status === value ? ' selected' : ''}>${label}</option>`
-                        )
-                        .join('')}
-                    </select>
-                  </div>
-
-                  <div class="field">
-                    <label for="notes-${reservation.id}">Notes</label>
-                    <textarea id="notes-${reservation.id}" rows="3" data-reservation-notes>${reservation.notes ?? ''}</textarea>
-                  </div>
-                </div>
-
-                <div class="admin-reservation-card__actions">
-                  <button class="button button--primary" type="button" data-save-reservation data-id="${reservation.id}">
-                    Enregistrer
+                  <button class="button button--ghost" type="button" data-copy-date="${group.dateKey}">
+                    Voir les capacites du jour
                   </button>
                 </div>
-              </article>
+
+                <div class="admin-reservation-list">
+                  ${group.items
+                    .map(
+                      (reservation) => `
+                        <article class="admin-reservation-card">
+                          <div class="admin-reservation-card__top">
+                            <div>
+                              <h3>${reservation.name}</h3>
+                              <p>${reservation.partySize} couvert(s) • ${serviceLabels[reservation.service]} • ${reservation.reservationTime}</p>
+                              <p>${reservation.phone}${reservation.email ? ` • ${reservation.email}` : ''}</p>
+                            </div>
+                            <span class="admin-status-badge" data-status="${reservation.status}">
+                              ${statusLabels[reservation.status]}
+                            </span>
+                          </div>
+
+                          <div class="admin-reservation-card__meta">
+                            <span>Demandée le ${formatDateTime(reservation.createdAt)}</span>
+                          </div>
+
+                          <p class="admin-reservation-card__message">${reservation.message || 'Aucun message.'}</p>
+
+                          <div class="field-grid">
+                            <div class="field">
+                              <label for="status-${reservation.id}">Statut</label>
+                              <select id="status-${reservation.id}" data-reservation-status>
+                                ${Object.entries(statusLabels)
+                                  .map(
+                                    ([value, label]) =>
+                                      `<option value="${value}"${reservation.status === value ? ' selected' : ''}>${label}</option>`
+                                  )
+                                  .join('')}
+                              </select>
+                            </div>
+
+                            <div class="field">
+                              <label for="notes-${reservation.id}">Notes</label>
+                              <textarea id="notes-${reservation.id}" rows="3" data-reservation-notes>${reservation.notes ?? ''}</textarea>
+                            </div>
+                          </div>
+
+                          <div class="admin-reservation-card__actions">
+                            <button class="button button--primary" type="button" data-save-reservation data-id="${reservation.id}">
+                              Enregistrer
+                            </button>
+                          </div>
+                        </article>
+                      `
+                    )
+                    .join('')}
+                </div>
+              </section>
             `
           )
           .join('');
@@ -354,21 +548,26 @@ const apiUrl = site.reservationApiUrl;
           }
 
           state.reservations = await response.json();
+          applyClientFilters();
           renderSummary();
+          renderOverview();
           renderReservations();
-          setFeedback(reservationsFeedback, `${state.reservations.length} reservation(s) chargee(s).`, 'success');
+          setFeedback(
+            reservationsFeedback,
+            `${state.filteredReservations.length} reservation(s) affichee(s) sur ${state.reservations.length} chargee(s).`,
+            'success'
+          );
         } catch (_error) {
           state.reservations = [];
+          state.filteredReservations = [];
           renderSummary();
+          renderOverview();
           renderReservations();
           setFeedback(reservationsFeedback, 'Impossible de charger les reservations. Verifiez le token admin.', 'error');
         }
       };
 
       tokenInput.value = state.token;
-      if (!dateInput.value) {
-        dateInput.value = new Date().toISOString().slice(0, 10);
-      }
 
       tokenForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -395,6 +594,33 @@ const apiUrl = site.reservationApiUrl;
 
       filtersForm.addEventListener('submit', async (event) => {
         event.preventDefault();
+        await renderCapacities();
+        await loadReservations();
+      });
+
+      filtersForm.addEventListener('input', () => {
+        if (!state.reservations.length) return;
+        applyClientFilters();
+        renderSummary();
+        renderOverview();
+        renderReservations();
+      });
+
+      filtersForm.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest('[data-filter-preset]');
+        if (!(button instanceof HTMLButtonElement)) return;
+
+        const preset = button.dataset.filterPreset;
+        if (preset === 'all') {
+          dateInput.value = '';
+        } else if (preset === 'today') {
+          dateInput.value = today();
+        } else if (preset === 'tomorrow') {
+          dateInput.value = tomorrow();
+        }
+
         await renderCapacities();
         await loadReservations();
       });
@@ -448,6 +674,18 @@ const apiUrl = site.reservationApiUrl;
       reservationsNode.addEventListener('click', async (event) => {
         const target = event.target;
         if (!(target instanceof HTMLElement)) return;
+
+        const focusDateButton = target.closest('[data-copy-date]');
+        if (focusDateButton instanceof HTMLButtonElement) {
+          const focusDate = focusDateButton.dataset.copyDate;
+          if (focusDate) {
+            dateInput.value = focusDate;
+            await renderCapacities();
+            await loadReservations();
+          }
+          return;
+        }
+
         const button = target.closest('[data-save-reservation]');
         if (!(button instanceof HTMLButtonElement)) return;
 
