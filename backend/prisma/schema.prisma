@@ -1,0 +1,54 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum Service {
+  MIDI
+  SOIR
+}
+
+enum ReservationStatus {
+  PENDING
+  CONFIRMED
+  DECLINED
+  CANCELLED
+  NO_SHOW
+}
+
+model Reservation {
+  id              String            @id @default(cuid())
+  name            String
+  phone           String
+  email           String?
+  reservationDate DateTime
+  reservationTime String
+  service         Service
+  partySize       Int
+  message         String?
+  status          ReservationStatus @default(PENDING)
+  source          String            @default("website")
+  notes           String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+
+  @@index([reservationDate, service, status])
+}
+
+model ServiceCapacity {
+  id              String   @id @default(cuid())
+  reservationDate DateTime
+  service         Service
+  capacity        Int
+  isClosed        Boolean  @default(false)
+  note            String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([reservationDate, service])
+}

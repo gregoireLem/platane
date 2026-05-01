@@ -2,7 +2,7 @@
 import { site } from '../data/site';
 ---
 
-<form class="contact-form" data-contact-form>
+<form class="contact-form" data-contact-form data-email={site.email}>
   <div class="field">
     <label for="name">Nom</label>
     <input id="name" name="name" type="text" placeholder="Votre nom" required />
@@ -69,7 +69,7 @@ import { site } from '../data/site';
         ].join('\n')
       );
 
-      window.location.href = `mailto:${'contact@platane.com'}?subject=${subject}&body=${body}`;
+      window.location.href = `mailto:${form.dataset.email}?subject=${subject}&body=${body}`;
     });
   };
 

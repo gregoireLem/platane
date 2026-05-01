@@ -1,0 +1,502 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import { site } from '../data/site';
+
+const apiUrl = site.reservationApiUrl;
+---
+
+<BaseLayout title="Administration" description="Gestion des réservations Au Platane.">
+  <section class="section admin-page">
+    <div class="admin-heading" data-reveal>
+      <p class="eyebrow">Administration</p>
+      <h1>Gérer les réservations.</h1>
+      <p class="lead">
+        Consultez les demandes, confirmez les tables et ajustez les capacités du midi et du soir.
+      </p>
+    </div>
+
+    <div class="admin-grid">
+      <section class="admin-card" data-reveal>
+        <div class="admin-card__header">
+          <h2>Accès</h2>
+          <p>Le token admin reste enregistré uniquement dans ce navigateur.</p>
+        </div>
+
+        <form class="admin-token-form" data-admin-token-form data-api-url={apiUrl}>
+          <div class="field">
+            <label for="admin-token">Token admin</label>
+            <input
+              id="admin-token"
+              name="token"
+              type="password"
+              placeholder="Collez le token du backend"
+            />
+          </div>
+          <div class="admin-token-form__actions">
+            <button class="button button--primary" type="submit">Enregistrer le token</button>
+            <button class="button button--secondary" type="button" data-admin-token-clear>
+              Effacer
+            </button>
+          </div>
+          <p class="admin-inline-feedback" data-admin-token-feedback aria-live="polite"></p>
+        </form>
+      </section>
+
+      <section class="admin-card" data-reveal>
+        <div class="admin-card__header">
+          <h2>Filtres</h2>
+          <p>Choisissez une date, puis affinez si besoin par service ou statut.</p>
+        </div>
+
+        <form class="admin-filters" data-admin-filters>
+          <div class="field-grid">
+            <div class="field">
+              <label for="admin-date">Date</label>
+              <input id="admin-date" name="date" type="date" />
+            </div>
+            <div class="field">
+              <label for="admin-service">Service</label>
+              <select id="admin-service" name="service">
+                <option value="">Tous</option>
+                <option value="midi">Midi</option>
+                <option value="soir">Soir</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="admin-status">Statut</label>
+            <select id="admin-status" name="status">
+              <option value="">Tous</option>
+              <option value="PENDING">En attente</option>
+              <option value="CONFIRMED">Confirmée</option>
+              <option value="DECLINED">Refusée</option>
+              <option value="CANCELLED">Annulée</option>
+              <option value="NO_SHOW">No-show</option>
+            </select>
+          </div>
+
+          <div class="admin-token-form__actions">
+            <button class="button button--primary" type="submit">Actualiser</button>
+          </div>
+        </form>
+      </section>
+    </div>
+
+    <section class="admin-card" data-reveal>
+      <div class="admin-card__header">
+        <h2>Capacités du jour</h2>
+        <p>Ajustez le nombre de places par service ou marquez un service complet.</p>
+      </div>
+
+      <div class="admin-capacity-grid" data-admin-capacities></div>
+      <p class="admin-inline-feedback" data-admin-capacity-feedback aria-live="polite"></p>
+    </section>
+
+    <section class="admin-card" data-reveal>
+      <div class="admin-card__header">
+        <h2>Réservations</h2>
+        <p>Les demandes se mettent à jour à partir des filtres ci-dessus.</p>
+      </div>
+
+      <div class="admin-summary" data-admin-summary></div>
+      <p class="admin-inline-feedback" data-admin-reservations-feedback aria-live="polite"></p>
+      <div class="admin-reservations" data-admin-reservations></div>
+    </section>
+  </section>
+</BaseLayout>
+
+<script is:inline>
+  (() => {
+    const tokenStorageKey = 'au-platane-admin-token';
+    const statusLabels = {
+      PENDING: 'En attente',
+      CONFIRMED: 'Confirmee',
+      DECLINED: 'Refusee',
+      CANCELLED: 'Annulee',
+      NO_SHOW: 'No-show'
+    };
+    const serviceLabels = {
+      midi: 'Midi',
+      soir: 'Soir',
+      MIDI: 'Midi',
+      SOIR: 'Soir'
+    };
+
+    const initAdminPage = () => {
+      const tokenForm = document.querySelector('[data-admin-token-form]');
+      const filtersForm = document.querySelector('[data-admin-filters]');
+      const capacitiesNode = document.querySelector('[data-admin-capacities]');
+      const summaryNode = document.querySelector('[data-admin-summary]');
+      const reservationsNode = document.querySelector('[data-admin-reservations]');
+      const tokenFeedback = document.querySelector('[data-admin-token-feedback]');
+      const capacityFeedback = document.querySelector('[data-admin-capacity-feedback]');
+      const reservationsFeedback = document.querySelector('[data-admin-reservations-feedback]');
+
+      if (
+        !(tokenForm instanceof HTMLFormElement) ||
+        !(filtersForm instanceof HTMLFormElement) ||
+        !(capacitiesNode instanceof HTMLElement) ||
+        !(summaryNode instanceof HTMLElement) ||
+        !(reservationsNode instanceof HTMLElement) ||
+        !(tokenFeedback instanceof HTMLElement) ||
+        !(capacityFeedback instanceof HTMLElement) ||
+        !(reservationsFeedback instanceof HTMLElement)
+      ) {
+        return;
+      }
+
+      const apiRoot = tokenForm.dataset.apiUrl;
+      if (!apiRoot) return;
+
+      const tokenInput = tokenForm.querySelector('#admin-token');
+      const clearButton = tokenForm.querySelector('[data-admin-token-clear]');
+      const dateInput = filtersForm.querySelector('#admin-date');
+      const serviceInput = filtersForm.querySelector('#admin-service');
+      const statusInput = filtersForm.querySelector('#admin-status');
+
+      if (
+        !(tokenInput instanceof HTMLInputElement) ||
+        !(clearButton instanceof HTMLButtonElement) ||
+        !(dateInput instanceof HTMLInputElement) ||
+        !(serviceInput instanceof HTMLSelectElement) ||
+        !(statusInput instanceof HTMLSelectElement)
+      ) {
+        return;
+      }
+
+      const state = {
+        token: localStorage.getItem(tokenStorageKey) ?? '',
+        reservations: []
+      };
+
+      const setFeedback = (node, message, tone = '') => {
+        node.textContent = message;
+        node.dataset.tone = tone;
+      };
+
+      const authHeaders = () => ({
+        'Content-Type': 'application/json',
+        'x-admin-token': state.token
+      });
+
+      const renderSummary = () => {
+        if (!state.reservations.length) {
+          summaryNode.innerHTML = '<p class="admin-empty">Aucune reservation pour ce filtre.</p>';
+          return;
+        }
+
+        const counters = state.reservations.reduce(
+          (acc, reservation) => {
+            acc.total += 1;
+            acc.seats += reservation.partySize;
+            acc[reservation.status] = (acc[reservation.status] ?? 0) + 1;
+            return acc;
+          },
+          { total: 0, seats: 0, PENDING: 0, CONFIRMED: 0, DECLINED: 0, CANCELLED: 0, NO_SHOW: 0 }
+        );
+
+        summaryNode.innerHTML = `
+          <div class="admin-summary-card">
+            <strong>${counters.total}</strong>
+            <span>reservations</span>
+          </div>
+          <div class="admin-summary-card">
+            <strong>${counters.seats}</strong>
+            <span>couverts</span>
+          </div>
+          <div class="admin-summary-card">
+            <strong>${counters.PENDING}</strong>
+            <span>en attente</span>
+          </div>
+          <div class="admin-summary-card">
+            <strong>${counters.CONFIRMED}</strong>
+            <span>confirmees</span>
+          </div>
+        `;
+      };
+
+      const renderReservations = () => {
+        if (!state.reservations.length) {
+          reservationsNode.innerHTML = '<p class="admin-empty">Aucune reservation trouvee.</p>';
+          return;
+        }
+
+        reservationsNode.innerHTML = state.reservations
+          .map(
+            (reservation) => `
+              <article class="admin-reservation-card">
+                <div class="admin-reservation-card__top">
+                  <div>
+                    <h3>${reservation.name}</h3>
+                    <p>${reservation.partySize} couvert(s) • ${serviceLabels[reservation.service]} • ${reservation.reservationTime}</p>
+                    <p>${reservation.phone}${reservation.email ? ` • ${reservation.email}` : ''}</p>
+                  </div>
+                  <span class="admin-status-badge" data-status="${reservation.status}">
+                    ${statusLabels[reservation.status]}
+                  </span>
+                </div>
+
+                <p class="admin-reservation-card__message">${reservation.message || 'Aucun message.'}</p>
+
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="status-${reservation.id}">Statut</label>
+                    <select id="status-${reservation.id}" data-reservation-status>
+                      ${Object.entries(statusLabels)
+                        .map(
+                          ([value, label]) =>
+                            `<option value="${value}"${reservation.status === value ? ' selected' : ''}>${label}</option>`
+                        )
+                        .join('')}
+                    </select>
+                  </div>
+
+                  <div class="field">
+                    <label for="notes-${reservation.id}">Notes</label>
+                    <textarea id="notes-${reservation.id}" rows="3" data-reservation-notes>${reservation.notes ?? ''}</textarea>
+                  </div>
+                </div>
+
+                <div class="admin-reservation-card__actions">
+                  <button class="button button--primary" type="button" data-save-reservation data-id="${reservation.id}">
+                    Enregistrer
+                  </button>
+                </div>
+              </article>
+            `
+          )
+          .join('');
+      };
+
+      const renderCapacities = async () => {
+        if (!dateInput.value) {
+          capacitiesNode.innerHTML = '<p class="admin-empty">Choisissez une date pour gerer les capacites.</p>';
+          return;
+        }
+
+        try {
+          const results = await Promise.all(
+            ['midi', 'soir'].map(async (service) => {
+              const response = await fetch(
+                `${apiRoot}/reservations/availability?date=${encodeURIComponent(dateInput.value)}&service=${service}`
+              );
+
+              if (!response.ok) throw new Error('capacity');
+              return response.json();
+            })
+          );
+
+          capacitiesNode.innerHTML = results
+            .map(
+              (serviceData) => `
+                <form class="admin-capacity-card" data-capacity-form data-service="${serviceData.service}">
+                  <div class="admin-capacity-card__top">
+                    <div>
+                      <h3>${serviceLabels[serviceData.service]}</h3>
+                      <p>${serviceData.remainingSeats} place(s) restantes sur ${serviceData.capacity}</p>
+                    </div>
+                    <span class="admin-status-badge" data-status="${serviceData.remainingSeats <= 0 || serviceData.isClosed ? 'DECLINED' : 'CONFIRMED'}">
+                      ${serviceData.remainingSeats <= 0 || serviceData.isClosed ? 'Complet' : 'Disponible'}
+                    </span>
+                  </div>
+
+                  <div class="field-grid">
+                    <div class="field">
+                      <label>Capacite</label>
+                      <input type="number" min="1" max="500" value="${serviceData.capacity}" data-capacity-value />
+                    </div>
+                    <label class="admin-checkbox">
+                      <input type="checkbox" data-capacity-closed ${serviceData.isClosed ? 'checked' : ''} />
+                      <span>Fermer ce service</span>
+                    </label>
+                  </div>
+
+                  <div class="field">
+                    <label>Note</label>
+                    <textarea rows="2" data-capacity-note>${serviceData.note ?? ''}</textarea>
+                  </div>
+
+                  <div class="admin-reservation-card__actions">
+                    <button class="button button--secondary" type="submit">Mettre a jour</button>
+                  </div>
+                </form>
+              `
+            )
+            .join('');
+        } catch (_error) {
+          capacitiesNode.innerHTML = '<p class="admin-empty">Impossible de charger les capacites.</p>';
+        }
+      };
+
+      const loadReservations = async () => {
+        if (!state.token) {
+          setFeedback(tokenFeedback, 'Ajoutez le token admin pour charger les reservations.', 'warning');
+          reservationsNode.innerHTML = '<p class="admin-empty">Token manquant.</p>';
+          summaryNode.innerHTML = '';
+          return;
+        }
+
+        const params = new URLSearchParams();
+        if (dateInput.value) params.set('date', dateInput.value);
+        if (serviceInput.value) params.set('service', serviceInput.value);
+        if (statusInput.value) params.set('status', statusInput.value);
+
+        setFeedback(reservationsFeedback, 'Chargement des reservations...', '');
+
+        try {
+          const response = await fetch(`${apiRoot}/admin/reservations?${params.toString()}`, {
+            headers: authHeaders()
+          });
+
+          if (!response.ok) {
+            throw new Error('admin');
+          }
+
+          state.reservations = await response.json();
+          renderSummary();
+          renderReservations();
+          setFeedback(reservationsFeedback, `${state.reservations.length} reservation(s) chargee(s).`, 'success');
+        } catch (_error) {
+          state.reservations = [];
+          renderSummary();
+          renderReservations();
+          setFeedback(reservationsFeedback, 'Impossible de charger les reservations. Verifiez le token admin.', 'error');
+        }
+      };
+
+      tokenInput.value = state.token;
+      if (!dateInput.value) {
+        dateInput.value = new Date().toISOString().slice(0, 10);
+      }
+
+      tokenForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        state.token = tokenInput.value.trim();
+
+        if (!state.token) {
+          localStorage.removeItem(tokenStorageKey);
+          setFeedback(tokenFeedback, 'Token vide.', 'warning');
+          return;
+        }
+
+        localStorage.setItem(tokenStorageKey, state.token);
+        setFeedback(tokenFeedback, 'Token enregistre sur ce navigateur.', 'success');
+        await renderCapacities();
+        await loadReservations();
+      });
+
+      clearButton.addEventListener('click', () => {
+        state.token = '';
+        tokenInput.value = '';
+        localStorage.removeItem(tokenStorageKey);
+        setFeedback(tokenFeedback, 'Token efface.', 'warning');
+      });
+
+      filtersForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        await renderCapacities();
+        await loadReservations();
+      });
+
+      capacitiesNode.addEventListener('submit', async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLFormElement) || !target.matches('[data-capacity-form]')) return;
+        event.preventDefault();
+
+        if (!state.token) {
+          setFeedback(capacityFeedback, 'Token admin requis pour modifier les capacites.', 'error');
+          return;
+        }
+
+        const service = target.dataset.service;
+        const capacityInput = target.querySelector('[data-capacity-value]');
+        const closedInput = target.querySelector('[data-capacity-closed]');
+        const noteInput = target.querySelector('[data-capacity-note]');
+
+        if (
+          !service ||
+          !(capacityInput instanceof HTMLInputElement) ||
+          !(closedInput instanceof HTMLInputElement) ||
+          !(noteInput instanceof HTMLTextAreaElement)
+        ) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${apiRoot}/admin/capacities`, {
+            method: 'PUT',
+            headers: authHeaders(),
+            body: JSON.stringify({
+              date: dateInput.value,
+              service,
+              capacity: Number(capacityInput.value),
+              isClosed: closedInput.checked,
+              note: noteInput.value.trim()
+            })
+          });
+
+          if (!response.ok) throw new Error('capacity');
+
+          setFeedback(capacityFeedback, `Capacite du ${serviceLabels[service]} mise a jour.`, 'success');
+          await renderCapacities();
+        } catch (_error) {
+          setFeedback(capacityFeedback, 'Impossible de mettre a jour la capacite.', 'error');
+        }
+      });
+
+      reservationsNode.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest('[data-save-reservation]');
+        if (!(button instanceof HTMLButtonElement)) return;
+
+        if (!state.token) {
+          setFeedback(reservationsFeedback, 'Token admin requis pour modifier une reservation.', 'error');
+          return;
+        }
+
+        const card = button.closest('.admin-reservation-card');
+        const reservationId = button.dataset.id;
+        const statusSelect = card?.querySelector('[data-reservation-status]');
+        const notesInput = card?.querySelector('[data-reservation-notes]');
+
+        if (
+          !reservationId ||
+          !(statusSelect instanceof HTMLSelectElement) ||
+          !(notesInput instanceof HTMLTextAreaElement)
+        ) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${apiRoot}/admin/reservations/${reservationId}/status`, {
+            method: 'PATCH',
+            headers: authHeaders(),
+            body: JSON.stringify({
+              status: statusSelect.value,
+              notes: notesInput.value.trim()
+            })
+          });
+
+          if (!response.ok) throw new Error('reservation');
+
+          setFeedback(reservationsFeedback, 'Reservation mise a jour.', 'success');
+          await renderCapacities();
+          await loadReservations();
+        } catch (_error) {
+          setFeedback(reservationsFeedback, 'Impossible de mettre a jour la reservation.', 'error');
+        }
+      });
+
+      renderCapacities();
+      if (state.token) {
+        setFeedback(tokenFeedback, 'Token charge depuis ce navigateur.', 'success');
+        loadReservations();
+      }
+    };
+
+    document.addEventListener('astro:page-load', initAdminPage);
+    initAdminPage();
+  })();
+</script>

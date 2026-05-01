@@ -84,6 +84,14 @@ Dans Google Sheets :
 
 Un exemple est fourni dans [`.env.example`](./.env.example).
 
+Pour les reservations avec backend :
+
+```bash
+PUBLIC_RESERVATION_API_URL=http://127.0.0.1:8787
+```
+
+En production, cette variable doit pointer vers l'URL publique du backend reservations.
+
 ## Déploiement recommandé
 
 Le plus simple :
@@ -104,6 +112,39 @@ GitHub Pages fonctionne pour un site Astro statique, mais c’est moins pratique
 
 - **GitHub** pour stocker le code
 - **Vercel** ou **Netlify** pour l’hébergement
+
+## Réservations avec backend
+
+Le projet contient maintenant un backend separé dans [`backend/`](./backend) pour gerer :
+
+- les demandes de reservation
+- la capacite midi / soir
+- le statut des reservations
+- une page d'administration sur `/admin`
+
+En local :
+
+1. lancer le backend
+2. lancer le front Astro
+3. ouvrir `/admin`
+
+```bash
+cd backend
+npm install
+npm run prisma:generate
+npm run prisma:migrate
+npm run dev
+```
+
+```bash
+npm run dev
+```
+
+L'URL du backend utilisee par le front se regle avec :
+
+```bash
+PUBLIC_RESERVATION_API_URL=http://127.0.0.1:8787
+```
 
 Si vous voulez, la prochaine étape peut être :
 

@@ -1,0 +1,429 @@
+---
+import Icon from './Icon.astro';
+import { site } from '../data/site';
+
+const apiUrl = site.reservationApiUrl;
+const fallbackUrl = `mailto:${site.email}?subject=${encodeURIComponent(
+  'Demande de réservation Au Platane'
+)}&body=${encodeURIComponent(
+  [
+    'Bonjour,',
+    '',
+    'Je souhaite faire une demande de réservation.',
+    '',
+    'Nom :',
+    'Téléphone :',
+    'Date souhaitée :',
+    'Service souhaité :',
+    'Heure souhaitée :',
+    'Nombre de personnes :',
+    'Message :',
+    '',
+    'Merci.'
+  ].join('\n')
+)}`;
+---
+
+<div class="reservation-form-shell">
+  <form
+    class="reservation-form"
+    data-reservation-form
+    data-api-url={apiUrl}
+    data-fallback-url={fallbackUrl}
+  >
+    <div class="reservation-form__intro">
+      <p class="reservation-form__notice">
+        La réservation est enregistrée en demande, puis confirmée rapidement par l’équipe.
+      </p>
+      <p class="reservation-form__availability" data-reservation-availability>
+        Choisissez une date pour voir les disponibilités.
+      </p>
+    </div>
+
+    <div class="field">
+      <label for="reservation-date">Date souhaitée</label>
+      <input id="reservation-date" name="reservationDate" type="date" required />
+    </div>
+
+    <div class="reservation-service-picker">
+      <p class="reservation-service-picker__label">Choisissez un service</p>
+      <div class="reservation-service-grid">
+        <button
+          class="reservation-service-card"
+          data-service-card
+          data-service="midi"
+          type="button"
+        >
+          <span class="reservation-service-card__title">Midi</span>
+          <span class="reservation-service-card__badge" data-service-badge>
+            En attente
+          </span>
+          <span class="reservation-service-card__meta" data-service-meta>
+            Selectionnez une date
+          </span>
+        </button>
+
+        <button
+          class="reservation-service-card"
+          data-service-card
+          data-service="soir"
+          type="button"
+        >
+          <span class="reservation-service-card__title">Soir</span>
+          <span class="reservation-service-card__badge" data-service-badge>
+            En attente
+          </span>
+          <span class="reservation-service-card__meta" data-service-meta>
+            Selectionnez une date
+          </span>
+        </button>
+      </div>
+    </div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label for="reservation-time">Heure souhaitée</label>
+        <input id="reservation-time" name="reservationTime" type="time" required />
+      </div>
+
+      <div class="field">
+        <label for="reservation-party-size">Nombre de personnes</label>
+        <input
+          id="reservation-party-size"
+          name="partySize"
+          type="number"
+          min="1"
+          max="20"
+          placeholder="2"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="field-grid">
+      <div class="field">
+        <label for="reservation-name">Nom</label>
+        <input id="reservation-name" name="name" type="text" placeholder="Votre nom" required />
+      </div>
+
+      <div class="field">
+        <label for="reservation-phone">Téléphone</label>
+        <input
+          id="reservation-phone"
+          name="phone"
+          type="tel"
+          placeholder="06 00 00 00 00"
+          required
+        />
+      </div>
+    </div>
+
+    <div class="field">
+      <label for="reservation-email">Email</label>
+      <input
+        id="reservation-email"
+        name="email"
+        type="email"
+        placeholder="vous@email.fr"
+      />
+    </div>
+
+    <div class="field">
+      <label for="reservation-message">Message</label>
+      <textarea
+        id="reservation-message"
+        name="message"
+        rows="5"
+        placeholder="Terrasse, poussette, chaise enfant, allergie, horaire ideal..."
+      ></textarea>
+    </div>
+
+    <input type="hidden" name="service" value="" data-reservation-service />
+
+    <div class="reservation-form__actions">
+      <button class="button button--primary" type="submit">
+        Envoyer la demande
+        <Icon name="calendar" />
+      </button>
+      <a class="button button--secondary" href={fallbackUrl}>
+        Demander par email
+        <Icon name="envelope" />
+      </a>
+    </div>
+
+    <p class="reservation-form__feedback" data-reservation-feedback aria-live="polite"></p>
+  </form>
+</div>
+
+<script is:inline>
+  (() => {
+    const apiRoot = document.querySelector('[data-reservation-form]')?.getAttribute('data-api-url');
+    if (!apiRoot) return;
+
+    const initReservationForm = () => {
+      const form = document.querySelector('[data-reservation-form]');
+      if (!(form instanceof HTMLFormElement) || form.dataset.bound === 'true') return;
+
+      form.dataset.bound = 'true';
+
+      const dateInput = form.querySelector('#reservation-date');
+      const timeInput = form.querySelector('#reservation-time');
+      const serviceInput = form.querySelector('[data-reservation-service]');
+      const availabilityNode = form.querySelector('[data-reservation-availability]');
+      const feedbackNode = form.querySelector('[data-reservation-feedback]');
+      const submitButton = form.querySelector('button[type="submit"]');
+      const serviceCards = Array.from(form.querySelectorAll('[data-service-card]'));
+
+      if (
+        !(dateInput instanceof HTMLInputElement) ||
+        !(timeInput instanceof HTMLInputElement) ||
+        !(serviceInput instanceof HTMLInputElement) ||
+        !(availabilityNode instanceof HTMLElement) ||
+        !(feedbackNode instanceof HTMLElement) ||
+        !(submitButton instanceof HTMLButtonElement)
+      ) {
+        return;
+      }
+
+      const availabilityState = {
+        midi: null,
+        soir: null
+      };
+
+      const setFeedback = (message, tone = '') => {
+        feedbackNode.textContent = message;
+        feedbackNode.dataset.tone = tone;
+      };
+
+      const setAvailabilityText = (message, tone = '') => {
+        availabilityNode.textContent = message;
+        availabilityNode.dataset.tone = tone;
+      };
+
+      const serviceLabel = (service) => (service === 'midi' ? 'Midi' : 'Soir');
+
+      const updateCardVisual = (card, state) => {
+        const badge = card.querySelector('[data-service-badge]');
+        const meta = card.querySelector('[data-service-meta]');
+        if (!(badge instanceof HTMLElement) || !(meta instanceof HTMLElement)) return;
+
+        card.dataset.state = state.state;
+        badge.textContent = state.badge;
+        meta.textContent = state.meta;
+        card.disabled = state.state === 'complete';
+      };
+
+      const renderCards = () => {
+        serviceCards.forEach((card) => {
+          const service = card.getAttribute('data-service');
+          if (!service || !(service in availabilityState)) return;
+          const state = availabilityState[service];
+
+          if (!state) {
+            updateCardVisual(card, {
+              state: 'idle',
+              badge: 'En attente',
+              meta: dateInput.value ? 'Verification en cours...' : 'Selectionnez une date'
+            });
+            card.classList.toggle('is-selected', serviceInput.value === service);
+            return;
+          }
+
+          updateCardVisual(card, state);
+          card.classList.toggle('is-selected', serviceInput.value === service);
+        });
+      };
+
+      const ensureValidSelection = () => {
+        const selectedService = serviceInput.value;
+        const selectedState = selectedService ? availabilityState[selectedService] : null;
+
+        if (selectedState && selectedState.state === 'available') {
+          return;
+        }
+
+        const nextAvailable = ['midi', 'soir'].find(
+          (service) => availabilityState[service]?.state === 'available'
+        );
+
+        serviceInput.value = nextAvailable ?? '';
+
+        if (nextAvailable === 'midi') {
+          timeInput.value = '12:30';
+        } else if (nextAvailable === 'soir') {
+          timeInput.value = '19:30';
+        }
+      };
+
+      const loadServiceAvailability = async (service) => {
+        const response = await fetch(
+          `${apiRoot}/reservations/availability?date=${encodeURIComponent(dateInput.value)}&service=${encodeURIComponent(service)}`
+        );
+
+        if (!response.ok) {
+          throw new Error('availability');
+        }
+
+        const data = await response.json();
+
+        if (data.isClosed || data.remainingSeats <= 0) {
+          availabilityState[service] = {
+            state: 'complete',
+            badge: 'Complet',
+            meta: 'Aucune place disponible'
+          };
+          return;
+        }
+
+        availabilityState[service] = {
+          state: 'available',
+          badge: 'Disponible',
+          meta: `${data.remainingSeats} place(s) restante(s)`
+        };
+      };
+
+      const refreshAvailability = async () => {
+        availabilityState.midi = null;
+        availabilityState.soir = null;
+        renderCards();
+
+        if (!dateInput.value) {
+          setAvailabilityText('Choisissez une date pour voir les disponibilites.');
+          serviceInput.value = '';
+          return;
+        }
+
+        setAvailabilityText('Verification des services en cours...');
+
+        try {
+          await Promise.all([loadServiceAvailability('midi'), loadServiceAvailability('soir')]);
+          ensureValidSelection();
+          renderCards();
+
+          if (!serviceInput.value) {
+            setAvailabilityText('Aucun service disponible pour cette date.', 'warning');
+            return;
+          }
+
+          const selected = availabilityState[serviceInput.value];
+          setAvailabilityText(
+            `${serviceLabel(serviceInput.value)} : ${selected.meta.toLowerCase()}.`,
+            selected.state === 'available' ? 'success' : 'warning'
+          );
+        } catch (_error) {
+          availabilityState.midi = {
+            state: 'idle',
+            badge: 'Indisponible',
+            meta: 'Verification impossible'
+          };
+          availabilityState.soir = {
+            state: 'idle',
+            badge: 'Indisponible',
+            meta: 'Verification impossible'
+          };
+          serviceInput.value = '';
+          renderCards();
+          setAvailabilityText(
+            'Disponibilites indisponibles pour le moment. Vous pouvez utiliser le bouton email.',
+            'warning'
+          );
+        }
+      };
+
+      serviceCards.forEach((card) => {
+        card.addEventListener('click', () => {
+          const service = card.getAttribute('data-service');
+          if (!service) return;
+          const state = availabilityState[service];
+          if (!state || state.state !== 'available') return;
+
+          serviceInput.value = service;
+          timeInput.value = service === 'midi' ? '12:30' : '19:30';
+          renderCards();
+          setAvailabilityText(
+            `${serviceLabel(service)} : ${state.meta.toLowerCase()}.`,
+            'success'
+          );
+        });
+      });
+
+      dateInput.addEventListener('change', refreshAvailability);
+
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+
+        if (!serviceInput.value) {
+          setFeedback('Choisissez un service disponible avant d envoyer votre demande.', 'error');
+          return;
+        }
+
+        setFeedback('Envoi en cours...', '');
+        submitButton.disabled = true;
+
+        const formData = new FormData(form);
+        const payload = {
+          name: formData.get('name')?.toString().trim() ?? '',
+          phone: formData.get('phone')?.toString().trim() ?? '',
+          email: formData.get('email')?.toString().trim() ?? '',
+          reservationDate: formData.get('reservationDate')?.toString().trim() ?? '',
+          reservationTime: formData.get('reservationTime')?.toString().trim() ?? '',
+          service: formData.get('service')?.toString().trim() ?? '',
+          partySize: Number(formData.get('partySize')?.toString() ?? '0'),
+          message: formData.get('message')?.toString().trim() ?? ''
+        };
+
+        try {
+          const response = await fetch(`${apiRoot}/reservations`, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(payload)
+          });
+
+          const data = await response.json();
+
+          if (!response.ok) {
+            setFeedback(
+              data?.message ||
+                'Impossible d enregistrer la demande pour le moment. Merci de nous contacter directement.',
+              'error'
+            );
+
+            if (data?.error === 'SERVICE_FULL') {
+              await refreshAvailability();
+            }
+
+            return;
+          }
+
+          form.reset();
+          serviceInput.value = '';
+          availabilityState.midi = null;
+          availabilityState.soir = null;
+          renderCards();
+          setFeedback(
+            `Demande enregistree pour le ${serviceLabel(payload.service).toLowerCase()}. Il reste ${data.availability.remainingSeats} place(s) sur ce service.`,
+            'success'
+          );
+          setAvailabilityText(
+            'Choisissez une nouvelle date pour voir les disponibilites.',
+            'success'
+          );
+        } catch (_error) {
+          setFeedback(
+            'Le serveur de reservation est indisponible. Utilisez le bouton email juste dessous si besoin.',
+            'error'
+          );
+        } finally {
+          submitButton.disabled = false;
+        }
+      });
+
+      renderCards();
+    };
+
+    document.addEventListener('astro:page-load', initReservationForm);
+    initReservationForm();
+  })();
+</script>

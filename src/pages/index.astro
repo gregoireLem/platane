@@ -1,29 +1,9 @@
 ---
 import ContactForm from '../components/ContactForm.astro';
 import Icon from '../components/Icon.astro';
+import ReservationForm from '../components/ReservationForm.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
-
-const hasReservationForm = site.reservationUrl.length > 0;
-const reservationFallbackUrl = `mailto:${site.email}?subject=${encodeURIComponent(
-  'Demande de réservation Au Platane'
-)}&body=${encodeURIComponent(
-  [
-    'Bonjour,',
-    '',
-    'Je souhaite faire une demande de réservation.',
-    '',
-    'Nom :',
-    'Téléphone :',
-    'Date souhaitée :',
-    'Heure souhaitée :',
-    'Nombre de personnes :',
-    'Message :',
-    '',
-    'Merci.'
-  ].join('\n')
-)}`;
-const reservationActionUrl = hasReservationForm ? site.reservationUrl : reservationFallbackUrl;
 ---
 
 <BaseLayout title="Lieu de vie" description={site.description}>
@@ -37,12 +17,7 @@ const reservationActionUrl = hasReservationForm ? site.reservationUrl : reservat
       </p>
 
       <div class="button-row">
-        <a
-          class="button button--primary"
-          href={reservationActionUrl}
-          target={hasReservationForm ? '_blank' : undefined}
-          rel={hasReservationForm ? 'noreferrer' : undefined}
-        >
+        <a class="button button--primary" href="#reservation">
           Réserver une table
           <Icon name="calendar" />
         </a>
@@ -135,39 +110,11 @@ const reservationActionUrl = hasReservationForm ? site.reservationUrl : reservat
         <p class="eyebrow">Réservation</p>
         <h2>Réserver une table simplement.</h2>
         <p>
-          Envoyez votre demande avec la date, l’heure et le nombre de personnes. L’équipe vous
-          confirme la réservation au plus vite.
+          Envoyez votre demande avec la date, l’heure et le nombre de personnes. Le formulaire
+          vérifie les places restantes et l’équipe confirme ensuite la réservation.
         </p>
       </div>
-
-      {
-        hasReservationForm ? (
-          <div class="reservation-embed">
-            <iframe
-              src={site.reservationUrl}
-              title="Formulaire de réservation Au Platane"
-              loading="lazy"
-            ></iframe>
-          </div>
-        ) : (
-          <div class="reservation-card">
-            <p>
-              Le formulaire Tally sera intégré ici dès que son lien sera ajouté. En attendant,
-              vous pouvez préparer une demande par email ou appeler directement.
-            </p>
-            <div class="button-row">
-              <a class="button button--primary" href={reservationFallbackUrl}>
-                Demander par email
-                <Icon name="envelope" />
-              </a>
-              <a class="button button--secondary" href={`tel:${site.phoneRaw}`}>
-                Appeler
-                <Icon name="phone" />
-              </a>
-            </div>
-          </div>
-        )
-      }
+      <ReservationForm />
     </div>
   </section>
 
