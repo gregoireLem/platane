@@ -19,7 +19,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      PUBLIC_RESERVATION_API_URL: https://platane-production.up.railway.app
+      PUBLIC_RESERVATION_API_URL: https://resourceful-hope-production-9700.up.railway.app
     steps:
       - name: Checkout
         uses: actions/checkout@v6
