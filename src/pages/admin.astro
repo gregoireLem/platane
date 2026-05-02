@@ -246,11 +246,25 @@ const apiUrl = site.reservationApiUrl;
       <section class="admin-card" data-reveal>
         <div class="admin-card__header">
           <h2>Réservations</h2>
-          <p>Retrouvez les demandes, les statuts et les notes en un seul endroit.</p>
+          <p>Une vue de service simple pour retrouver vite une réservation et traiter les demandes.</p>
+        </div>
+
+        <div class="admin-reservations-toolbar">
+          <div class="admin-reservation-tabs" data-admin-reservation-tabs>
+            <button class="button button--primary" type="button" data-reservation-mode="service">
+              Service du jour
+            </button>
+            <button class="button button--secondary" type="button" data-reservation-mode="pending">
+              En attente
+            </button>
+            <button class="button button--secondary" type="button" data-reservation-mode="all">
+              Toutes
+            </button>
+          </div>
+          <div class="admin-service-focus" data-admin-service-focus></div>
         </div>
 
         <div class="admin-summary" data-admin-summary></div>
-        <div class="admin-overview" data-admin-overview></div>
         <p class="admin-inline-feedback" data-admin-reservations-feedback aria-live="polite"></p>
         <div class="admin-reservations" data-admin-reservations></div>
       </section>
@@ -304,7 +318,7 @@ const apiUrl = site.reservationApiUrl;
       const capacitiesNode = document.querySelector('[data-admin-capacities]');
       const schedulesNode = document.querySelector('[data-admin-schedules]');
       const summaryNode = document.querySelector('[data-admin-summary]');
-      const overviewNode = document.querySelector('[data-admin-overview]');
+      const serviceFocusNode = document.querySelector('[data-admin-service-focus]');
       const calendarNode = document.querySelector('[data-admin-calendar]');
       const reservationsNode = document.querySelector('[data-admin-reservations]');
       const tokenFeedback = document.querySelector('[data-admin-token-feedback]');
@@ -314,6 +328,7 @@ const apiUrl = site.reservationApiUrl;
       const manualForm = document.querySelector('[data-admin-manual-form]');
       const manualFeedback = document.querySelector('[data-admin-manual-feedback]');
       const viewSwitcher = document.querySelector('[data-admin-view-switcher]');
+      const reservationTabs = document.querySelector('[data-admin-reservation-tabs]');
 
       if (
         !(tokenForm instanceof HTMLFormElement) ||
@@ -321,7 +336,7 @@ const apiUrl = site.reservationApiUrl;
         !(capacitiesNode instanceof HTMLElement) ||
         !(schedulesNode instanceof HTMLElement) ||
         !(summaryNode instanceof HTMLElement) ||
-        !(overviewNode instanceof HTMLElement) ||
+        !(serviceFocusNode instanceof HTMLElement) ||
         !(calendarNode instanceof HTMLElement) ||
         !(reservationsNode instanceof HTMLElement) ||
         !(tokenFeedback instanceof HTMLElement) ||
@@ -330,7 +345,8 @@ const apiUrl = site.reservationApiUrl;
         !(reservationsFeedback instanceof HTMLElement) ||
         !(manualForm instanceof HTMLFormElement) ||
         !(manualFeedback instanceof HTMLElement) ||
-        !(viewSwitcher instanceof HTMLElement)
+        !(viewSwitcher instanceof HTMLElement) ||
+        !(reservationTabs instanceof HTMLElement)
       ) {
         return;
       }
@@ -367,7 +383,9 @@ const apiUrl = site.reservationApiUrl;
         reservations: [],
         filteredReservations: [],
         schedules: [],
-        view: 'planning'
+        availability: null,
+        view: 'planning',
+        reservationMode: 'service'
       };
 
       const today = () => new Date().toISOString().slice(0, 10);
@@ -377,6 +395,7 @@ const apiUrl = site.reservationApiUrl;
         return date.toISOString().slice(0, 10);
       };
       const currentMonth = () => new Date().toISOString().slice(0, 7);
+      const defaultService = () => (new Date().getHours() < 15 ? 'midi' : 'soir');
 
       const formatDay = (value) =>
         new Intl.DateTimeFormat('fr-FR', {
@@ -384,14 +403,6 @@ const apiUrl = site.reservationApiUrl;
           day: 'numeric',
           month: 'short'
         }).format(new Date(`${value}T12:00:00`));
-
-      const formatDateTime = (value) =>
-        new Intl.DateTimeFormat('fr-FR', {
-          day: '2-digit',
-          month: '2-digit',
-          hour: '2-digit',
-          minute: '2-digit'
-        }).format(new Date(value));
 
       const setFeedback = (node, message, tone = '') => {
         node.textContent = message;
@@ -423,6 +434,22 @@ const apiUrl = site.reservationApiUrl;
         }
       };
 
+      const setReservationMode = (mode) => {
+        state.reservationMode = mode;
+
+        Array.from(reservationTabs.querySelectorAll('[data-reservation-mode]')).forEach((button) => {
+          if (!(button instanceof HTMLButtonElement)) return;
+          const isActive = button.dataset.reservationMode === mode;
+          button.classList.toggle('button--primary', isActive);
+          button.classList.toggle('button--secondary', !isActive);
+        });
+      };
+
+      const ensureServiceSelection = () => {
+        if (!dateInput.value) dateInput.value = today();
+        if (!serviceInput.value) serviceInput.value = defaultService();
+      };
+
       const renderSummary = () => {
         if (!state.filteredReservations.length) {
           summaryNode.innerHTML = '<p class="admin-empty">Aucune reservation pour ce filtre.</p>';
@@ -437,75 +464,67 @@ const apiUrl = site.reservationApiUrl;
             acc.dates.add(reservation.reservationDate.slice(0, 10));
             return acc;
           },
-          {
-            total: 0,
-            seats: 0,
-            PENDING: 0,
-            CONFIRMED: 0,
-            DECLINED: 0,
-            CANCELLED: 0,
-            NO_SHOW: 0,
-            dates: new Set()
-          }
+          { total: 0, seats: 0, PENDING: 0, CONFIRMED: 0 }
         );
 
         summaryNode.innerHTML = `
           <div class="admin-summary-card">
-            <strong>${counters.total}</strong>
-            <span>reservations</span>
-          </div>
-          <div class="admin-summary-card">
-            <strong>${counters.seats}</strong>
-            <span>couverts</span>
+            <strong>${counters.CONFIRMED}</strong>
+            <span>confirmées</span>
           </div>
           <div class="admin-summary-card">
             <strong>${counters.PENDING}</strong>
             <span>en attente</span>
           </div>
           <div class="admin-summary-card">
-            <strong>${counters.CONFIRMED}</strong>
-            <span>confirmees</span>
+            <strong>${counters.seats}</strong>
+            <span>couverts</span>
           </div>
           <div class="admin-summary-card">
-            <strong>${counters.dates.size}</strong>
-            <span>jour(s) affiché(s)</span>
+            <strong>${counters.total}</strong>
+            <span>affichées</span>
           </div>
         `;
       };
 
-      const renderOverview = () => {
-        if (!state.filteredReservations.length) {
-          overviewNode.innerHTML = '';
+      const renderServiceFocus = () => {
+        if (state.reservationMode === 'pending') {
+          serviceFocusNode.innerHTML = `
+            <article class="admin-focus-card">
+              <span class="admin-focus-card__eyebrow">Demandes à traiter</span>
+              <h3>En attente de réponse</h3>
+              <p>On affiche d'abord les réservations à confirmer ou rappeler.</p>
+            </article>
+          `;
           return;
         }
 
-        const dayMap = new Map();
-        for (const reservation of state.filteredReservations) {
-          const dateKey = reservation.reservationDate.slice(0, 10);
-          const current = dayMap.get(dateKey) ?? { total: 0, seats: 0, pending: 0, confirmed: 0 };
-          current.total += 1;
-          current.seats += reservation.partySize;
-          if (reservation.status === 'PENDING') current.pending += 1;
-          if (reservation.status === 'CONFIRMED') current.confirmed += 1;
-          dayMap.set(dateKey, current);
+        if (state.reservationMode === 'all') {
+          serviceFocusNode.innerHTML = `
+            <article class="admin-focus-card">
+              <span class="admin-focus-card__eyebrow">Vue complète</span>
+              <h3>Toutes les réservations</h3>
+              <p>Utilisez la recherche et les filtres pour retrouver un client ou vérifier un service.</p>
+            </article>
+          `;
+          return;
         }
 
-        overviewNode.innerHTML = Array.from(dayMap.entries())
-          .map(
-            ([dateKey, counts]) => `
-              <article class="admin-overview-card">
-                <div>
-                  <h3>${formatDay(dateKey)}</h3>
-                  <p>${counts.total} reservation(s) • ${counts.seats} couvert(s)</p>
-                </div>
-                <div class="admin-overview-card__badges">
-                  <span class="admin-status-badge" data-status="PENDING">${counts.pending} attente</span>
-                  <span class="admin-status-badge" data-status="CONFIRMED">${counts.confirmed} confirmees</span>
-                </div>
-              </article>
-            `
-          )
-          .join('');
+        const selectedDate = dateInput.value || today();
+        const selectedService = serviceInput.value || defaultService();
+        const availability = state.availability;
+        const filled =
+          availability && typeof availability.capacity === 'number'
+            ? `${availability.reservedSeats} / ${availability.capacity} couverts`
+            : `${state.filteredReservations.reduce((total, item) => total + item.partySize, 0)} couverts`;
+
+        serviceFocusNode.innerHTML = `
+          <article class="admin-focus-card">
+            <span class="admin-focus-card__eyebrow">Service sélectionné</span>
+            <h3>${formatDay(selectedDate)} • ${serviceLabels[selectedService]}</h3>
+            <p>${filled}${availability ? ` • ${availability.remainingSeats} places restantes` : ''}</p>
+          </article>
+        `;
       };
 
       const renderCalendar = () => {
@@ -662,17 +681,21 @@ const apiUrl = site.reservationApiUrl;
 
       const applyClientFilters = () => {
         const search = searchInput.value.trim().toLowerCase();
-        const selectedDate = dateInput.value;
-        const selectedService = serviceInput.value;
+        const selectedDate =
+          state.reservationMode === 'service' ? dateInput.value || today() : dateInput.value;
+        const selectedService =
+          state.reservationMode === 'service' ? serviceInput.value || defaultService() : serviceInput.value;
         const selectedStatus = statusInput.value;
 
         const filtered = state.reservations.filter((reservation) => {
           const dateKey = reservation.reservationDate.slice(0, 10);
           const serviceKey = reservation.service.toLowerCase();
 
+          if (state.reservationMode === 'pending' && reservation.status !== 'PENDING') return false;
+
           if (selectedDate && dateKey !== selectedDate) return false;
           if (selectedService && serviceKey !== selectedService) return false;
-          if (selectedStatus && reservation.status !== selectedStatus) return false;
+          if (selectedStatus && state.reservationMode !== 'pending' && reservation.status !== selectedStatus) return false;
 
           if (!search) return true;
 
@@ -707,9 +730,80 @@ const apiUrl = site.reservationApiUrl;
         state.filteredReservations = filtered;
       };
 
+      const renderReservationItem = (reservation, compact = false) => `
+        <details class="admin-reservation-row"${reservation.status === 'PENDING' ? ' open' : ''}>
+          <summary class="admin-reservation-row__summary">
+            <div class="admin-reservation-row__main">
+              <strong>${reservation.name}</strong>
+              <span>${reservation.partySize} pers • ${reservation.reservationTime}${compact ? '' : ` • ${formatDay(
+                reservation.reservationDate.slice(0, 10)
+              )} • ${serviceLabels[reservation.service]}`}</span>
+            </div>
+            <div class="admin-reservation-row__meta">
+              <span>${reservation.phone}</span>
+              <span class="admin-status-badge" data-status="${reservation.status}">
+                ${statusLabels[reservation.status]}
+              </span>
+            </div>
+          </summary>
+
+          <div class="admin-reservation-row__detail">
+            <div class="admin-reservation-row__detail-copy">
+              <p><strong>Service:</strong> ${formatDay(reservation.reservationDate.slice(0, 10))} • ${serviceLabels[reservation.service]} • ${reservation.reservationTime}</p>
+              <p><strong>Contact:</strong> ${reservation.phone}${reservation.email ? ` • ${reservation.email}` : ''}</p>
+              <p><strong>Source:</strong> ${reservation.source || '—'}</p>
+              <p><strong>Message:</strong> ${reservation.message || 'Aucun message.'}</p>
+            </div>
+
+            <div class="field-grid">
+              <div class="field">
+                <label for="status-${reservation.id}">Statut</label>
+                <select id="status-${reservation.id}" data-reservation-status>
+                  ${Object.entries(statusLabels)
+                    .map(
+                      ([value, label]) =>
+                        `<option value="${value}"${reservation.status === value ? ' selected' : ''}>${label}</option>`
+                    )
+                    .join('')}
+                </select>
+              </div>
+
+              <div class="field">
+                <label for="notes-${reservation.id}">Notes</label>
+                <textarea id="notes-${reservation.id}" rows="3" data-reservation-notes>${reservation.notes ?? ''}</textarea>
+              </div>
+            </div>
+
+            <div class="admin-reservation-card__actions">
+              <button class="button button--primary" type="button" data-save-reservation data-id="${reservation.id}">
+                Enregistrer
+              </button>
+            </div>
+          </div>
+        </details>
+      `;
+
       const renderReservations = () => {
         if (!state.filteredReservations.length) {
           reservationsNode.innerHTML = '<p class="admin-empty">Aucune reservation trouvee.</p>';
+          return;
+        }
+
+        if (state.reservationMode === 'service') {
+          reservationsNode.innerHTML = `
+            <section class="admin-reservation-service-list">
+              ${state.filteredReservations.map((reservation) => renderReservationItem(reservation, true)).join('')}
+            </section>
+          `;
+          return;
+        }
+
+        if (state.reservationMode === 'pending') {
+          reservationsNode.innerHTML = `
+            <section class="admin-reservation-service-list">
+              ${state.filteredReservations.map((reservation) => renderReservationItem(reservation)).join('')}
+            </section>
+          `;
           return;
         }
 
@@ -740,59 +834,35 @@ const apiUrl = site.reservationApiUrl;
 
                 <div class="admin-reservation-list">
                   ${group.items
-                    .map(
-                      (reservation) => `
-                        <article class="admin-reservation-card">
-                          <div class="admin-reservation-card__top">
-                            <div>
-                              <h3>${reservation.name}</h3>
-                              <p>${reservation.partySize} couvert(s) • ${serviceLabels[reservation.service]} • ${reservation.reservationTime}</p>
-                              <p>${reservation.phone}${reservation.email ? ` • ${reservation.email}` : ''}</p>
-                            </div>
-                            <span class="admin-status-badge" data-status="${reservation.status}">
-                              ${statusLabels[reservation.status]}
-                            </span>
-                          </div>
-
-                          <div class="admin-reservation-card__meta">
-                            <span>Demandée le ${formatDateTime(reservation.createdAt)}</span>
-                          </div>
-
-                          <p class="admin-reservation-card__message">${reservation.message || 'Aucun message.'}</p>
-
-                          <div class="field-grid">
-                            <div class="field">
-                              <label for="status-${reservation.id}">Statut</label>
-                              <select id="status-${reservation.id}" data-reservation-status>
-                                ${Object.entries(statusLabels)
-                                  .map(
-                                    ([value, label]) =>
-                                      `<option value="${value}"${reservation.status === value ? ' selected' : ''}>${label}</option>`
-                                  )
-                                  .join('')}
-                              </select>
-                            </div>
-
-                            <div class="field">
-                              <label for="notes-${reservation.id}">Notes</label>
-                              <textarea id="notes-${reservation.id}" rows="3" data-reservation-notes>${reservation.notes ?? ''}</textarea>
-                            </div>
-                          </div>
-
-                          <div class="admin-reservation-card__actions">
-                            <button class="button button--primary" type="button" data-save-reservation data-id="${reservation.id}">
-                              Enregistrer
-                            </button>
-                          </div>
-                        </article>
-                      `
-                    )
+                    .map((reservation) => renderReservationItem(reservation))
                     .join('')}
                 </div>
               </section>
             `
           )
           .join('');
+      };
+
+      const loadServiceAvailability = async () => {
+        if (state.reservationMode !== 'service') {
+          state.availability = null;
+          return;
+        }
+
+        ensureServiceSelection();
+
+        try {
+          const response = await fetch(
+            `${apiRoot}/reservations/availability?date=${encodeURIComponent(dateInput.value)}&service=${encodeURIComponent(
+              serviceInput.value
+            )}`
+          );
+
+          if (!response.ok) throw new Error('availability');
+          state.availability = await response.json();
+        } catch (_error) {
+          state.availability = null;
+        }
       };
 
       const renderCapacities = async () => {
@@ -898,9 +968,10 @@ const apiUrl = site.reservationApiUrl;
           if (!response.ok) throw new Error('admin');
 
           state.reservations = await response.json();
+          await loadServiceAvailability();
           applyClientFilters();
           renderSummary();
-          renderOverview();
+          renderServiceFocus();
           renderCalendar();
           renderReservations();
           setFeedback(
@@ -911,8 +982,9 @@ const apiUrl = site.reservationApiUrl;
         } catch (_error) {
           state.reservations = [];
           state.filteredReservations = [];
+          state.availability = null;
           renderSummary();
-          renderOverview();
+          renderServiceFocus();
           renderCalendar();
           renderReservations();
           setFeedback(reservationsFeedback, 'Impossible de charger les reservations. Verifiez le token admin.', 'error');
@@ -952,6 +1024,7 @@ const apiUrl = site.reservationApiUrl;
 
       filtersForm.addEventListener('submit', async (event) => {
         event.preventDefault();
+        if (state.reservationMode === 'service') ensureServiceSelection();
         await renderCapacities();
         await loadReservations();
       });
@@ -981,6 +1054,18 @@ const apiUrl = site.reservationApiUrl;
         }
 
         await renderCapacities();
+        await loadReservations();
+      });
+
+      reservationTabs.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest('[data-reservation-mode]');
+        if (!(button instanceof HTMLButtonElement)) return;
+        const mode = button.dataset.reservationMode;
+        if (!mode) return;
+        setReservationMode(mode);
+        if (mode === 'service') ensureServiceSelection();
         await loadReservations();
       });
 
@@ -1221,6 +1306,8 @@ const apiUrl = site.reservationApiUrl;
         ['manual', 'reservations', 'settings'].includes(initialView) ? initialView : 'planning',
         false
       );
+      setReservationMode('service');
+      ensureServiceSelection();
       if (state.token) {
         setFeedback(tokenFeedback, 'Token charge depuis ce navigateur.', 'success');
         loadSchedules();
