@@ -1324,6 +1324,12 @@ p {
   margin-bottom: 1rem;
 }
 
+.admin-upcoming-services {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 0.75rem;
+}
+
 .admin-view-switcher,
 .admin-filter-presets,
 .admin-reservation-tabs,
@@ -1441,6 +1447,32 @@ p {
   font-family: var(--font-display);
   font-size: 1.45rem;
   line-height: 1;
+}
+
+.admin-upcoming-day {
+  display: grid;
+  gap: 0.2rem;
+  padding: 0.85rem 0.95rem;
+  border: 1px solid rgba(122, 84, 63, 0.12);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 253, 249, 0.88);
+  text-align: left;
+  box-shadow: 0 10px 24px rgba(66, 44, 33, 0.06);
+}
+
+.admin-upcoming-day strong {
+  font-size: 0.98rem;
+  line-height: 1.2;
+}
+
+.admin-upcoming-day span,
+.admin-upcoming-day small {
+  color: var(--muted);
+}
+
+.admin-upcoming-day.is-active {
+  border-color: rgba(186, 109, 78, 0.28);
+  background: rgba(186, 109, 78, 0.08);
 }
 
 .admin-planning-toolbar {
@@ -1936,6 +1968,10 @@ p {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
+  .admin-upcoming-services {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
   .space-card {
     grid-template-columns: auto 1fr;
     gap: 0.25rem 0.8rem;
@@ -2008,6 +2044,10 @@ p {
   .admin-reservation-group__header,
   .admin-overview-card__badges {
     display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .admin-upcoming-services {
     grid-template-columns: 1fr;
   }
 

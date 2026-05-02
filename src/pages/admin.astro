@@ -252,7 +252,7 @@ const apiUrl = site.reservationApiUrl;
         <div class="admin-reservations-toolbar">
           <div class="admin-reservation-tabs" data-admin-reservation-tabs>
             <button class="button button--primary" type="button" data-reservation-mode="service">
-              Service du jour
+              À venir
             </button>
             <button class="button button--secondary" type="button" data-reservation-mode="pending">
               En attente
@@ -261,6 +261,7 @@ const apiUrl = site.reservationApiUrl;
               Toutes
             </button>
           </div>
+          <div class="admin-upcoming-services" data-admin-upcoming-services></div>
           <div class="admin-service-focus" data-admin-service-focus></div>
         </div>
 
@@ -318,6 +319,7 @@ const apiUrl = site.reservationApiUrl;
       const capacitiesNode = document.querySelector('[data-admin-capacities]');
       const schedulesNode = document.querySelector('[data-admin-schedules]');
       const summaryNode = document.querySelector('[data-admin-summary]');
+      const upcomingServicesNode = document.querySelector('[data-admin-upcoming-services]');
       const serviceFocusNode = document.querySelector('[data-admin-service-focus]');
       const calendarNode = document.querySelector('[data-admin-calendar]');
       const reservationsNode = document.querySelector('[data-admin-reservations]');
@@ -336,6 +338,7 @@ const apiUrl = site.reservationApiUrl;
         !(capacitiesNode instanceof HTMLElement) ||
         !(schedulesNode instanceof HTMLElement) ||
         !(summaryNode instanceof HTMLElement) ||
+        !(upcomingServicesNode instanceof HTMLElement) ||
         !(serviceFocusNode instanceof HTMLElement) ||
         !(calendarNode instanceof HTMLElement) ||
         !(reservationsNode instanceof HTMLElement) ||
@@ -396,6 +399,12 @@ const apiUrl = site.reservationApiUrl;
       };
       const currentMonth = () => new Date().toISOString().slice(0, 7);
       const defaultService = () => (new Date().getHours() < 15 ? 'midi' : 'soir');
+      const nextSevenDays = () =>
+        Array.from({ length: 7 }, (_, index) => {
+          const date = new Date();
+          date.setDate(date.getDate() + index);
+          return date.toISOString().slice(0, 10);
+        });
 
       const formatDay = (value) =>
         new Intl.DateTimeFormat('fr-FR', {
@@ -445,6 +454,43 @@ const apiUrl = site.reservationApiUrl;
         });
       };
 
+      const renderUpcomingServices = () => {
+        const days = nextSevenDays();
+        const selectedService = serviceInput.value || defaultService();
+        const activeDate = dateInput.value || today();
+
+        upcomingServicesNode.innerHTML = days
+          .map((dateKey) => {
+            const counts = state.reservations.reduce(
+              (acc, reservation) => {
+                if (reservation.reservationDate.slice(0, 10) !== dateKey) return acc;
+                const serviceKey = reservation.service.toLowerCase();
+                acc[serviceKey].reservations += 1;
+                acc[serviceKey].seats += reservation.partySize;
+                return acc;
+              },
+              {
+                midi: { reservations: 0, seats: 0 },
+                soir: { reservations: 0, seats: 0 }
+              }
+            );
+
+            const selectedCounts = counts[selectedService];
+            return `
+              <button
+                class="admin-upcoming-day${activeDate === dateKey ? ' is-active' : ''}"
+                type="button"
+                data-upcoming-date="${dateKey}"
+              >
+                <strong>${formatDay(dateKey)}</strong>
+                <span>${selectedCounts.reservations} resa • ${selectedCounts.seats} cvt</span>
+                <small>Midi ${counts.midi.reservations} · Soir ${counts.soir.reservations}</small>
+              </button>
+            `;
+          })
+          .join('');
+      };
+
       const ensureServiceSelection = () => {
         if (!dateInput.value) dateInput.value = today();
         if (!serviceInput.value) serviceInput.value = defaultService();
@@ -488,6 +534,7 @@ const apiUrl = site.reservationApiUrl;
 
       const renderServiceFocus = () => {
         if (state.reservationMode === 'pending') {
+          upcomingServicesNode.hidden = true;
           serviceFocusNode.innerHTML = `
             <article class="admin-focus-card">
               <span class="admin-focus-card__eyebrow">Demandes à traiter</span>
@@ -499,6 +546,7 @@ const apiUrl = site.reservationApiUrl;
         }
 
         if (state.reservationMode === 'all') {
+          upcomingServicesNode.hidden = true;
           serviceFocusNode.innerHTML = `
             <article class="admin-focus-card">
               <span class="admin-focus-card__eyebrow">Vue complète</span>
@@ -509,6 +557,7 @@ const apiUrl = site.reservationApiUrl;
           return;
         }
 
+        upcomingServicesNode.hidden = false;
         const selectedDate = dateInput.value || today();
         const selectedService = serviceInput.value || defaultService();
         const availability = state.availability;
@@ -948,19 +997,15 @@ const apiUrl = site.reservationApiUrl;
           setFeedback(tokenFeedback, 'Ajoutez le token admin pour charger les reservations.', 'warning');
           reservationsNode.innerHTML = '<p class="admin-empty">Token manquant.</p>';
           summaryNode.innerHTML = '';
-          overviewNode.innerHTML = '';
+          upcomingServicesNode.innerHTML = '';
+          serviceFocusNode.innerHTML = '';
           return;
         }
-
-        const params = new URLSearchParams();
-        if (dateInput.value) params.set('date', dateInput.value);
-        if (serviceInput.value) params.set('service', serviceInput.value);
-        if (statusInput.value) params.set('status', statusInput.value);
 
         setFeedback(reservationsFeedback, 'Chargement des reservations...', '');
 
         try {
-          const response = await fetch(`${apiRoot}/admin/reservations?${params.toString()}`, {
+          const response = await fetch(`${apiRoot}/admin/reservations`, {
             headers: authHeaders()
           });
 
@@ -969,6 +1014,7 @@ const apiUrl = site.reservationApiUrl;
           state.reservations = await response.json();
           await loadServiceAvailability();
           applyClientFilters();
+          renderUpcomingServices();
           renderSummary();
           renderServiceFocus();
           renderCalendar();
@@ -982,6 +1028,7 @@ const apiUrl = site.reservationApiUrl;
           state.reservations = [];
           state.filteredReservations = [];
           state.availability = null;
+          upcomingServicesNode.innerHTML = '';
           renderSummary();
           renderServiceFocus();
           renderCalendar();
@@ -1030,9 +1077,11 @@ const apiUrl = site.reservationApiUrl;
 
       filtersForm.addEventListener('input', () => {
         if (!state.reservations.length) return;
+        if (state.reservationMode === 'service') ensureServiceSelection();
         applyClientFilters();
+        renderUpcomingServices();
         renderSummary();
-        renderOverview();
+        renderServiceFocus();
         renderCalendar();
         renderReservations();
       });
@@ -1065,6 +1114,18 @@ const apiUrl = site.reservationApiUrl;
         if (!mode) return;
         setReservationMode(mode);
         if (mode === 'service') ensureServiceSelection();
+        await loadReservations();
+      });
+
+      upcomingServicesNode.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest('[data-upcoming-date]');
+        if (!(button instanceof HTMLButtonElement)) return;
+        const nextDate = button.dataset.upcomingDate;
+        if (!nextDate) return;
+        dateInput.value = nextDate;
+        setReservationMode('service');
         await loadReservations();
       });
 
@@ -1307,6 +1368,7 @@ const apiUrl = site.reservationApiUrl;
       );
       setReservationMode('service');
       ensureServiceSelection();
+      renderUpcomingServices();
       if (state.token) {
         setFeedback(tokenFeedback, 'Token charge depuis ce navigateur.', 'success');
         loadSchedules();
