@@ -246,11 +246,15 @@ const apiUrl = site.reservationApiUrl;
     </section>
 
     <section class="admin-card admin-view-panel" data-reveal data-admin-view="reservations" hidden>
-        <div class="admin-card__header">
-          <h2>Réservations</h2>
-          <p>Retrouvez les demandes, les statuts et les notes en un seul endroit.</p>
-        </div>
-      </section>
+      <div class="admin-card__header">
+        <h2>Réservations</h2>
+        <p>Retrouvez les demandes, les statuts et les notes en un seul endroit.</p>
+      </div>
+
+      <div class="admin-summary" data-admin-summary></div>
+      <div class="admin-overview" data-admin-overview></div>
+      <p class="admin-inline-feedback" data-admin-reservations-feedback aria-live="polite"></p>
+      <div class="admin-reservations" data-admin-reservations></div>
     </section>
   </section>
 </BaseLayout>
