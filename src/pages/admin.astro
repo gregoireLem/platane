@@ -15,7 +15,26 @@ const apiUrl = site.reservationApiUrl;
       </p>
     </div>
 
-    <div class="admin-grid">
+    <section class="admin-card" data-reveal>
+      <div class="admin-card__header">
+        <h2>Navigation</h2>
+        <p>Choisissez l'action du moment, sans surcharger l'écran.</p>
+      </div>
+
+      <div class="admin-view-switcher" data-admin-view-switcher>
+        <button class="button button--primary" type="button" data-admin-view-target="planning">
+          Vue planning
+        </button>
+        <button class="button button--secondary" type="button" data-admin-view-target="manual">
+          Ajouter une réservation
+        </button>
+        <button class="button button--secondary" type="button" data-admin-view-target="reservations">
+          Gérer les réservations
+        </button>
+      </div>
+    </section>
+
+    <div class="admin-grid admin-grid--single">
       <section class="admin-card" data-reveal>
         <div class="admin-card__header">
           <h2>Accès</h2>
@@ -42,76 +61,102 @@ const apiUrl = site.reservationApiUrl;
         </form>
       </section>
 
-      <section class="admin-card" data-reveal>
-        <div class="admin-card__header">
-          <h2>Filtres</h2>
-          <p>Utilisez la vue globale, puis zoomez sur une date si vous devez ajuster les capacites.</p>
+    </div>
+
+    <section class="admin-card admin-view-panel" data-reveal data-admin-view="planning">
+      <div class="admin-card__header">
+        <h2>Filtres</h2>
+        <p>Utilisez la vue globale, puis zoomez sur une date si vous devez ajuster les capacites.</p>
+      </div>
+
+      <form class="admin-filters" data-admin-filters>
+        <div class="admin-filter-presets">
+          <button class="button button--ghost" type="button" data-filter-preset="all">Tout voir</button>
+          <button class="button button--ghost" type="button" data-filter-preset="today">Aujourd'hui</button>
+          <button class="button button--ghost" type="button" data-filter-preset="tomorrow">Demain</button>
         </div>
 
-        <form class="admin-filters" data-admin-filters>
-          <div class="admin-filter-presets">
-            <button class="button button--ghost" type="button" data-filter-preset="all">Tout voir</button>
-            <button class="button button--ghost" type="button" data-filter-preset="today">Aujourd'hui</button>
-            <button class="button button--ghost" type="button" data-filter-preset="tomorrow">Demain</button>
+        <div class="field-grid">
+          <div class="field">
+            <label for="admin-date">Date</label>
+            <input id="admin-date" name="date" type="date" />
           </div>
-
-          <div class="field-grid">
-            <div class="field">
-              <label for="admin-date">Date</label>
-              <input id="admin-date" name="date" type="date" />
-            </div>
-            <div class="field">
-              <label for="admin-service">Service</label>
-              <select id="admin-service" name="service">
-                <option value="">Tous</option>
-                <option value="midi">Midi</option>
-                <option value="soir">Soir</option>
-              </select>
-            </div>
+          <div class="field">
+            <label for="admin-service">Service</label>
+            <select id="admin-service" name="service">
+              <option value="">Tous</option>
+              <option value="midi">Midi</option>
+              <option value="soir">Soir</option>
+            </select>
           </div>
+        </div>
 
-          <div class="field-grid">
-            <div class="field">
-              <label for="admin-status">Statut</label>
-              <select id="admin-status" name="status">
-                <option value="">Tous</option>
-                <option value="PENDING">En attente</option>
-                <option value="CONFIRMED">Confirmée</option>
-                <option value="DECLINED">Refusée</option>
-                <option value="CANCELLED">Annulée</option>
-                <option value="NO_SHOW">No-show</option>
-              </select>
-            </div>
-
-            <div class="field">
-              <label for="admin-sort">Tri</label>
-              <select id="admin-sort" name="sort">
-                <option value="date-asc">Date la plus proche</option>
-                <option value="date-desc">Date la plus lointaine</option>
-                <option value="created-desc">Demande la plus récente</option>
-                <option value="party-desc">Plus grandes tables</option>
-              </select>
-            </div>
+        <div class="field-grid">
+          <div class="field">
+            <label for="admin-status">Statut</label>
+            <select id="admin-status" name="status">
+              <option value="">Tous</option>
+              <option value="PENDING">En attente</option>
+              <option value="CONFIRMED">Confirmée</option>
+              <option value="DECLINED">Refusée</option>
+              <option value="CANCELLED">Annulée</option>
+              <option value="NO_SHOW">No-show</option>
+            </select>
           </div>
 
           <div class="field">
-            <label for="admin-search">Recherche</label>
-            <input
-              id="admin-search"
-              name="search"
-              type="search"
-              placeholder="Nom, téléphone, email, note ou message"
-            />
+            <label for="admin-sort">Tri</label>
+            <select id="admin-sort" name="sort">
+              <option value="date-asc">Date la plus proche</option>
+              <option value="date-desc">Date la plus lointaine</option>
+              <option value="created-desc">Demande la plus récente</option>
+              <option value="party-desc">Plus grandes tables</option>
+            </select>
           </div>
+        </div>
 
-          <div class="admin-token-form__actions">
-            <button class="button button--primary" type="submit">Actualiser</button>
-          </div>
-        </form>
-      </section>
-    </div>
+        <div class="field">
+          <label for="admin-search">Recherche</label>
+          <input
+            id="admin-search"
+            name="search"
+            type="search"
+            placeholder="Nom, téléphone, email, note ou message"
+          />
+        </div>
 
-    <section class="admin-card" data-reveal>
+        <div class="admin-token-form__actions">
+          <button class="button button--primary" type="submit">Actualiser</button>
+        </div>
+      </form>
+    </section>
+
+    <section class="admin-card admin-view-panel" data-reveal data-admin-view="planning">
+      <div class="admin-card__header">
+        <h2>Planning mensuel</h2>
+        <p>Repérez rapidement les jours calmes, les jours chargés et les services complets.</p>
+      </div>
+
+      <div class="admin-planning-toolbar">
+        <div class="field">
+          <label for="admin-month">Mois</label>
+          <input id="admin-month" type="month" data-admin-month />
+        </div>
+      </div>
+      <div class="admin-calendar" data-admin-calendar></div>
+    </section>
+
+    <section class="admin-card admin-view-panel" data-reveal data-admin-view="planning">
+      <div class="admin-card__header">
+        <h2>Capacités du jour</h2>
+        <p>Ajustez le nombre de places par service ou marquez un service complet.</p>
+      </div>
+
+      <div class="admin-capacity-grid" data-admin-capacities></div>
+      <p class="admin-inline-feedback" data-admin-capacity-feedback aria-live="polite"></p>
+    </section>
+
+    <section class="admin-card admin-view-panel" data-reveal data-admin-view="manual" hidden>
       <div class="admin-card__header">
         <h2>Ajouter une réservation</h2>
         <p>Saisissez à la main une demande reçue par téléphone, sur place ou par message.</p>
@@ -200,41 +245,12 @@ const apiUrl = site.reservationApiUrl;
       </form>
     </section>
 
-    <section class="admin-card" data-reveal>
-      <div class="admin-card__header">
-        <h2>Planning mensuel</h2>
-        <p>Repérez rapidement les jours calmes, les jours chargés et les services complets.</p>
-      </div>
-
-      <div class="admin-planning-toolbar">
-        <div class="field">
-          <label for="admin-month">Mois</label>
-          <input id="admin-month" type="month" data-admin-month />
+    <section class="admin-card admin-view-panel" data-reveal data-admin-view="reservations" hidden>
+        <div class="admin-card__header">
+          <h2>Réservations</h2>
+          <p>Retrouvez les demandes, les statuts et les notes en un seul endroit.</p>
         </div>
-      </div>
-      <div class="admin-calendar" data-admin-calendar></div>
-    </section>
-
-    <section class="admin-card" data-reveal>
-      <div class="admin-card__header">
-        <h2>Capacités du jour</h2>
-        <p>Ajustez le nombre de places par service ou marquez un service complet.</p>
-      </div>
-
-      <div class="admin-capacity-grid" data-admin-capacities></div>
-      <p class="admin-inline-feedback" data-admin-capacity-feedback aria-live="polite"></p>
-    </section>
-
-    <section class="admin-card" data-reveal>
-      <div class="admin-card__header">
-        <h2>Réservations</h2>
-        <p>Vue planning globale, puis cartes détaillées par date et par service.</p>
-      </div>
-
-      <div class="admin-summary" data-admin-summary></div>
-      <div class="admin-overview" data-admin-overview></div>
-      <p class="admin-inline-feedback" data-admin-reservations-feedback aria-live="polite"></p>
-      <div class="admin-reservations" data-admin-reservations></div>
+      </section>
     </section>
   </section>
 </BaseLayout>
@@ -269,6 +285,7 @@ const apiUrl = site.reservationApiUrl;
       const reservationsFeedback = document.querySelector('[data-admin-reservations-feedback]');
       const manualForm = document.querySelector('[data-admin-manual-form]');
       const manualFeedback = document.querySelector('[data-admin-manual-feedback]');
+      const viewSwitcher = document.querySelector('[data-admin-view-switcher]');
 
       if (
         !(tokenForm instanceof HTMLFormElement) ||
@@ -282,7 +299,8 @@ const apiUrl = site.reservationApiUrl;
         !(capacityFeedback instanceof HTMLElement) ||
         !(reservationsFeedback instanceof HTMLElement) ||
         !(manualForm instanceof HTMLFormElement) ||
-        !(manualFeedback instanceof HTMLElement)
+        !(manualFeedback instanceof HTMLElement) ||
+        !(viewSwitcher instanceof HTMLElement)
       ) {
         return;
       }
@@ -298,6 +316,8 @@ const apiUrl = site.reservationApiUrl;
       const sortInput = filtersForm.querySelector('#admin-sort');
       const searchInput = filtersForm.querySelector('#admin-search');
       const monthInput = document.querySelector('[data-admin-month]');
+      const viewButtons = Array.from(document.querySelectorAll('[data-admin-view-target]'));
+      const viewPanels = Array.from(document.querySelectorAll('[data-admin-view]'));
 
       if (
         !(tokenInput instanceof HTMLInputElement) ||
@@ -315,7 +335,8 @@ const apiUrl = site.reservationApiUrl;
       const state = {
         token: localStorage.getItem(tokenStorageKey) ?? '',
         reservations: [],
-        filteredReservations: []
+        filteredReservations: [],
+        view: 'planning'
       };
 
       const today = () => new Date().toISOString().slice(0, 10);
@@ -350,6 +371,26 @@ const apiUrl = site.reservationApiUrl;
         'Content-Type': 'application/json',
         'x-admin-token': state.token
       });
+
+      const setActiveView = (view, syncHash = true) => {
+        state.view = view;
+
+        viewPanels.forEach((panel) => {
+          if (!(panel instanceof HTMLElement)) return;
+          panel.hidden = panel.dataset.adminView !== view;
+        });
+
+        viewButtons.forEach((button) => {
+          if (!(button instanceof HTMLButtonElement)) return;
+          const isActive = button.dataset.adminViewTarget === view;
+          button.classList.toggle('button--primary', isActive);
+          button.classList.toggle('button--secondary', !isActive);
+        });
+
+        if (syncHash) {
+          history.replaceState(null, '', `#${view}`);
+        }
+      };
 
       const renderSummary = () => {
         if (!state.filteredReservations.length) {
@@ -910,6 +951,7 @@ const apiUrl = site.reservationApiUrl;
           if (manualDateInput instanceof HTMLInputElement) manualDateInput.value = today();
           if (manualTimeInput instanceof HTMLInputElement) manualTimeInput.value = '19:30';
           setFeedback(manualFeedback, 'Reservation ajoutée.', 'success');
+          setActiveView('reservations');
           await renderCapacities();
           await loadReservations();
         } catch (_error) {
@@ -940,6 +982,7 @@ const apiUrl = site.reservationApiUrl;
           const focusDate = focusDateButton.dataset.copyDate;
           if (focusDate) {
             dateInput.value = focusDate;
+            setActiveView('planning');
             await renderCapacities();
             await loadReservations();
           }
@@ -988,6 +1031,18 @@ const apiUrl = site.reservationApiUrl;
       });
 
       renderCapacities();
+      viewSwitcher.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest('[data-admin-view-target]');
+        if (!(button instanceof HTMLButtonElement)) return;
+        const nextView = button.dataset.adminViewTarget;
+        if (!nextView) return;
+        setActiveView(nextView);
+      });
+
+      const initialView = location.hash.replace('#', '');
+      setActiveView(initialView === 'manual' || initialView === 'reservations' ? initialView : 'planning', false);
       if (state.token) {
         setFeedback(tokenFeedback, 'Token charge depuis ce navigateur.', 'success');
         loadReservations();
