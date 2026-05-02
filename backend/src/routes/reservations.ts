@@ -4,6 +4,7 @@ import { z } from 'zod';
 import { prisma } from '../db.js';
 import {
   getServiceAvailability,
+  isTimeWithinRange,
   normalizeReservationDate,
   normalizeService,
   serviceLabel
@@ -55,6 +56,14 @@ reservationsRouter.post('/', async (req, res, next) => {
       return res.status(409).json({
         error: 'SERVICE_CLOSED',
         message: `${serviceLabel(service)} est ferme pour cette date.`
+      });
+    }
+
+    if (!isTimeWithinRange(payload.reservationTime, availability.openTime, availability.closeTime)) {
+      return res.status(409).json({
+        error: 'OUTSIDE_OPENING_HOURS',
+        message: `Horaire hors ouverture pour ${serviceLabel(service).toLowerCase()} (${availability.openTime} - ${availability.closeTime}).`,
+        availability
       });
     }
 

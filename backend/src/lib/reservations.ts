@@ -27,12 +27,33 @@ export const getDefaultCapacity = (service: Service) => {
   return 40;
 };
 
+export const getDefaultHours = (service: Service) => {
+  if (service === Service.MIDI) {
+    return { openTime: '12:00', closeTime: '14:30' };
+  }
+
+  return { openTime: '19:00', closeTime: '22:30' };
+};
+
+export const getWeekdayIndex = (reservationDate: Date) => (reservationDate.getUTCDay() + 6) % 7;
+
+export const isTimeWithinRange = (value: string, openTime: string, closeTime: string) =>
+  value >= openTime && value <= closeTime;
+
 export const getServiceAvailability = async (reservationDate: Date, service: Service) => {
-  const [capacityOverride, reservations] = await Promise.all([
+  const [capacityOverride, schedule, reservations] = await Promise.all([
     prisma.serviceCapacity.findUnique({
       where: {
         reservationDate_service: {
           reservationDate,
+          service
+        }
+      }
+    }),
+    prisma.serviceSchedule.findUnique({
+      where: {
+        weekday_service: {
+          weekday: getWeekdayIndex(reservationDate),
           service
         }
       }
@@ -49,14 +70,20 @@ export const getServiceAvailability = async (reservationDate: Date, service: Ser
     })
   ]);
 
-  const capacity = capacityOverride?.capacity ?? getDefaultCapacity(service);
+  const defaultHours = getDefaultHours(service);
+  const capacity = capacityOverride?.capacity ?? schedule?.capacity ?? getDefaultCapacity(service);
   const reservedSeats = reservations.reduce((sum, reservation) => sum + reservation.partySize, 0);
   const remainingSeats = Math.max(capacity - reservedSeats, 0);
+  const isClosed = capacityOverride?.isClosed ?? schedule?.isClosed ?? false;
+  const openTime = schedule?.openTime ?? defaultHours.openTime;
+  const closeTime = schedule?.closeTime ?? defaultHours.closeTime;
 
   return {
     capacity,
-    isClosed: capacityOverride?.isClosed ?? false,
-    note: capacityOverride?.note ?? null,
+    isClosed,
+    openTime,
+    closeTime,
+    note: capacityOverride?.note ?? schedule?.note ?? null,
     remainingSeats,
     reservedSeats
   };

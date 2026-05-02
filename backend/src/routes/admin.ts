@@ -5,6 +5,8 @@ import { config } from '../config.js';
 import { prisma } from '../db.js';
 import {
   getServiceAvailability,
+  getDefaultCapacity,
+  getDefaultHours,
   normalizeReservationDate,
   normalizeService,
   serviceLabel
@@ -45,6 +47,16 @@ const upsertCapacitySchema = z.object({
   note: z.string().trim().max(1000).optional()
 });
 
+const upsertScheduleSchema = z.object({
+  weekday: z.coerce.number().int().min(0).max(6),
+  service: z.enum(['midi', 'soir']),
+  capacity: z.coerce.number().int().positive().max(500),
+  isClosed: z.boolean().optional().default(false),
+  openTime: z.string().regex(/^\d{2}:\d{2}$/).optional().or(z.literal('')),
+  closeTime: z.string().regex(/^\d{2}:\d{2}$/).optional().or(z.literal('')),
+  note: z.string().trim().max(1000).optional().or(z.literal(''))
+});
+
 export const adminRouter = Router();
 
 adminRouter.use((req, res, next) => {
@@ -73,6 +85,38 @@ adminRouter.get('/reservations', async (req, res, next) => {
         ]
       })
     );
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.get('/schedules', async (_req, res, next) => {
+  try {
+    const schedules = await prisma.serviceSchedule.findMany({
+      orderBy: [{ weekday: 'asc' }, { service: 'asc' }]
+    });
+
+    const items = Array.from({ length: 7 }, (_, weekday) =>
+      ['midi', 'soir'].map((serviceValue) => {
+        const service = normalizeService(serviceValue);
+        const existing = schedules.find(
+          (item) => item.weekday === weekday && item.service === service
+        );
+        const defaultHours = getDefaultHours(service);
+
+        return {
+          weekday,
+          service: serviceValue,
+          capacity: existing?.capacity ?? getDefaultCapacity(service),
+          isClosed: existing?.isClosed ?? false,
+          openTime: existing?.openTime ?? defaultHours.openTime,
+          closeTime: existing?.closeTime ?? defaultHours.closeTime,
+          note: existing?.note ?? ''
+        };
+      })
+    ).flat();
+
+    res.json(items);
   } catch (error) {
     next(error);
   }
@@ -167,6 +211,42 @@ adminRouter.put('/capacities', async (req, res, next) => {
           capacity: payload.capacity,
           isClosed: payload.isClosed,
           note: payload.note
+        }
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.put('/schedules', async (req, res, next) => {
+  try {
+    const payload = upsertScheduleSchema.parse(req.body);
+    const service = normalizeService(payload.service);
+
+    res.json(
+      await prisma.serviceSchedule.upsert({
+        where: {
+          weekday_service: {
+            weekday: payload.weekday,
+            service
+          }
+        },
+        update: {
+          capacity: payload.capacity,
+          isClosed: payload.isClosed,
+          openTime: payload.openTime || null,
+          closeTime: payload.closeTime || null,
+          note: payload.note || null
+        },
+        create: {
+          weekday: payload.weekday,
+          service,
+          capacity: payload.capacity,
+          isClosed: payload.isClosed,
+          openTime: payload.openTime || null,
+          closeTime: payload.closeTime || null,
+          note: payload.note || null
         }
       })
     );

@@ -11,14 +11,15 @@ const apiUrl = site.reservationApiUrl;
       <p class="eyebrow">Administration</p>
       <h1>Gérer les réservations.</h1>
       <p class="lead">
-        Consultez les demandes, confirmez les tables et ajustez les capacités du midi et du soir.
+        Un tableau de bord simple pour suivre le planning, ajouter des réservations et ajuster les
+        capacités.
       </p>
     </div>
 
     <section class="admin-card" data-reveal>
       <div class="admin-card__header">
         <h2>Navigation</h2>
-        <p>Choisissez l'action du moment, sans surcharger l'écran.</p>
+        <p>Commencez par la vue planning, puis ouvrez l'action dont vous avez besoin.</p>
       </div>
 
       <div class="admin-view-switcher" data-admin-view-switcher>
@@ -30,6 +31,9 @@ const apiUrl = site.reservationApiUrl;
         </button>
         <button class="button button--secondary" type="button" data-admin-view-target="reservations">
           Gérer les réservations
+        </button>
+        <button class="button button--secondary" type="button" data-admin-view-target="settings">
+          Capacités & horaires
         </button>
       </div>
     </section>
@@ -61,200 +65,217 @@ const apiUrl = site.reservationApiUrl;
         </form>
       </section>
 
+      <section class="admin-card" data-reveal>
+        <div class="admin-card__header">
+          <h2>Filtres</h2>
+          <p>Ces filtres servent au planning et à la liste des réservations.</p>
+        </div>
+
+        <form class="admin-filters" data-admin-filters>
+          <div class="admin-filter-presets">
+            <button class="button button--ghost" type="button" data-filter-preset="all">Tout voir</button>
+            <button class="button button--ghost" type="button" data-filter-preset="today">Aujourd'hui</button>
+            <button class="button button--ghost" type="button" data-filter-preset="tomorrow">Demain</button>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="admin-date">Date</label>
+              <input id="admin-date" name="date" type="date" />
+            </div>
+            <div class="field">
+              <label for="admin-service">Service</label>
+              <select id="admin-service" name="service">
+                <option value="">Tous</option>
+                <option value="midi">Midi</option>
+                <option value="soir">Soir</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="admin-status">Statut</label>
+              <select id="admin-status" name="status">
+                <option value="">Tous</option>
+                <option value="PENDING">En attente</option>
+                <option value="CONFIRMED">Confirmée</option>
+                <option value="DECLINED">Refusée</option>
+                <option value="CANCELLED">Annulée</option>
+                <option value="NO_SHOW">No-show</option>
+              </select>
+            </div>
+
+            <div class="field">
+              <label for="admin-sort">Tri</label>
+              <select id="admin-sort" name="sort">
+                <option value="date-asc">Date la plus proche</option>
+                <option value="date-desc">Date la plus lointaine</option>
+                <option value="created-desc">Demande la plus récente</option>
+                <option value="party-desc">Plus grandes tables</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="admin-search">Recherche</label>
+            <input
+              id="admin-search"
+              name="search"
+              type="search"
+              placeholder="Nom, téléphone, email, note ou message"
+            />
+          </div>
+
+          <div class="admin-token-form__actions">
+            <button class="button button--primary" type="submit">Actualiser</button>
+          </div>
+        </form>
+      </section>
     </div>
 
-    <section class="admin-card admin-view-panel" data-reveal data-admin-view="planning">
-      <div class="admin-card__header">
-        <h2>Filtres</h2>
-        <p>Utilisez la vue globale, puis zoomez sur une date si vous devez ajuster les capacites.</p>
-      </div>
-
-      <form class="admin-filters" data-admin-filters>
-        <div class="admin-filter-presets">
-          <button class="button button--ghost" type="button" data-filter-preset="all">Tout voir</button>
-          <button class="button button--ghost" type="button" data-filter-preset="today">Aujourd'hui</button>
-          <button class="button button--ghost" type="button" data-filter-preset="tomorrow">Demain</button>
+    <section class="admin-view-panel" data-admin-view="planning">
+      <section class="admin-card" data-reveal>
+        <div class="admin-card__header">
+          <h2>Planning mensuel</h2>
+          <p>Repérez rapidement les jours calmes, les jours chargés et le volume midi / soir.</p>
         </div>
 
-        <div class="field-grid">
+        <div class="admin-planning-toolbar">
           <div class="field">
-            <label for="admin-date">Date</label>
-            <input id="admin-date" name="date" type="date" />
-          </div>
-          <div class="field">
-            <label for="admin-service">Service</label>
-            <select id="admin-service" name="service">
-              <option value="">Tous</option>
-              <option value="midi">Midi</option>
-              <option value="soir">Soir</option>
-            </select>
+            <label for="admin-month">Mois</label>
+            <input id="admin-month" type="month" data-admin-month />
           </div>
         </div>
-
-        <div class="field-grid">
-          <div class="field">
-            <label for="admin-status">Statut</label>
-            <select id="admin-status" name="status">
-              <option value="">Tous</option>
-              <option value="PENDING">En attente</option>
-              <option value="CONFIRMED">Confirmée</option>
-              <option value="DECLINED">Refusée</option>
-              <option value="CANCELLED">Annulée</option>
-              <option value="NO_SHOW">No-show</option>
-            </select>
-          </div>
-
-          <div class="field">
-            <label for="admin-sort">Tri</label>
-            <select id="admin-sort" name="sort">
-              <option value="date-asc">Date la plus proche</option>
-              <option value="date-desc">Date la plus lointaine</option>
-              <option value="created-desc">Demande la plus récente</option>
-              <option value="party-desc">Plus grandes tables</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="admin-search">Recherche</label>
-          <input
-            id="admin-search"
-            name="search"
-            type="search"
-            placeholder="Nom, téléphone, email, note ou message"
-          />
-        </div>
-
-        <div class="admin-token-form__actions">
-          <button class="button button--primary" type="submit">Actualiser</button>
-        </div>
-      </form>
+        <div class="admin-calendar" data-admin-calendar></div>
+      </section>
     </section>
 
-    <section class="admin-card admin-view-panel" data-reveal data-admin-view="planning">
-      <div class="admin-card__header">
-        <h2>Planning mensuel</h2>
-        <p>Repérez rapidement les jours calmes, les jours chargés et les services complets.</p>
-      </div>
-
-      <div class="admin-planning-toolbar">
-        <div class="field">
-          <label for="admin-month">Mois</label>
-          <input id="admin-month" type="month" data-admin-month />
+    <section class="admin-view-panel" data-admin-view="manual" hidden>
+      <section class="admin-card" data-reveal>
+        <div class="admin-card__header">
+          <h2>Ajouter une réservation</h2>
+          <p>Saisissez ici les demandes reçues par téléphone, sur place ou par message.</p>
         </div>
-      </div>
-      <div class="admin-calendar" data-admin-calendar></div>
+
+        <form class="admin-manual-form" data-admin-manual-form>
+          <div class="field-grid">
+            <div class="field">
+              <label for="manual-date">Date</label>
+              <input id="manual-date" name="reservationDate" type="date" required />
+            </div>
+            <div class="field">
+              <label for="manual-time">Heure</label>
+              <input id="manual-time" name="reservationTime" type="time" required />
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="manual-service">Service</label>
+              <select id="manual-service" name="service">
+                <option value="midi">Midi</option>
+                <option value="soir" selected>Soir</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="manual-party">Nombre de personnes</label>
+              <input id="manual-party" name="partySize" type="number" min="1" max="20" value="2" required />
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="manual-name">Nom</label>
+              <input id="manual-name" name="name" type="text" placeholder="Nom du client" required />
+            </div>
+            <div class="field">
+              <label for="manual-phone">Téléphone</label>
+              <input id="manual-phone" name="phone" type="tel" placeholder="06..." required />
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="manual-email">Email</label>
+              <input id="manual-email" name="email" type="email" placeholder="Optionnel" />
+            </div>
+            <div class="field">
+              <label for="manual-source">Source</label>
+              <select id="manual-source" name="source">
+                <option value="telephone">Téléphone</option>
+                <option value="sur-place">Sur place</option>
+                <option value="sms">SMS</option>
+                <option value="instagram">Instagram</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="field-grid">
+            <div class="field">
+              <label for="manual-status">Statut</label>
+              <select id="manual-status" name="status">
+                <option value="CONFIRMED" selected>Confirmée</option>
+                <option value="PENDING">En attente</option>
+                <option value="DECLINED">Refusée</option>
+                <option value="CANCELLED">Annulée</option>
+                <option value="NO_SHOW">No-show</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="manual-notes">Notes internes</label>
+              <input id="manual-notes" name="notes" type="text" placeholder="Allergie, terrasse, poussette..." />
+            </div>
+          </div>
+
+          <div class="field">
+            <label for="manual-message">Message</label>
+            <textarea id="manual-message" name="message" rows="3" placeholder="Demande client, précision d'horaire, occasion..."></textarea>
+          </div>
+
+          <div class="admin-token-form__actions">
+            <button class="button button--primary" type="submit">Ajouter la réservation</button>
+          </div>
+          <p class="admin-inline-feedback" data-admin-manual-feedback aria-live="polite"></p>
+        </form>
+      </section>
     </section>
 
-    <section class="admin-card admin-view-panel" data-reveal data-admin-view="planning">
-      <div class="admin-card__header">
-        <h2>Capacités du jour</h2>
-        <p>Ajustez le nombre de places par service ou marquez un service complet.</p>
-      </div>
+    <section class="admin-view-panel" data-admin-view="reservations" hidden>
+      <section class="admin-card" data-reveal>
+        <div class="admin-card__header">
+          <h2>Réservations</h2>
+          <p>Retrouvez les demandes, les statuts et les notes en un seul endroit.</p>
+        </div>
 
-      <div class="admin-capacity-grid" data-admin-capacities></div>
-      <p class="admin-inline-feedback" data-admin-capacity-feedback aria-live="polite"></p>
+        <div class="admin-summary" data-admin-summary></div>
+        <div class="admin-overview" data-admin-overview></div>
+        <p class="admin-inline-feedback" data-admin-reservations-feedback aria-live="polite"></p>
+        <div class="admin-reservations" data-admin-reservations></div>
+      </section>
     </section>
 
-    <section class="admin-card admin-view-panel" data-reveal data-admin-view="manual" hidden>
-      <div class="admin-card__header">
-        <h2>Ajouter une réservation</h2>
-        <p>Saisissez à la main une demande reçue par téléphone, sur place ou par message.</p>
-      </div>
-
-      <form class="admin-manual-form" data-admin-manual-form>
-        <div class="field-grid">
-          <div class="field">
-            <label for="manual-date">Date</label>
-            <input id="manual-date" name="reservationDate" type="date" required />
-          </div>
-          <div class="field">
-            <label for="manual-time">Heure</label>
-            <input id="manual-time" name="reservationTime" type="time" required />
-          </div>
+    <section class="admin-view-panel" data-admin-view="settings" hidden>
+      <section class="admin-card" data-reveal>
+        <div class="admin-card__header">
+          <h2>Capacités & horaires hebdomadaires</h2>
+          <p>Réglez les horaires d'ouverture et les capacités par jour de semaine, pas seulement date par date.</p>
         </div>
 
-        <div class="field-grid">
-          <div class="field">
-            <label for="manual-service">Service</label>
-            <select id="manual-service" name="service">
-              <option value="midi">Midi</option>
-              <option value="soir" selected>Soir</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="manual-party">Nombre de personnes</label>
-            <input id="manual-party" name="partySize" type="number" min="1" max="20" value="2" required />
-          </div>
+        <div class="admin-schedule-grid" data-admin-schedules></div>
+        <p class="admin-inline-feedback" data-admin-schedule-feedback aria-live="polite"></p>
+      </section>
+
+      <section class="admin-card" data-reveal>
+        <div class="admin-card__header">
+          <h2>Ajustement ponctuel d'une date</h2>
+          <p>Si besoin, gardez une exception pour un jour particulier.</p>
         </div>
 
-        <div class="field-grid">
-          <div class="field">
-            <label for="manual-name">Nom</label>
-            <input id="manual-name" name="name" type="text" placeholder="Nom du client" required />
-          </div>
-          <div class="field">
-            <label for="manual-phone">Téléphone</label>
-            <input id="manual-phone" name="phone" type="tel" placeholder="06..." required />
-          </div>
-        </div>
-
-        <div class="field-grid">
-          <div class="field">
-            <label for="manual-email">Email</label>
-            <input id="manual-email" name="email" type="email" placeholder="Optionnel" />
-          </div>
-          <div class="field">
-            <label for="manual-source">Source</label>
-            <select id="manual-source" name="source">
-              <option value="telephone">Téléphone</option>
-              <option value="sur-place">Sur place</option>
-              <option value="sms">SMS</option>
-              <option value="instagram">Instagram</option>
-              <option value="autre">Autre</option>
-            </select>
-          </div>
-        </div>
-
-        <div class="field-grid">
-          <div class="field">
-            <label for="manual-status">Statut</label>
-            <select id="manual-status" name="status">
-              <option value="CONFIRMED" selected>Confirmée</option>
-              <option value="PENDING">En attente</option>
-              <option value="DECLINED">Refusée</option>
-              <option value="CANCELLED">Annulée</option>
-              <option value="NO_SHOW">No-show</option>
-            </select>
-          </div>
-          <div class="field">
-            <label for="manual-notes">Notes internes</label>
-            <input id="manual-notes" name="notes" type="text" placeholder="Allergie, terrasse, poussette..." />
-          </div>
-        </div>
-
-        <div class="field">
-          <label for="manual-message">Message</label>
-          <textarea id="manual-message" name="message" rows="3" placeholder="Demande client, précision d'horaire, occasion..."></textarea>
-        </div>
-
-        <div class="admin-token-form__actions">
-          <button class="button button--primary" type="submit">Ajouter la réservation</button>
-        </div>
-        <p class="admin-inline-feedback" data-admin-manual-feedback aria-live="polite"></p>
-      </form>
-    </section>
-
-    <section class="admin-card admin-view-panel" data-reveal data-admin-view="reservations" hidden>
-      <div class="admin-card__header">
-        <h2>Réservations</h2>
-        <p>Retrouvez les demandes, les statuts et les notes en un seul endroit.</p>
-      </div>
-
-      <div class="admin-summary" data-admin-summary></div>
-      <div class="admin-overview" data-admin-overview></div>
-      <p class="admin-inline-feedback" data-admin-reservations-feedback aria-live="polite"></p>
-      <div class="admin-reservations" data-admin-reservations></div>
+        <div class="admin-capacity-grid" data-admin-capacities></div>
+        <p class="admin-inline-feedback" data-admin-capacity-feedback aria-live="polite"></p>
+      </section>
     </section>
   </section>
 </BaseLayout>
@@ -262,6 +283,7 @@ const apiUrl = site.reservationApiUrl;
 <script is:inline>
   (() => {
     const tokenStorageKey = 'au-platane-admin-token';
+    const weekdayLabels = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
     const statusLabels = {
       PENDING: 'En attente',
       CONFIRMED: 'Confirmee',
@@ -280,12 +302,14 @@ const apiUrl = site.reservationApiUrl;
       const tokenForm = document.querySelector('[data-admin-token-form]');
       const filtersForm = document.querySelector('[data-admin-filters]');
       const capacitiesNode = document.querySelector('[data-admin-capacities]');
+      const schedulesNode = document.querySelector('[data-admin-schedules]');
       const summaryNode = document.querySelector('[data-admin-summary]');
       const overviewNode = document.querySelector('[data-admin-overview]');
       const calendarNode = document.querySelector('[data-admin-calendar]');
       const reservationsNode = document.querySelector('[data-admin-reservations]');
       const tokenFeedback = document.querySelector('[data-admin-token-feedback]');
       const capacityFeedback = document.querySelector('[data-admin-capacity-feedback]');
+      const scheduleFeedback = document.querySelector('[data-admin-schedule-feedback]');
       const reservationsFeedback = document.querySelector('[data-admin-reservations-feedback]');
       const manualForm = document.querySelector('[data-admin-manual-form]');
       const manualFeedback = document.querySelector('[data-admin-manual-feedback]');
@@ -295,12 +319,14 @@ const apiUrl = site.reservationApiUrl;
         !(tokenForm instanceof HTMLFormElement) ||
         !(filtersForm instanceof HTMLFormElement) ||
         !(capacitiesNode instanceof HTMLElement) ||
+        !(schedulesNode instanceof HTMLElement) ||
         !(summaryNode instanceof HTMLElement) ||
         !(overviewNode instanceof HTMLElement) ||
         !(calendarNode instanceof HTMLElement) ||
         !(reservationsNode instanceof HTMLElement) ||
         !(tokenFeedback instanceof HTMLElement) ||
         !(capacityFeedback instanceof HTMLElement) ||
+        !(scheduleFeedback instanceof HTMLElement) ||
         !(reservationsFeedback instanceof HTMLElement) ||
         !(manualForm instanceof HTMLFormElement) ||
         !(manualFeedback instanceof HTMLElement) ||
@@ -340,6 +366,7 @@ const apiUrl = site.reservationApiUrl;
         token: localStorage.getItem(tokenStorageKey) ?? '',
         reservations: [],
         filteredReservations: [],
+        schedules: [],
         view: 'planning'
       };
 
@@ -557,6 +584,82 @@ const apiUrl = site.reservationApiUrl;
         `;
       };
 
+      const renderSchedules = () => {
+        if (!state.schedules.length) {
+          schedulesNode.innerHTML = '<p class="admin-empty">Impossible de charger les réglages hebdomadaires.</p>';
+          return;
+        }
+
+        const grouped = new Map();
+        for (const item of state.schedules) {
+          const current = grouped.get(item.weekday) ?? [];
+          current.push(item);
+          grouped.set(item.weekday, current);
+        }
+
+        schedulesNode.innerHTML = Array.from(grouped.entries())
+          .map(
+            ([weekday, items]) => `
+              <section class="admin-schedule-day">
+                <div class="admin-schedule-day__header">
+                  <h3>${weekdayLabels[weekday]}</h3>
+                </div>
+                <div class="admin-capacity-grid">
+                  ${items
+                    .map(
+                      (item) => `
+                        <form class="admin-capacity-card" data-schedule-form data-weekday="${item.weekday}" data-service="${item.service}">
+                          <div class="admin-capacity-card__top">
+                            <div>
+                              <h3>${serviceLabels[item.service]}</h3>
+                              <p>${item.isClosed ? 'Service fermé' : `${item.openTime} - ${item.closeTime}`}</p>
+                            </div>
+                            <span class="admin-status-badge" data-status="${item.isClosed ? 'DECLINED' : 'CONFIRMED'}">
+                              ${item.isClosed ? 'Fermé' : 'Ouvert'}
+                            </span>
+                          </div>
+
+                          <div class="field-grid">
+                            <div class="field">
+                              <label>Capacité</label>
+                              <input type="number" min="1" max="500" value="${item.capacity}" data-schedule-capacity />
+                            </div>
+                            <label class="admin-checkbox">
+                              <input type="checkbox" data-schedule-closed ${item.isClosed ? 'checked' : ''} />
+                              <span>Fermer ce service</span>
+                            </label>
+                          </div>
+
+                          <div class="field-grid">
+                            <div class="field">
+                              <label>Ouverture</label>
+                              <input type="time" value="${item.openTime}" data-schedule-open />
+                            </div>
+                            <div class="field">
+                              <label>Fermeture</label>
+                              <input type="time" value="${item.closeTime}" data-schedule-close />
+                            </div>
+                          </div>
+
+                          <div class="field">
+                            <label>Note</label>
+                            <input type="text" value="${item.note ?? ''}" data-schedule-note placeholder="Ex: cuisine réduite, terrasse seulement..." />
+                          </div>
+
+                          <div class="admin-reservation-card__actions">
+                            <button class="button button--secondary" type="submit">Mettre à jour</button>
+                          </div>
+                        </form>
+                      `
+                    )
+                    .join('')}
+                </div>
+              </section>
+            `
+          )
+          .join('');
+      };
+
       const applyClientFilters = () => {
         const search = searchInput.value.trim().toLowerCase();
         const selectedDate = dateInput.value;
@@ -615,12 +718,7 @@ const apiUrl = site.reservationApiUrl;
           const dateKey = reservation.reservationDate.slice(0, 10);
           const serviceKey = reservation.service.toLowerCase();
           const groupKey = `${dateKey}-${serviceKey}`;
-          const bucket = groups.get(groupKey) ?? {
-            dateKey,
-            serviceKey,
-            seats: 0,
-            items: []
-          };
+          const bucket = groups.get(groupKey) ?? { dateKey, serviceKey, seats: 0, items: [] };
           bucket.seats += reservation.partySize;
           bucket.items.push(reservation);
           groups.set(groupKey, bucket);
@@ -636,7 +734,7 @@ const apiUrl = site.reservationApiUrl;
                     <p>${group.items.length} reservation(s) • ${group.seats} couvert(s)</p>
                   </div>
                   <button class="button button--ghost" type="button" data-copy-date="${group.dateKey}">
-                    Voir les capacites du jour
+                    Voir les capacités du jour
                   </button>
                 </div>
 
@@ -722,7 +820,7 @@ const apiUrl = site.reservationApiUrl;
                   <div class="admin-capacity-card__top">
                     <div>
                       <h3>${serviceLabels[serviceData.service]}</h3>
-                      <p>${serviceData.remainingSeats} place(s) restantes sur ${serviceData.capacity}</p>
+                      <p>${serviceData.openTime} - ${serviceData.closeTime} • ${serviceData.remainingSeats} place(s) restantes sur ${serviceData.capacity}</p>
                     </div>
                     <span class="admin-status-badge" data-status="${serviceData.remainingSeats <= 0 || serviceData.isClosed ? 'DECLINED' : 'CONFIRMED'}">
                       ${serviceData.remainingSeats <= 0 || serviceData.isClosed ? 'Complet' : 'Disponible'}
@@ -731,7 +829,7 @@ const apiUrl = site.reservationApiUrl;
 
                   <div class="field-grid">
                     <div class="field">
-                      <label>Capacite</label>
+                      <label>Capacité</label>
                       <input type="number" min="1" max="500" value="${serviceData.capacity}" data-capacity-value />
                     </div>
                     <label class="admin-checkbox">
@@ -746,7 +844,7 @@ const apiUrl = site.reservationApiUrl;
                   </div>
 
                   <div class="admin-reservation-card__actions">
-                    <button class="button button--secondary" type="submit">Mettre a jour</button>
+                    <button class="button button--secondary" type="submit">Mettre à jour</button>
                   </div>
                 </form>
               `
@@ -757,11 +855,31 @@ const apiUrl = site.reservationApiUrl;
         }
       };
 
+      const loadSchedules = async () => {
+        if (!state.token) {
+          schedulesNode.innerHTML = '<p class="admin-empty">Token manquant.</p>';
+          return;
+        }
+
+        try {
+          const response = await fetch(`${apiRoot}/admin/schedules`, {
+            headers: authHeaders()
+          });
+
+          if (!response.ok) throw new Error('schedules');
+          state.schedules = await response.json();
+          renderSchedules();
+        } catch (_error) {
+          schedulesNode.innerHTML = '<p class="admin-empty">Impossible de charger les réglages hebdomadaires.</p>';
+        }
+      };
+
       const loadReservations = async () => {
         if (!state.token) {
           setFeedback(tokenFeedback, 'Ajoutez le token admin pour charger les reservations.', 'warning');
           reservationsNode.innerHTML = '<p class="admin-empty">Token manquant.</p>';
           summaryNode.innerHTML = '';
+          overviewNode.innerHTML = '';
           return;
         }
 
@@ -777,9 +895,7 @@ const apiUrl = site.reservationApiUrl;
             headers: authHeaders()
           });
 
-          if (!response.ok) {
-            throw new Error('admin');
-          }
+          if (!response.ok) throw new Error('admin');
 
           state.reservations = await response.json();
           applyClientFilters();
@@ -823,6 +939,7 @@ const apiUrl = site.reservationApiUrl;
         localStorage.setItem(tokenStorageKey, state.token);
         setFeedback(tokenFeedback, 'Token enregistre sur ce navigateur.', 'success');
         await renderCapacities();
+        await loadSchedules();
         await loadReservations();
       });
 
@@ -917,6 +1034,61 @@ const apiUrl = site.reservationApiUrl;
         }
       });
 
+      schedulesNode.addEventListener('submit', async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLFormElement) || !target.matches('[data-schedule-form]')) return;
+        event.preventDefault();
+
+        if (!state.token) {
+          setFeedback(scheduleFeedback, 'Token admin requis pour modifier les horaires.', 'error');
+          return;
+        }
+
+        const service = target.dataset.service;
+        const weekday = target.dataset.weekday;
+        const capacityInput = target.querySelector('[data-schedule-capacity]');
+        const closedInput = target.querySelector('[data-schedule-closed]');
+        const openInput = target.querySelector('[data-schedule-open]');
+        const closeInput = target.querySelector('[data-schedule-close]');
+        const noteInput = target.querySelector('[data-schedule-note]');
+
+        if (
+          !service ||
+          !weekday ||
+          !(capacityInput instanceof HTMLInputElement) ||
+          !(closedInput instanceof HTMLInputElement) ||
+          !(openInput instanceof HTMLInputElement) ||
+          !(closeInput instanceof HTMLInputElement) ||
+          !(noteInput instanceof HTMLInputElement)
+        ) {
+          return;
+        }
+
+        try {
+          const response = await fetch(`${apiRoot}/admin/schedules`, {
+            method: 'PUT',
+            headers: authHeaders(),
+            body: JSON.stringify({
+              weekday: Number(weekday),
+              service,
+              capacity: Number(capacityInput.value),
+              isClosed: closedInput.checked,
+              openTime: openInput.value,
+              closeTime: closeInput.value,
+              note: noteInput.value.trim()
+            })
+          });
+
+          if (!response.ok) throw new Error('schedule');
+
+          setFeedback(scheduleFeedback, `${serviceLabels[service]} mis à jour pour ${weekdayLabels[Number(weekday)]}.`, 'success');
+          await loadSchedules();
+          await renderCapacities();
+        } catch (_error) {
+          setFeedback(scheduleFeedback, 'Impossible de mettre à jour les horaires hebdomadaires.', 'error');
+        }
+      });
+
       manualForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
@@ -947,9 +1119,7 @@ const apiUrl = site.reservationApiUrl;
             })
           });
 
-          if (!response.ok) {
-            throw new Error('manual');
-          }
+          if (!response.ok) throw new Error('manual');
 
           manualForm.reset();
           if (manualDateInput instanceof HTMLInputElement) manualDateInput.value = today();
@@ -973,6 +1143,7 @@ const apiUrl = site.reservationApiUrl;
         if (!clickedDate) return;
 
         dateInput.value = clickedDate;
+        setActiveView('settings');
         await renderCapacities();
         await loadReservations();
       });
@@ -986,7 +1157,7 @@ const apiUrl = site.reservationApiUrl;
           const focusDate = focusDateButton.dataset.copyDate;
           if (focusDate) {
             dateInput.value = focusDate;
-            setActiveView('planning');
+            setActiveView('settings');
             await renderCapacities();
             await loadReservations();
           }
@@ -1046,9 +1217,13 @@ const apiUrl = site.reservationApiUrl;
       });
 
       const initialView = location.hash.replace('#', '');
-      setActiveView(initialView === 'manual' || initialView === 'reservations' ? initialView : 'planning', false);
+      setActiveView(
+        ['manual', 'reservations', 'settings'].includes(initialView) ? initialView : 'planning',
+        false
+      );
       if (state.token) {
         setFeedback(tokenFeedback, 'Token charge depuis ce navigateur.', 'success');
+        loadSchedules();
         loadReservations();
       }
     };

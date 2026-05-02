@@ -1331,6 +1331,28 @@ p {
   display: none;
 }
 
+.admin-schedule-grid {
+  display: grid;
+  gap: 1rem;
+}
+
+.admin-schedule-day {
+  display: grid;
+  gap: 0.75rem;
+}
+
+.admin-schedule-day + .admin-schedule-day {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(122, 84, 63, 0.12);
+}
+
+.admin-schedule-day__header h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
 .admin-inline-feedback {
   min-height: 1.4rem;
 }
