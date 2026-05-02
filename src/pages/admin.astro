@@ -461,7 +461,6 @@ const apiUrl = site.reservationApiUrl;
             acc.total += 1;
             acc.seats += reservation.partySize;
             acc[reservation.status] = (acc[reservation.status] ?? 0) + 1;
-            acc.dates.add(reservation.reservationDate.slice(0, 10));
             return acc;
           },
           { total: 0, seats: 0, PENDING: 0, CONFIRMED: 0 }
