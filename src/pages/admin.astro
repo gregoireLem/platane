@@ -1317,7 +1317,7 @@ const apiUrl = site.reservationApiUrl;
           return;
         }
 
-        const card = button.closest('.admin-reservation-card');
+        const card = button.closest('.admin-reservation-card, .admin-reservation-row');
         const reservationId = button.dataset.id;
         const statusSelect = card?.querySelector('[data-reservation-status]');
         const notesInput = card?.querySelector('[data-reservation-notes]');
