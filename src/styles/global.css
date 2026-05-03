@@ -331,6 +331,38 @@ p {
   gap: 1rem;
 }
 
+.brand-ribbon {
+  display: inline-grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  align-items: center;
+  padding: 0.75rem 0.9rem;
+  border: 1px solid rgba(102, 83, 37, 0.14);
+  border-radius: 1rem;
+  background: rgba(255, 247, 233, 0.9);
+  width: fit-content;
+  box-shadow: 0 10px 26px rgba(89, 38, 15, 0.08);
+}
+
+.brand-ribbon__mark {
+  width: 4rem;
+  border-radius: 0.7rem;
+}
+
+.brand-ribbon__copy {
+  display: grid;
+  gap: 0.12rem;
+}
+
+.brand-ribbon__copy .eyebrow {
+  margin: 0;
+}
+
+.brand-ribbon__tagline {
+  color: var(--terracotta-deep);
+  font-size: 0.92rem;
+}
+
 .home-hero__tags {
   display: flex;
   flex-wrap: wrap;
@@ -387,6 +419,22 @@ p {
   font-size: 0.92rem;
 }
 
+.home-hero__seal {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  width: min(15rem, 42%);
+  padding: 0.7rem;
+  border-radius: 1rem;
+  background: rgba(102, 83, 37, 0.9);
+  box-shadow: 0 20px 42px rgba(89, 38, 15, 0.22);
+}
+
+.home-hero__seal img {
+  width: 100%;
+  border-radius: 0.8rem;
+}
+
 .home-story {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
@@ -407,6 +455,25 @@ p {
 .home-actions {
   display: grid;
   gap: 0.8rem;
+}
+
+.home-brand-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(135deg, rgba(102, 83, 37, 0.94), rgba(89, 38, 15, 0.94));
+  color: #ffefd2;
+  box-shadow: 0 18px 38px rgba(89, 38, 15, 0.18);
+}
+
+.home-brand-card img {
+  width: 6rem;
+  border-radius: 0.8rem;
+}
+
+.home-brand-card p {
+  color: rgba(255, 239, 210, 0.88);
 }
 
 .home-action {
@@ -1144,6 +1211,28 @@ p {
   gap: 1rem;
 }
 
+.menu-page__brand-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.8rem;
+  width: fit-content;
+  padding: 0.7rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(255, 239, 210, 0.82);
+  border: 1px solid rgba(102, 83, 37, 0.14);
+}
+
+.menu-page__brand-chip img {
+  width: 3rem;
+  border-radius: 999px;
+}
+
+.menu-page__brand-chip span {
+  color: var(--terracotta-deep);
+  font-size: 0.9rem;
+  font-weight: 700;
+}
+
 .menu-page__meta {
   justify-self: end;
   width: min(100%, 22rem);
@@ -1166,6 +1255,8 @@ p {
   background:
     linear-gradient(180deg, rgba(255, 252, 247, 0.95), rgba(247, 240, 230, 0.92));
   box-shadow: var(--shadow);
+  position: relative;
+  overflow: hidden;
 }
 
 .menu-sheet__top {
@@ -1228,6 +1319,17 @@ p {
   gap: 1.6rem 2rem;
 }
 
+.menu-sheet__signature {
+  margin-top: 2rem;
+  padding-top: 1.4rem;
+  border-top: 1px solid rgba(102, 83, 37, 0.14);
+}
+
+.menu-sheet__signature img {
+  width: min(100%, 16rem);
+  border-radius: 0.8rem;
+}
+
 .menu-group {
   display: grid;
   align-content: start;
@@ -1288,6 +1390,34 @@ p {
 .admin-heading {
   display: grid;
   gap: 0.9rem;
+}
+
+.admin-brand-bar {
+  display: inline-grid;
+  grid-template-columns: auto 1fr;
+  gap: 0.9rem;
+  align-items: center;
+  width: fit-content;
+  padding: 0.8rem 0.95rem;
+  border-radius: 1rem;
+  background: rgba(255, 247, 233, 0.92);
+  border: 1px solid rgba(102, 83, 37, 0.14);
+  box-shadow: 0 12px 28px rgba(89, 38, 15, 0.08);
+}
+
+.admin-brand-bar img {
+  width: 4.2rem;
+  border-radius: 0.8rem;
+}
+
+.admin-brand-bar .eyebrow {
+  margin: 0;
+}
+
+.admin-brand-bar__tagline {
+  margin: 0;
+  color: var(--terracotta-deep);
+  font-weight: 700;
 }
 
 .admin-grid,
@@ -1942,6 +2072,15 @@ p {
     gap: 0.85rem;
   }
 
+  .brand-ribbon {
+    width: 100%;
+    grid-template-columns: 3.5rem 1fr;
+  }
+
+  .brand-ribbon__mark {
+    width: 3.5rem;
+  }
+
   h1 {
     font-size: clamp(2.2rem, 14vw, 3.15rem);
     max-width: 11ch;
@@ -1991,6 +2130,12 @@ p {
     background: rgba(255, 251, 246, 0.7);
   }
 
+  .home-hero__seal {
+    position: static;
+    width: 100%;
+    margin-top: 0.75rem;
+  }
+
   .home-story {
     gap: 1rem;
   }
@@ -2004,8 +2149,27 @@ p {
     padding: 0.8rem 0.85rem;
   }
 
+  .menu-page__brand-chip {
+    width: 100%;
+    border-radius: 1rem;
+    justify-content: flex-start;
+  }
+
   .space-grid--compact {
     grid-template-columns: 1fr;
+  }
+
+  .site-footer__logo {
+    width: 12rem;
+  }
+
+  .admin-brand-bar {
+    width: 100%;
+    grid-template-columns: 3.8rem 1fr;
+  }
+
+  .admin-brand-bar img {
+    width: 3.8rem;
   }
 
   .admin-summary {

@@ -9,6 +9,13 @@ import { site } from '../data/site';
 <BaseLayout title="Lieu de vie" description={site.description}>
   <section class="home-hero section">
     <div class="home-hero__copy" data-reveal>
+      <div class="brand-ribbon">
+        <img class="brand-ribbon__mark" src="/brand/au-platane-mark-olive.png" alt="" />
+        <div class="brand-ribbon__copy">
+          <p class="eyebrow">{site.label}</p>
+          <p class="brand-ribbon__tagline">Bar . Restaurant . Salon de thé</p>
+        </div>
+      </div>
       <p class="eyebrow">{site.label}</p>
       <h1>Un lieu de vie et de partage autour d’une cuisine locale et de saison.</h1>
       <p class="lead">
@@ -46,6 +53,9 @@ import { site } from '../data/site';
         <strong>Terrasse sous le platane</strong>
         <span>Du déjeuner aux soirées d’été.</span>
       </figcaption>
+      <div class="home-hero__seal">
+        <img src="/brand/au-platane-logo-cream.png" alt="Au Platane" />
+      </div>
     </figure>
   </section>
 
@@ -67,6 +77,10 @@ import { site } from '../data/site';
     </div>
 
     <div class="home-actions" data-reveal>
+      <article class="home-brand-card">
+        <img src="/brand/au-platane-mark-olive.png" alt="" />
+        <p>Une identité de lieu chaleureuse, gourmande et artisanale, du déjeuner au salon de thé.</p>
+      </article>
       <a class="home-action home-action--strong" href="/menu">
         <span>Menu du moment</span>
         <strong>Voir la carte</strong>

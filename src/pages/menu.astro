@@ -12,6 +12,10 @@ import { menuSourceLabel } from '../data/menu-source';
   <section class="section menu-page">
     <div class="menu-page__intro" data-reveal>
       <p class="eyebrow">Le menu</p>
+      <div class="menu-page__brand-chip">
+        <img src="/brand/au-platane-mark-olive.png" alt="" />
+        <span>Bar . Restaurant . Salon de thé</span>
+      </div>
       <h1 data-menu-title>{weeklyMenu.title}</h1>
       <p class="lead" data-menu-intro>{weeklyMenu.intro}</p>
     </div>
@@ -70,6 +74,10 @@ import { menuSourceLabel } from '../data/menu-source';
             </ul>
           </article>
         ))}
+      </div>
+
+      <div class="menu-sheet__signature">
+        <img src="/brand/au-platane-logo-ochre.png" alt="Au Platane" />
       </div>
     </div>
   </section>
