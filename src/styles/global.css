@@ -419,22 +419,6 @@ p {
   font-size: 0.92rem;
 }
 
-.home-hero__seal {
-  position: absolute;
-  top: 1rem;
-  right: 1rem;
-  width: min(15rem, 42%);
-  padding: 0.7rem;
-  border-radius: 1rem;
-  background: rgba(102, 83, 37, 0.9);
-  box-shadow: 0 20px 42px rgba(89, 38, 15, 0.22);
-}
-
-.home-hero__seal img {
-  width: 100%;
-  border-radius: 0.8rem;
-}
-
 .home-story {
   display: grid;
   grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.05fr);
@@ -452,28 +436,32 @@ p {
   align-content: center;
 }
 
-.home-actions {
-  display: grid;
-  gap: 0.8rem;
-}
-
-.home-brand-card {
+.home-story__portrait {
+  margin: 0;
   display: grid;
   gap: 0.85rem;
-  padding: 1rem;
-  border-radius: var(--radius-lg);
-  background: linear-gradient(135deg, rgba(102, 83, 37, 0.94), rgba(89, 38, 15, 0.94));
-  color: #ffefd2;
-  box-shadow: 0 18px 38px rgba(89, 38, 15, 0.18);
 }
 
-.home-brand-card img {
-  width: 6rem;
-  border-radius: 0.8rem;
+.home-story__portrait img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: calc(var(--radius-xl) + 0.2rem);
+  aspect-ratio: 4 / 5;
+  box-shadow: var(--shadow);
 }
 
-.home-brand-card p {
-  color: rgba(255, 239, 210, 0.88);
+.home-story__portrait figcaption {
+  display: grid;
+  gap: 0.12rem;
+  padding: 0.95rem 1rem;
+  border-radius: 1rem;
+  background: rgba(255, 247, 233, 0.9);
+  border: 1px solid rgba(102, 83, 37, 0.12);
+}
+
+.home-story__portrait figcaption span {
+  color: var(--muted);
 }
 
 .home-action {
@@ -538,6 +526,10 @@ p {
 
 .home-spaces {
   padding-top: 0.8rem;
+}
+
+.home-events {
+  padding-top: 0.4rem;
 }
 
 .space-grid--compact {
@@ -1081,6 +1073,65 @@ p {
   color: var(--terracotta);
 }
 
+.contact-hours {
+  display: grid;
+  gap: 0.75rem;
+  padding-top: 0.2rem;
+}
+
+.contact-hours__title {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: var(--muted);
+}
+
+.hours-card {
+  display: grid;
+  gap: 0.85rem;
+  padding: 1rem;
+  border-radius: var(--radius-lg);
+  background: rgba(255, 247, 233, 0.9);
+  border: 1px solid rgba(102, 83, 37, 0.12);
+}
+
+.hours-card strong {
+  line-height: 1.2;
+}
+
+.hours-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: grid;
+  gap: 0.45rem;
+}
+
+.hours-list li {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  padding-bottom: 0.45rem;
+  border-bottom: 1px solid rgba(102, 83, 37, 0.1);
+}
+
+.hours-list li:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.hours-list li span {
+  color: var(--muted);
+}
+
+.hours-list li strong {
+  text-align: right;
+}
+
+.hours-list--compact li {
+  padding-bottom: 0.35rem;
+}
+
 .contact-map-card {
   margin-top: 1.25rem;
   overflow: hidden;
@@ -1170,6 +1221,11 @@ p {
 
 .site-footer__label {
   color: rgba(255, 239, 210, 0.8);
+}
+
+.site-footer__hours {
+  color: rgba(255, 239, 210, 0.7);
+  font-size: 0.92rem;
 }
 
 .site-footer__links {
@@ -2130,14 +2186,12 @@ p {
     background: rgba(255, 251, 246, 0.7);
   }
 
-  .home-hero__seal {
-    position: static;
-    width: 100%;
-    margin-top: 0.75rem;
-  }
-
   .home-story {
     gap: 1rem;
+  }
+
+  .home-story__portrait img {
+    aspect-ratio: 4 / 4.8;
   }
 
   .home-actions {
@@ -2153,6 +2207,15 @@ p {
     width: 100%;
     border-radius: 1rem;
     justify-content: flex-start;
+  }
+
+  .hours-list li {
+    flex-direction: column;
+    gap: 0.15rem;
+  }
+
+  .hours-list li strong {
+    text-align: left;
   }
 
   .space-grid--compact {

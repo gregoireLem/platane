@@ -12,6 +12,15 @@ export const site = {
     'https://www.google.com/maps/search/?api=1&query=32+chemin+des+bois,+07110+Montreal',
   mapsEmbedUrl:
     'https://www.google.com/maps?q=32+chemin+des+bois,+07110+Montreal&z=16&output=embed',
+  openingHours: [
+    { day: 'Lundi', hours: 'Fermé' },
+    { day: 'Mardi', hours: '7h - 22h' },
+    { day: 'Mercredi', hours: '7h - 22h' },
+    { day: 'Jeudi', hours: '7h - 22h' },
+    { day: 'Vendredi', hours: '7h - 23h' },
+    { day: 'Samedi', hours: '8h - 23h' },
+    { day: 'Dimanche', hours: '8h - 18h' }
+  ],
   spaces: [
     {
       title: 'Restaurant',
@@ -42,6 +51,12 @@ export const site = {
       title: 'Glaces',
       icon: 'ice-cream',
       description: 'Des glaces pour les pauses gourmandes et les beaux jours.'
+    },
+    {
+      title: 'Événements',
+      icon: 'spark',
+      description: 'Concerts, théâtre, culture, expositions et rendez-vous simples au village.'
     }
-  ]
+  ],
+  eventHighlights: ['Concerts', 'Théâtre', 'Culture', 'Expositions', 'Représentations', 'Rencontres']
 } as const;

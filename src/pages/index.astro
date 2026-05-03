@@ -16,12 +16,8 @@ import { site } from '../data/site';
           <p class="brand-ribbon__tagline">Bar . Restaurant . Salon de thé</p>
         </div>
       </div>
-      <p class="eyebrow">{site.label}</p>
       <h1>Un lieu de vie et de partage autour d’une cuisine locale et de saison.</h1>
-      <p class="lead">
-        Au Platane prend vie autour du restaurant, puis s’ouvre au salon de thé, au bar, aux
-        événements et à l’épicerie.
-      </p>
+      <p class="lead">Un lieu simple et vivant, entre restaurant, bar, salon de thé et petite épicerie de village.</p>
 
       <div class="button-row">
         <a class="button button--primary" href="#reservation">
@@ -53,50 +49,38 @@ import { site } from '../data/site';
         <strong>Terrasse sous le platane</strong>
         <span>Du déjeuner aux soirées d’été.</span>
       </figcaption>
-      <div class="home-hero__seal">
-        <img src="/brand/au-platane-logo-cream.png" alt="Au Platane" />
-      </div>
     </figure>
   </section>
 
   <section class="home-story section">
     <div class="home-story__copy" data-reveal>
       <p class="eyebrow">Le projet</p>
-      <h2>Un lieu simple, vivant, ancré dans le village.</h2>
-      <p>
-        L’idée est de faire revivre cette adresse comme un lieu de partage, autour d’une cuisine
-        locale et de saison, dans un esprit simple et chaleureux.
+      <h2>Un lieu simple, vivant et ouvert à tous.</h2>
+      <p class="lead">
+        Restaurant, bar, salon de thé, petite épicerie… Au Platane souhaite faire vivre un lieu chaleureux et convivial au cœur du village.
       </p>
       <p>
-        Le restaurant en est la base. Autour, le lieu vivra avec le salon de thé, le bar, des
-        événements et une épicerie.
+        Le projet est porté par Elisa & Flo, installés à Montréal et profondément attachés à la vie du village. Elisa y a ses racines et ses souvenirs d’enfance ; Flo y a trouvé un lieu de vie et un territoire qu’il a appris à aimer.
+      </p>
+      <p>
+        Ensemble, ils imaginent un endroit chaleureux où l’on peut aussi bien déjeuner, boire un verre, prendre un café ou simplement se retrouver.
+      </p>
+      <p>
+        Une cuisine de saison, des produits locaux, des événements simples et une atmosphère conviviale : ici, l’idée est surtout de faire vivre le village toute l’année.
       </p>
       <div class="button-row">
         <a class="button button--secondary" href="/menu">Voir le menu</a>
+        <a class="button button--secondary" href="#contact">Nous contacter</a>
       </div>
     </div>
 
-    <div class="home-actions" data-reveal>
-      <article class="home-brand-card">
-        <img src="/brand/au-platane-mark-olive.png" alt="" />
-        <p>Une identité de lieu chaleureuse, gourmande et artisanale, du déjeuner au salon de thé.</p>
-      </article>
-      <a class="home-action home-action--strong" href="/menu">
-        <span>Menu du moment</span>
-        <strong>Voir la carte</strong>
-        <Icon name="arrow-right" />
-      </a>
-      <a class="home-action" href={`tel:${site.phoneRaw}`}>
-        <span>Téléphone</span>
-        <strong>{site.phoneDisplay}</strong>
-        <Icon name="phone" />
-      </a>
-      <a class="home-action" href={site.mapsUrl} target="_blank" rel="noreferrer">
-        <span>Adresse</span>
-        <strong>Ouvrir Maps</strong>
-        <Icon name="map-pin" />
-      </a>
-    </div>
+    <figure class="home-story__portrait" data-reveal>
+      <img src="/images/elisa-flo.jpg" alt="Elisa et Flo, porteurs du projet Au Platane" loading="lazy" />
+      <figcaption>
+        <strong>Elisa & Flo</strong>
+        <span>Deux gérants attachés au village et à une hospitalité simple, locale et vivante.</span>
+      </figcaption>
+    </figure>
   </section>
 
   <section class="section home-spaces">
@@ -118,6 +102,22 @@ import { site } from '../data/site';
     </div>
   </section>
 
+  <section class="section home-events" id="evenements">
+    <div class="section-heading" data-reveal>
+      <p class="eyebrow">Événements</p>
+      <h2>Un lieu qui s’anime aussi autour de la culture.</h2>
+      <p class="lead">
+        Concerts, représentations, théâtre, expositions ou rendez-vous simples : Au Platane veut aussi faire vivre le village par ses moments partagés.
+      </p>
+    </div>
+
+    <div class="pill-list" data-reveal>
+      {site.eventHighlights.map((item) => (
+        <li>{item}</li>
+      ))}
+    </div>
+  </section>
+
   <section class="section reservation-section" id="reservation">
     <div class="reservation-panel" data-reveal>
       <div class="reservation-panel__copy">
@@ -127,6 +127,17 @@ import { site } from '../data/site';
           Envoyez votre demande avec la date, l’heure et le nombre de personnes. Le formulaire
           vérifie les places restantes et l’équipe confirme ensuite la réservation.
         </p>
+        <div class="hours-card">
+          <strong>Horaires d’ouverture</strong>
+          <ul class="hours-list">
+            {site.openingHours.map((item) => (
+              <li>
+                <span>{item.day}</span>
+                <strong>{item.hours}</strong>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
       <ReservationForm />
     </div>
@@ -169,6 +180,21 @@ import { site } from '../data/site';
               <Icon name="map-pin" />
               <span>Voir sur Maps</span>
             </a>
+          </div>
+
+          <div class="contact-hours">
+            <div class="contact-hours__title">
+              <Icon name="calendar" />
+              <span>Horaires</span>
+            </div>
+            <ul class="hours-list hours-list--compact">
+              {site.openingHours.map((item) => (
+                <li>
+                  <span>{item.day}</span>
+                  <strong>{item.hours}</strong>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </aside>
