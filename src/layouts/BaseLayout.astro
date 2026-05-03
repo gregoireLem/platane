@@ -1,9 +1,4 @@
 ---
-import '@fontsource/cormorant-garamond/600.css';
-import '@fontsource/cormorant-garamond/700.css';
-import '@fontsource/manrope/400.css';
-import '@fontsource/manrope/500.css';
-import '@fontsource/manrope/700.css';
 import { ClientRouter } from 'astro:transitions';
 import ScrollEffects from '../components/ScrollEffects.astro';
 import SiteFooter from '../components/SiteFooter.astro';
@@ -24,6 +19,12 @@ const { title, description } = Astro.props as {
     <meta name="description" content={description} />
     <title>{title ? `${title} | Au Platane` : 'Au Platane'}</title>
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Playfair+Display:wght@500;600;700&display=swap"
+      rel="stylesheet"
+    />
     <script is:inline>
       if ('scrollRestoration' in history) {
         history.scrollRestoration = 'manual';

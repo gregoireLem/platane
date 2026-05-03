@@ -314,6 +314,11 @@ const apiUrl = site.reservationApiUrl;
     };
 
     const initAdminPage = () => {
+      const adminPage = document.querySelector('.admin-page');
+      if (!(adminPage instanceof HTMLElement)) return;
+      if (adminPage.dataset.adminInitBound === 'true') return;
+      adminPage.dataset.adminInitBound = 'true';
+
       const tokenForm = document.querySelector('[data-admin-token-form]');
       const filtersForm = document.querySelector('[data-admin-filters]');
       const capacitiesNode = document.querySelector('[data-admin-capacities]');
@@ -1009,22 +1014,32 @@ const apiUrl = site.reservationApiUrl;
             headers: authHeaders()
           });
 
-          if (!response.ok) throw new Error('admin');
+          if (!response.ok) {
+            throw new Error(`admin:${response.status}`);
+          }
 
           state.reservations = await response.json();
-          await loadServiceAvailability();
-          applyClientFilters();
-          renderUpcomingServices();
-          renderSummary();
-          renderServiceFocus();
-          renderCalendar();
-          renderReservations();
+
+          try {
+            await loadServiceAvailability();
+            applyClientFilters();
+            renderUpcomingServices();
+            renderSummary();
+            renderServiceFocus();
+            renderCalendar();
+            renderReservations();
+          } catch (renderError) {
+            console.error('Admin reservations render error', renderError);
+            throw new Error('admin:render');
+          }
+
           setFeedback(
             reservationsFeedback,
             `${state.filteredReservations.length} reservation(s) affichee(s) sur ${state.reservations.length} chargee(s).`,
             'success'
           );
-        } catch (_error) {
+        } catch (error) {
+          console.error('Admin reservations load error', error);
           state.reservations = [];
           state.filteredReservations = [];
           state.availability = null;
@@ -1033,7 +1048,11 @@ const apiUrl = site.reservationApiUrl;
           renderServiceFocus();
           renderCalendar();
           renderReservations();
-          setFeedback(reservationsFeedback, 'Impossible de charger les reservations. Verifiez le token admin.', 'error');
+          setFeedback(
+            reservationsFeedback,
+            'Impossible de charger les reservations. Rechargez la page puis reenregistrez le token si besoin.',
+            'error'
+          );
         }
       };
 
