@@ -1,6 +1,6 @@
 export type MenuFormula = {
   name: string;
-  price: string;
+  price?: string;
   description: string;
 };
 
@@ -16,54 +16,36 @@ export type MenuSection = {
 };
 
 export const weeklyMenu = {
-  title: 'La carte',
-  period: 'Carte du moment',
-  updatedAt: '28 avril 2026',
-  intro: 'Une cuisine faite sur place, inspirée des saisons et des produits locaux.',
-  formulas: [] as MenuFormula[],
+  title: 'La cuisine du Platane',
+  period: 'L’ardoise du moment',
+  updatedAt: '12 mai 2026',
+  intro:
+    'Une cuisine simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
+  formulas: [
+    {
+      name: 'Le midi',
+      description:
+        'Une formule du jour pensée pour les habitants, artisans, travailleurs du secteur et visiteurs de passage. Entrée + plat + dessert, dans un esprit généreux, simple et fait maison.'
+    },
+    {
+      name: 'Le soir',
+      description:
+        'Une cuisine conviviale avec des assiettes à partager, quelques tapas, du bon vin et des produits du coin.'
+    }
+  ] as MenuFormula[],
   sections: [
     {
       title: 'Entrées',
       items: [
         {
-          name: 'Œuf mayo fermier',
-          price: '6,50 €',
-          description: 'Œuf fermier, mayonnaise du Platane'
+          name: 'Œuf mayonnaise fermier & pickles maison'
         },
         {
-          name: 'Croquette de bœuf bourguignonne',
-          price: '9 €',
-          description: 'Bœuf mijoté longuement, pané et croustillant, servi avec son jus acidulé'
+          name: 'Gaspacho de tomates anciennes, basilic & huile verte'
         },
         {
-          name: 'Tartare de truite',
-          price: '10 €',
-          description: 'Truite de Font Rome, garniture de saison'
-        },
-        {
-          name: 'Gaspacho tomate ancienne, fraise et basilic',
-          description:
-            'Soupe froide estivale, fraîche et parfumée, entre douceur fruitée et acidité légère, huile d’olive ardéchoise'
-        }
-      ]
-    },
-    {
-      title: 'Salades',
-      items: [
-        {
-          name: 'Poulet du Velay',
-          price: '17 €',
-          description: 'Poulet IGP, légumes de saison, vinaigrette du Platane'
-        },
-        {
-          name: 'Halloumi grillé',
-          price: '16,50 €',
-          description: 'Halloumi pané, légumes de saison, vinaigrette du Platane'
-        },
-        {
-          name: 'La raviole',
-          price: '16,50 €',
-          description: 'Ravioles de Romans, légumes de saison, jus de saison'
+          name: 'Escargots des Frères Royé en persillade',
+          description: '6 ou 12 escargots'
         }
       ]
     },
@@ -71,24 +53,23 @@ export const weeklyMenu = {
       title: 'Plats',
       items: [
         {
-          name: 'Burger du Platane',
-          price: '18 €',
-          description: 'Recette du moment, garniture de saison, pain artisanal du chef'
+          name: 'Le Burger du Platane',
+          description:
+            'Steak haché, tomme de vache de Sanhiac « Le Piqueberle », sauce maison, oignons confits & pain artisanal du chef'
         },
         {
-          name: 'Bœuf mijoté au vin rouge',
-          price: '23 €',
-          description: 'Bœuf mijoté au vin rouge, cuisson lente, légumes et purée de saison'
+          name: 'Burger des Bois',
+          description:
+            'Champignons MYCA Ardèche rôtis, garniture de saison, tomme de vache de Sanhiac « Le Piqueberle », sauce maison & pain artisanal du chef'
         },
         {
-          name: 'Poitrine de porc confite',
-          price: '21 €',
-          description: 'Porc confit longuement, garniture de saison'
+          name: 'Tartare de truite',
+          description: 'Truite fraîche assaisonnée, herbes, condiments & fraîcheur du moment'
         },
         {
-          name: 'Burger des bois',
-          price: '18 €',
-          description: 'Champignon MYCA Ardèche rôti, garniture de saison, fromage, sauce, pain artisanal du chef'
+          name: 'Salade de chèvre chaud',
+          description:
+            'Chèvre de « Le Piqueberle », miel, noix torréfiées, crudités de saison & vinaigrette aux herbes'
         }
       ]
     },
@@ -96,73 +77,51 @@ export const weeklyMenu = {
       title: 'Desserts',
       items: [
         {
-          name: 'Tiramisu du chef',
-          price: '6,50 €',
-          description: 'Biscuit maison, crème mascarpone'
+          name: 'Faisselle & crème de marrons d’Ardèche'
         },
         {
-          name: 'Moelleux à la châtaigne',
-          price: '5 €',
-          description: 'Gâteau de Sylvie Biscuit & cie, crème anglaise'
+          name: 'Pavlova aux fruits rouges'
         },
         {
-          name: 'Faisselle, crème de marron',
-          price: '4 €',
-          description: 'Faisselle artisanale, crème de marron d’Ardèche'
+          name: 'Moelleux à la châtaigne'
         },
         {
-          name: 'Choux façon profiterole au chocolat',
-          price: '7,50 €',
-          description: 'Choux garnis, glace, sauce chocolat chaud'
-        },
-        {
-          name: 'Glaces & sorbets',
-          price: '3,50 €',
-          description: 'Sélection de parfums'
+          name: 'Glaces & sorbets artisanaux'
         }
       ]
     },
     {
-      title: 'À partager le soir',
+      title: 'Le soir à partager',
       items: [
         {
-          name: 'Les frites du bistrot',
-          price: '3,50 €'
+          name: 'Les frites du bistrot & mayonnaise fumée'
         },
         {
-          name: 'Cromesqui de chèvre “Le Piqueberle”',
-          price: '6,50 €'
+          name: 'Cromesqui de chèvre « Le Piqueberle »'
         },
         {
-          name: 'Planche des salaisons',
-          price: '16 €'
+          name: 'Planche des salaisons'
         },
         {
-          name: 'Fromage des fermes voisines',
-          price: '15 €'
+          name: 'Fromages des fermes voisines'
         },
         {
-          name: 'Planche du pays',
-          price: '17,50 €'
+          name: 'Planche du pays'
         },
         {
-          name: 'Camembert rôti du terroir',
-          price: '10 €'
+          name: 'Camembert rôti'
         },
         {
-          name: 'Feta rôtie',
-          price: '8 €',
-          description: 'Poivron confit, sauce tomate'
+          name: 'Feta rôtie, poivron confit & sauce tomate'
         },
         {
-          name: 'Tartinade du moment',
-          price: '6 €'
+          name: 'Tartinade du moment'
         }
       ]
     }
   ] satisfies MenuSection[],
   notes: [
-    'La carte évolue selon les saisons et les produits disponibles.',
-    'Les plats sont faits sur place avec une attention particulière aux produits locaux.'
+    'La carte fonctionne comme une ardoise : courte, vivante et amenée à évoluer régulièrement selon les arrivages, les producteurs et les envies du moment.',
+    'Le midi, une formule du jour ; le soir, des assiettes à partager, quelques tapas, du bon vin et des produits du coin.'
   ]
 } as const;
