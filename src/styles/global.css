@@ -270,9 +270,9 @@ p {
 .site-header__social {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
   justify-content: center;
-  min-height: 2.2rem;
+  width: 2.7rem;
+  height: 2.7rem;
   border-radius: 999px;
   border: 1px solid rgba(102, 83, 37, 0.14);
   background: rgba(255, 248, 236, 0.92);
@@ -280,14 +280,16 @@ p {
   box-shadow: 0 12px 24px rgba(89, 38, 15, 0.08);
   flex-shrink: 0;
   transition: transform 180ms ease, background-color 180ms ease, color 180ms ease;
-  padding: 0.35rem 0.8rem;
-  font-size: 0.84rem;
-  font-weight: 700;
 }
 
 .site-header__social:hover {
   transform: translateY(-1px);
   color: var(--text);
+}
+
+.site-header__social .icon {
+  width: 1.15rem;
+  height: 1.15rem;
 }
 
 .hero {

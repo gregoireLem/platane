@@ -3,7 +3,7 @@ export const site = {
   label: 'Lieu de vie en Ardèche',
   description: 'Un lieu de vie et de partage autour d’une cuisine locale et de saison.',
   email: 'contact@auplatane.com',
-  instagramUrl: 'https://www.instagram.com/auplatane/',
+  instagramUrl: 'https://www.instagram.com/auplatane_ardeche/',
   phoneDisplay: '06 89 89 06 50',
   phoneRaw: '0689890650',
   reservationApiUrl: import.meta.env.PUBLIC_RESERVATION_API_URL || 'http://127.0.0.1:8787',
