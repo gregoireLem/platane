@@ -3,6 +3,7 @@ export const site = {
   label: 'Lieu de vie en Ardèche',
   description: 'Un lieu de vie et de partage autour d’une cuisine locale et de saison.',
   email: 'contact@auplatane.com',
+  instagramUrl: 'https://www.instagram.com/auplatane/',
   phoneDisplay: '06 89 89 06 50',
   phoneRaw: '0689890650',
   reservationApiUrl: import.meta.env.PUBLIC_RESERVATION_API_URL || 'http://127.0.0.1:8787',
@@ -14,12 +15,12 @@ export const site = {
     'https://www.google.com/maps?q=32+chemin+des+bois,+07110+Montreal&z=16&output=embed',
   openingHours: [
     { day: 'Lundi', hours: 'Fermé' },
-    { day: 'Mardi', hours: '7h - 22h' },
-    { day: 'Mercredi', hours: '7h - 22h' },
-    { day: 'Jeudi', hours: '7h - 22h' },
-    { day: 'Vendredi', hours: '7h - 23h' },
-    { day: 'Samedi', hours: '8h - 23h' },
-    { day: 'Dimanche', hours: '8h - 18h' }
+    { day: 'Mardi', hours: '8h30 - 22h' },
+    { day: 'Mercredi', hours: '8h30 - 22h' },
+    { day: 'Jeudi', hours: '8h30 - 22h' },
+    { day: 'Vendredi', hours: '8h30 - 23h (hors événement)' },
+    { day: 'Samedi', hours: '8h30 - 23h (hors événement)' },
+    { day: 'Dimanche', hours: '8h30 - 18h30' }
   ],
   spaces: [
     {

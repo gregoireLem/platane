@@ -6,15 +6,19 @@ import { site } from '../data/site';
 <footer class="site-footer">
   <div class="site-footer__inner">
     <div class="site-footer__brand">
-      <img class="site-footer__logo" src="/brand/au-platane-logo-ochre.png" alt="Au Platane" />
+      <img class="site-footer__logo" src="/brand/au-platane-logo-cream.png" alt="Au Platane" />
       <p class="site-footer__label">{site.label}</p>
-      <p class="site-footer__hours">Mar - Jeu 7h - 22h • Ven - Sam jusqu’à 23h • Dim 8h - 18h</p>
+      <p class="site-footer__hours">Mar - Jeu 8h30 - 22h • Ven - Sam 8h30 - 23h • Dim 8h30 - 18h30</p>
     </div>
 
     <div class="site-footer__links">
       <a href={`mailto:${site.email}`}>
         <Icon name="envelope" />
         {site.email}
+      </a>
+      <a href={site.instagramUrl} target="_blank" rel="noreferrer">
+        <Icon name="instagram" />
+        Instagram
       </a>
       <a href={`tel:${site.phoneRaw}`}>
         <Icon name="phone" />

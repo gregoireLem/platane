@@ -28,11 +28,35 @@ import { menuSourceLabel } from '../data/menu-source';
   </section>
 
   <section class="section">
+    <div class="menu-ardoise-heading" data-reveal>
+      <div>
+        <p class="eyebrow">L’ardoise du moment</p>
+        <h2>Une carte courte, vivante et pensée au rythme du lieu.</h2>
+      </div>
+
+      <div class="menu-ardoise-heading__chips">
+        <span>Le midi : formule du jour</span>
+        <span>Le soir : assiettes à partager</span>
+        <span>Suggestions du chef selon les arrivages</span>
+      </div>
+    </div>
+
     <div class="menu-sheet" data-reveal>
+      <div class="menu-sheet__ardoise">
+        <div>
+          <p class="eyebrow">L’ardoise du moment</p>
+          <h2>Une carte courte, vivante et pensée pour évoluer.</h2>
+        </div>
+        <p>
+          Entrées, plats et desserts changent au rythme des arrivages. Le midi, une formule du jour ;
+          le soir, des assiettes à partager et des suggestions selon l’humeur de la cuisine.
+        </p>
+      </div>
+
       <div class:list={['menu-sheet__top', !weeklyMenu.formulas.length && 'menu-sheet__top--notes-only']}>
         {weeklyMenu.formulas.length > 0 && (
-          <div>
-            <p class="eyebrow">Formules</p>
+          <div class="menu-sheet__story">
+            <p class="eyebrow">Le rythme du Platane</p>
             <div class="menu-formulas" data-menu-formulas>
               {weeklyMenu.formulas.map((formula) => (
                 <article class="menu-formula">
@@ -46,7 +70,7 @@ import { menuSourceLabel } from '../data/menu-source';
         )}
 
         <div class="menu-sheet__notes">
-          <p class="eyebrow">Infos</p>
+          <p class="eyebrow">Esprit de la carte</p>
           <ul class="notes-list" data-menu-notes>
             {weeklyMenu.notes.map((note) => (
               <li>{note}</li>
@@ -77,6 +101,10 @@ import { menuSourceLabel } from '../data/menu-source';
       </div>
 
       <div class="menu-sheet__signature">
+        <div class="menu-sheet__signature-note">
+          <p class="eyebrow">Au Platane</p>
+          <p>Une carte pensée pour le site, mais aussi comme une ardoise simple à faire vivre au quotidien.</p>
+        </div>
         <img src="/brand/au-platane-logo-ochre.png" alt="Au Platane" />
       </div>
     </div>
