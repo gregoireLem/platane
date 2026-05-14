@@ -1251,9 +1251,9 @@ p {
 }
 
 .site-footer__logo {
-  width: min(100%, 22rem);
+  width: min(100%, 11.5rem);
   display: block;
-  border-radius: 0;
+  border-radius: 0.5rem;
   box-shadow: none;
 }
 
@@ -2354,7 +2354,7 @@ p {
   }
 
   .site-footer__logo {
-    width: 14rem;
+    width: 10rem;
   }
 
   .admin-brand-bar {
