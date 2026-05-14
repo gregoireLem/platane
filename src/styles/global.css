@@ -1,12 +1,12 @@
 :root {
   color-scheme: light;
-  --bg: #fff7ea;
+  --bg: #ffefd2;
   --bg-soft: #ffefd2;
   --surface: rgba(255, 239, 210, 0.72);
   --surface-strong: #fff6e6;
   --text: #59260f;
   --muted: #665325;
-  --sage: #7a6731;
+  --sage: #665325;
   --sage-deep: #665325;
   --terracotta: #9b621e;
   --terracotta-deep: #59260f;
@@ -38,8 +38,8 @@ body {
   color: var(--text);
   background:
     radial-gradient(circle at top right, rgba(155, 98, 30, 0.08), transparent 24rem),
-    radial-gradient(circle at top left, rgba(102, 83, 37, 0.08), transparent 18rem),
-    linear-gradient(180deg, #fff8ed 0%, #fff1d8 100%);
+    radial-gradient(circle at top left, rgba(102, 83, 37, 0.07), transparent 18rem),
+    linear-gradient(180deg, #ffefd2 0%, #fff4df 100%);
   min-height: 100vh;
 }
 
@@ -187,7 +187,7 @@ p {
 .brand {
   display: inline-flex;
   align-items: center;
-  gap: 0.95rem;
+  flex-shrink: 0;
   line-height: 1.1;
 }
 
@@ -200,10 +200,10 @@ p {
 }
 
 .brand__logo {
-  width: clamp(9rem, 17vw, 12rem);
-  border-radius: 0.6rem;
+  width: clamp(7rem, 13vw, 9.5rem);
   display: block;
-  box-shadow: 0 10px 30px rgba(89, 38, 15, 0.12);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .brand__meta {
@@ -292,6 +292,36 @@ p {
   height: 1.15rem;
 }
 
+.site-header__social--instagram,
+.site-footer__instagram,
+.contact-list__instagram {
+  background: linear-gradient(135deg, #f58529 0%, #dd2a7b 48%, #8134af 100%);
+  color: #fff !important;
+  border: none;
+}
+
+.site-header__social--instagram:hover,
+.site-footer__instagram:hover,
+.contact-list__instagram:hover {
+  color: #fff;
+}
+
+.site-footer__instagram,
+.contact-list__instagram {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.55rem 0.9rem;
+  border-radius: 999px;
+  box-shadow: 0 10px 22px rgba(89, 38, 15, 0.12);
+}
+
+.site-header__social--instagram svg,
+.site-footer__instagram svg,
+.contact-list__instagram svg {
+  stroke: currentColor;
+}
+
 .hero {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -369,38 +399,6 @@ p {
   gap: 1rem;
 }
 
-.brand-ribbon {
-  display: inline-grid;
-  grid-template-columns: auto 1fr;
-  gap: 0.9rem;
-  align-items: center;
-  padding: 0.75rem 0.9rem;
-  border: 1px solid rgba(102, 83, 37, 0.14);
-  border-radius: 1rem;
-  background: rgba(255, 247, 233, 0.9);
-  width: fit-content;
-  box-shadow: 0 10px 26px rgba(89, 38, 15, 0.08);
-}
-
-.brand-ribbon__mark {
-  width: 4rem;
-  border-radius: 0.7rem;
-}
-
-.brand-ribbon__copy {
-  display: grid;
-  gap: 0.12rem;
-}
-
-.brand-ribbon__copy .eyebrow {
-  margin: 0;
-}
-
-.brand-ribbon__tagline {
-  color: var(--terracotta-deep);
-  font-size: 0.92rem;
-}
-
 .home-hero__tags {
   display: flex;
   flex-wrap: wrap;
@@ -471,7 +469,7 @@ p {
 .home-story__copy {
   display: grid;
   gap: 1rem;
-  align-content: center;
+  align-content: start;
 }
 
 .home-story__portrait {
@@ -1253,10 +1251,10 @@ p {
 }
 
 .site-footer__logo {
-  width: min(100%, 18rem);
-  border-radius: 0.75rem;
+  width: min(100%, 22rem);
   display: block;
-  box-shadow: 0 12px 30px rgba(255, 239, 210, 0.08);
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .site-footer__label {
@@ -1271,6 +1269,7 @@ p {
 .site-footer__links {
   display: flex;
   flex-wrap: wrap;
+  justify-content: flex-end;
   gap: 1rem;
 }
 
@@ -1279,6 +1278,7 @@ p {
   align-items: center;
   gap: 0.65rem;
   color: #ffefd2;
+  white-space: nowrap;
 }
 
 .menu-hero {
@@ -1320,7 +1320,8 @@ p {
 
 .menu-page__brand-chip img {
   width: 3rem;
-  border-radius: 999px;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .menu-page__brand-chip span {
@@ -1344,22 +1345,10 @@ p {
   color: var(--text);
 }
 
-.menu-ardoise-heading {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(18rem, 0.9fr);
-  gap: 1.5rem;
-  align-items: end;
-  margin-bottom: 1.5rem;
-}
-
-.menu-ardoise-heading h2 {
-  max-width: 18ch;
-}
-
 .menu-ardoise-heading__chips {
   display: flex;
   flex-wrap: wrap;
-  justify-content: flex-end;
+  justify-content: flex-start;
   gap: 0.75rem;
 }
 
@@ -1412,11 +1401,6 @@ p {
 
 .menu-sheet__ardoise h2 {
   max-width: 16ch;
-}
-
-.menu-sheet__ardoise p:last-child {
-  color: var(--muted);
-  max-width: 32rem;
 }
 
 .menu-sheet__top {
@@ -1592,7 +1576,8 @@ p {
 
 .admin-brand-bar img {
   width: 4.2rem;
-  border-radius: 0.8rem;
+  border-radius: 0;
+  box-shadow: none;
 }
 
 .admin-brand-bar .eyebrow {
@@ -2192,14 +2177,15 @@ p {
   }
 
   .site-header__inner {
-    flex-direction: row;
-    align-items: center;
+    flex-wrap: wrap;
+    align-items: flex-start;
   }
 
   .site-header__inner {
     gap: 0.65rem;
-    padding: 0.5rem;
+    padding: 0.5rem 3.35rem 0.55rem 0.5rem;
     border-radius: 1.1rem;
+    position: relative;
   }
 
   .brand__eyebrow {
@@ -2207,8 +2193,7 @@ p {
   }
 
   .brand__logo {
-    width: 8.2rem;
-    border-radius: 0.5rem;
+    width: 7.7rem;
   }
 
   .site-header__social {
@@ -2216,18 +2201,27 @@ p {
     height: 2.35rem;
   }
 
+  .site-header__socials {
+    position: absolute;
+    top: 0.55rem;
+    right: 0.55rem;
+    width: auto;
+  }
+
   .brand__tagline {
     display: none;
   }
 
   .nav {
-    margin-left: auto;
+    width: 100%;
+    max-width: 100%;
+    margin-left: 0;
     flex-direction: row;
     align-items: center;
-    flex-wrap: nowrap;
+    flex-wrap: wrap;
     gap: 0.2rem;
     font-size: 0.76rem;
-    white-space: nowrap;
+    white-space: normal;
   }
 
   .nav a {
@@ -2237,8 +2231,9 @@ p {
   }
 
   .site-header__nav-group {
-    margin-left: auto;
-    justify-items: end;
+    width: 100%;
+    margin-left: 0;
+    display: block;
   }
 
   .site-header.is-compact {
@@ -2246,13 +2241,13 @@ p {
   }
 
   .site-header.is-compact .site-header__inner {
-    padding: 0.42rem;
+    padding: 0.42rem 3.2rem 0.5rem 0.42rem;
     border-radius: 1rem;
     gap: 0.6rem;
   }
 
   .site-header.is-compact .brand__logo {
-    width: 7.4rem;
+    width: 7.1rem;
   }
 
   .site-header.is-compact .nav {
@@ -2271,15 +2266,6 @@ p {
 
   .home-hero__copy {
     gap: 0.85rem;
-  }
-
-  .brand-ribbon {
-    width: 100%;
-    grid-template-columns: 3.5rem 1fr;
-  }
-
-  .brand-ribbon__mark {
-    width: 3.5rem;
   }
 
   h1 {
@@ -2368,7 +2354,7 @@ p {
   }
 
   .site-footer__logo {
-    width: 12rem;
+    width: 14rem;
   }
 
   .admin-brand-bar {

@@ -9,13 +9,6 @@ import { site } from '../data/site';
 <BaseLayout title="Lieu de vie" description={site.description}>
   <section class="home-hero section">
     <div class="home-hero__copy" data-reveal>
-      <div class="brand-ribbon">
-        <img class="brand-ribbon__mark" src="/brand/au-platane-mark-olive.png" alt="" />
-        <div class="brand-ribbon__copy">
-          <p class="eyebrow">{site.label}</p>
-          <p class="brand-ribbon__tagline">Bar . Restaurant . Salon de thé</p>
-        </div>
-      </div>
       <h1>Un lieu de vie et de partage autour d’une cuisine locale et de saison.</h1>
       <p class="lead">Un lieu simple et vivant, entre restaurant, bar, salon de thé et petite épicerie de village.</p>
 
@@ -166,7 +159,7 @@ import { site } from '../data/site';
             <span>{site.phoneDisplay}</span>
           </a>
 
-          <a href={site.instagramUrl} target="_blank" rel="noreferrer">
+          <a class="contact-list__instagram" href={site.instagramUrl} target="_blank" rel="noreferrer">
             <Icon name="instagram" />
             <span>Instagram</span>
           </a>
