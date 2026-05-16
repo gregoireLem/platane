@@ -472,6 +472,20 @@ const apiUrl = site.reservationApiUrl;
         renderGallery(state.content.gallery);
       };
 
+      const loadContentOrWarn = async () => {
+        try {
+          await loadContent();
+          return true;
+        } catch (_error) {
+          setFeedback(
+            loginFeedback,
+            'Connecté, mais le backend contenu n’est pas encore déployé. Redéployez Railway sur le dernier commit.',
+            'warning'
+          );
+          return false;
+        }
+      };
+
       const editorialPayload = () => ({
         menu: {
           title: inputValue(menuForm, 'title').trim(),
@@ -500,12 +514,16 @@ const apiUrl = site.reservationApiUrl;
               password: passwordInput.value
             })
           });
-          if (!response.ok) throw new Error('login');
+          if (!response.ok) {
+            setAuthenticated(false);
+            setFeedback(loginFeedback, 'Identifiant ou mot de passe incorrect.', 'error');
+            return;
+          }
           setAuthenticated(true, usernameInput.value.trim());
-          await loadContent();
+          await loadContentOrWarn();
         } catch (_error) {
           setAuthenticated(false);
-          setFeedback(loginFeedback, 'Identifiant ou mot de passe incorrect.', 'error');
+          setFeedback(loginFeedback, 'Impossible de joindre le backend admin.', 'error');
         }
       });
 
@@ -638,7 +656,7 @@ const apiUrl = site.reservationApiUrl;
           if (!response.ok) throw new Error('session');
           const session = await response.json();
           setAuthenticated(true, session.username);
-          await loadContent();
+          await loadContentOrWarn();
         })
         .catch(() => {
           setFeedback(loginFeedback, 'Connectez-vous pour modifier les contenus.', 'warning');
