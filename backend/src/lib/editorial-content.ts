@@ -43,37 +43,96 @@ export const defaultEditorialContent: EditorialContent = {
   menu: {
     title: 'La cuisine du Platane',
     period: 'L’ardoise du moment',
-    updatedAt: '',
+    updatedAt: '12 mai 2026',
     intro:
       'Une cuisine simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
     formulas: [
       {
         name: 'Le midi',
         price: '',
-        description: 'Une formule du jour généreuse, simple et faite maison.'
+        description:
+          'Une formule du jour pensée pour les habitants, artisans, travailleurs du secteur et visiteurs de passage. Entrée + plat + dessert, dans un esprit généreux, simple et fait maison.'
       },
       {
         name: 'Le soir',
         price: '',
-        description: 'Des assiettes à partager, du bon vin et des produits du coin.'
+        description:
+          'Une cuisine conviviale avec des assiettes à partager, quelques tapas, du bon vin et des produits du coin.'
       }
     ],
     sections: [
       {
         title: 'Entrées',
-        items: [{ name: 'Œuf mayonnaise fermier & pickles maison', price: '', description: '' }]
+        items: [
+          { name: 'Œuf mayonnaise fermier & pickles maison', price: '', description: '' },
+          { name: 'Gaspacho de tomates anciennes, basilic & huile verte', price: '', description: '' },
+          { name: 'Escargots des Frères Royé en persillade', price: '', description: '6 ou 12 escargots' },
+          {
+            name: 'Croquette de bœuf bourguignonne',
+            price: '',
+            description: 'Bœuf mijoté longuement, pané et croustillant, servi avec sauce blanche aux herbes'
+          }
+        ]
       },
       {
         title: 'Plats',
-        items: [{ name: 'Le Burger du Platane', price: '', description: 'Sauce maison, tomme locale & pain artisanal.' }]
+        items: [
+          {
+            name: 'Le Burger du Platane',
+            price: '',
+            description:
+              'Steak haché, tomme de vache de Sanhiac « Le Piqueberle », sauce maison, oignons confits & pain artisanal du chef'
+          },
+          {
+            name: 'Burger des Bois',
+            price: '',
+            description:
+              'Champignons MYCA Ardèche rôtis, garniture de saison, tomme de vache de Sanhiac « Le Piqueberle », sauce maison & pain artisanal du chef'
+          },
+          {
+            name: 'Tartare de truite',
+            price: '',
+            description: 'Truite fraîche assaisonnée, herbes, condiments & fraîcheur du moment'
+          },
+          {
+            name: 'Salade de chèvre chaud',
+            price: '',
+            description:
+              'Chèvre de « Le Piqueberle », miel, noix torréfiées, crudités de saison & vinaigrette aux herbes'
+          },
+          {
+            name: 'Bœuf mijoté au vin rouge',
+            price: '',
+            description: 'Bœuf mijoté au vin rouge, cuisson lente, légumes et purée de saison'
+          }
+        ]
       },
       {
         title: 'Desserts',
-        items: [{ name: 'Moelleux à la châtaigne', price: '', description: '' }]
+        items: [
+          { name: 'Faisselle & crème de marrons d’Ardèche', price: '', description: '' },
+          { name: 'Pavlova aux fruits rouges', price: '', description: '' },
+          { name: 'Moelleux à la châtaigne', price: '', description: '' },
+          { name: 'Glaces & sorbets artisanaux', price: '', description: '' }
+        ]
+      },
+      {
+        title: 'Le soir à partager',
+        items: [
+          { name: 'Les frites du bistrot & mayonnaise fumée', price: '', description: '' },
+          { name: 'Cromesqui de chèvre « Le Piqueberle »', price: '', description: '' },
+          { name: 'Planche des salaisons', price: '', description: '' },
+          { name: 'Fromages des fermes voisines', price: '', description: '' },
+          { name: 'Planche du pays', price: '', description: '' },
+          { name: 'Camembert rôti', price: '', description: '' },
+          { name: 'Feta rôtie, poivron confit & sauce tomate', price: '', description: '' },
+          { name: 'Tartinade du moment', price: '', description: '' }
+        ]
       }
     ],
     notes: [
-      'La carte fonctionne comme une ardoise : courte, vivante et amenée à évoluer selon les arrivages.'
+      'La carte fonctionne comme une ardoise : courte, vivante et amenée à évoluer régulièrement selon les arrivages, les producteurs et les envies du moment.',
+      'Le midi, une formule du jour ; le soir, des assiettes à partager, quelques tapas, du bon vin et des produits du coin.'
     ]
   },
   suggestions: {

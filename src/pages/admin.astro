@@ -66,7 +66,7 @@ const apiUrl = site.reservationApiUrl;
       <section class="admin-card">
         <div class="admin-card__header">
           <h2>Modifier la carte et les menus</h2>
-          <p>Une saisie simple, pensée comme une ardoise. Séparez les colonnes avec le caractère <strong>|</strong>.</p>
+          <p>Une saisie simple, pensée comme une ardoise : un titre de rubrique avec <strong>:</strong>, puis un plat par ligne.</p>
         </div>
 
         <form class="admin-editor-form" data-menu-form>
@@ -92,11 +92,11 @@ const apiUrl = site.reservationApiUrl;
           </div>
           <div class="field">
             <label for="menu-formulas">Formules</label>
-            <textarea id="menu-formulas" name="formulas" rows="5" placeholder="Le midi | 19€ | Entrée + plat + dessert"></textarea>
+            <textarea id="menu-formulas" name="formulas" rows="5" placeholder="Le midi : Formule du jour maison&#10;Le soir : Assiettes à partager"></textarea>
           </div>
           <div class="field">
             <label for="menu-sections">Carte</label>
-            <textarea id="menu-sections" name="sections" rows="14" placeholder={`Entrées\nŒuf mayonnaise | 7€ | Pickles maison\n\nPlats\nBurger du Platane | 18€ | Sauce maison, tomme locale`}></textarea>
+            <textarea id="menu-sections" name="sections" rows="16" placeholder={`Entrées:\nŒuf mayonnaise fermier\nGaspacho de tomates anciennes\n\nPlats:\nLe Burger du Platane\nBœuf mijoté au vin rouge`}></textarea>
           </div>
           <div class="field">
             <label for="menu-notes">Notes</label>
@@ -302,8 +302,8 @@ const apiUrl = site.reservationApiUrl;
       const setAuthenticated = (isAuthenticated, username = '') => {
         state.isAuthenticated = isAuthenticated;
         dashboard.hidden = !isAuthenticated;
-        usernameInput.disabled = isAuthenticated;
-        loginButton.disabled = isAuthenticated;
+        usernameInput.disabled = false;
+        loginButton.disabled = false;
         logoutButton.disabled = !isAuthenticated;
         passwordInput.value = '';
         viewPanels.forEach((panel) => {
@@ -342,34 +342,55 @@ const apiUrl = site.reservationApiUrl;
       };
 
       const formulasToText = (items) =>
-        (items ?? []).map((item) => [item.name, item.price, item.description].filter(Boolean).join(' | ')).join('\n');
+        (items ?? []).map((item) => `${item.name}${item.description ? ` : ${item.description}` : ''}`).join('\n');
 
       const sectionsToText = (sections) =>
         (sections ?? [])
-          .map((section) => `${section.title}\n${section.items.map((item) => [item.name, item.price, item.description].filter(Boolean).join(' | ')).join('\n')}`)
+          .map((section) => `${section.title}:\n${section.items.map((item) => item.description ? `${item.name} - ${item.description}` : item.name).join('\n')}`)
           .join('\n\n');
 
       const parseFormulas = (value) =>
         splitLines(value).map((line) => {
-          const [name = '', price = '', description = ''] = line.split('|').map(lineValue);
+          const parts = line.includes('|') ? line.split('|') : line.split(':');
+          const [name = '', priceOrDescription = '', descriptionValue = ''] = parts.map(lineValue);
+          const description = descriptionValue || priceOrDescription;
+          const price = descriptionValue ? priceOrDescription : '';
           return { name, price, description };
         }).filter((item) => item.name);
 
-      const parseSections = (value) =>
-        value
-          .split(/\n\s*\n/g)
-          .map((block) => splitLines(block))
-          .filter((lines) => lines.length)
-          .map(([title, ...items]) => ({
-            title,
-            items: items
-              .map((line) => {
-                const [name = '', price = '', description = ''] = line.split('|').map(lineValue);
-                return { name, price, description };
-              })
-              .filter((item) => item.name)
-          }))
-          .filter((section) => section.title && section.items.length);
+      const parseMenuLine = (line) => {
+        if (line.includes('|')) {
+          const [name = '', price = '', description = ''] = line.split('|').map(lineValue);
+          return { name, price, description };
+        }
+
+        const [name = '', description = ''] = line.split(/\s+-\s+/, 2).map(lineValue);
+        return { name, price: '', description };
+      };
+
+      const parseSections = (value) => {
+        const sections = [];
+        let current = null;
+
+        splitLines(value).forEach((line) => {
+          if (line.endsWith(':')) {
+            current = { title: line.slice(0, -1).trim(), items: [] };
+            sections.push(current);
+            return;
+          }
+
+          if (!current) {
+            current = { title: line, items: [] };
+            sections.push(current);
+            return;
+          }
+
+          const item = parseMenuLine(line);
+          if (item.name) current.items.push(item);
+        });
+
+        return sections.filter((section) => section.title && section.items.length);
+      };
 
       const readImageAsDataUrl = (input) =>
         new Promise((resolve, reject) => {
