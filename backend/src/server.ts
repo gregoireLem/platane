@@ -4,6 +4,7 @@ import { ZodError } from 'zod';
 import { config } from './config.js';
 import { prisma } from './db.js';
 import { adminRouter } from './routes/admin.js';
+import { contentRouter } from './routes/content.js';
 import { reservationsRouter } from './routes/reservations.js';
 
 const app = express();
@@ -26,13 +27,14 @@ app.use(
     credentials: true
   })
 );
-app.use(express.json());
+app.use(express.json({ limit: '6mb' }));
 
 app.get('/health', (_req, res) => {
   res.json({ ok: true });
 });
 
 app.use('/reservations', reservationsRouter);
+app.use('/content', contentRouter);
 app.use('/admin', adminRouter);
 
 app.use((error: unknown, _req: express.Request, res: express.Response, _next: express.NextFunction) => {

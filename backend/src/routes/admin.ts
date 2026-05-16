@@ -5,6 +5,12 @@ import { z } from 'zod';
 import { config } from '../config.js';
 import { prisma } from '../db.js';
 import {
+  defaultEditorialContent,
+  editorialContentKey,
+  editorialContentSchema,
+  normalizeEditorialContent
+} from '../lib/editorial-content.js';
+import {
   getServiceAvailability,
   getDefaultCapacity,
   getDefaultHours,
@@ -19,6 +25,37 @@ const sessionMaxAgeMs = 12 * 60 * 60 * 1000;
 const loginSchema = z.object({
   username: z.string().trim().min(1),
   password: z.string().min(1)
+});
+
+const imageUrlSchema = z
+  .string()
+  .trim()
+  .max(2_500_000)
+  .refine((value) => !value || value.startsWith('data:image/') || /^https?:\/\//.test(value), {
+    message: 'Image invalide'
+  })
+  .optional()
+  .or(z.literal(''));
+
+const eventSchema = z.object({
+  title: z.string().trim().min(2).max(160),
+  eventDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  eventTime: z.string().trim().max(20).optional().or(z.literal('')),
+  summary: z.string().trim().min(2).max(500),
+  details: z.string().trim().max(1500).optional().or(z.literal('')),
+  imageUrl: imageUrlSchema,
+  ctaLabel: z.string().trim().max(80).optional().or(z.literal('')),
+  ctaUrl: z.string().trim().max(500).optional().or(z.literal('')),
+  isPublished: z.boolean().optional().default(true)
+});
+
+const galleryPhotoSchema = z.object({
+  title: z.string().trim().min(2).max(160),
+  category: z.string().trim().min(2).max(80),
+  alt: z.string().trim().max(240).optional().or(z.literal('')),
+  imageUrl: imageUrlSchema.refine((value) => !!value, { message: 'Image requise' }),
+  sortOrder: z.coerce.number().int().min(0).max(9999).optional().default(0),
+  isPublished: z.boolean().optional().default(true)
 });
 
 const listReservationsSchema = z.object({
@@ -170,6 +207,158 @@ adminRouter.use((req, res, next) => {
   }
 
   next();
+});
+
+const parseEventDate = (value: string) => new Date(`${value}T12:00:00.000Z`);
+
+adminRouter.get('/content', async (_req, res, next) => {
+  try {
+    const [content, events, gallery] = await Promise.all([
+      prisma.siteContent.findUnique({ where: { key: editorialContentKey } }),
+      prisma.bistroEvent.findMany({
+        orderBy: [{ eventDate: 'asc' }, { createdAt: 'asc' }]
+      }),
+      prisma.galleryPhoto.findMany({
+        orderBy: [{ sortOrder: 'asc' }, { createdAt: 'desc' }]
+      })
+    ]);
+
+    res.json({
+      ...(normalizeEditorialContent(content?.value ?? defaultEditorialContent)),
+      events,
+      gallery
+    });
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.put('/content/editorial', async (req, res, next) => {
+  try {
+    const payload = editorialContentSchema.parse(req.body);
+
+    const content = await prisma.siteContent.upsert({
+      where: { key: editorialContentKey },
+      update: { value: payload },
+      create: { key: editorialContentKey, value: payload }
+    });
+
+    res.json(normalizeEditorialContent(content.value));
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.post('/events', async (req, res, next) => {
+  try {
+    const payload = eventSchema.parse(req.body);
+
+    res.status(201).json(
+      await prisma.bistroEvent.create({
+        data: {
+          title: payload.title,
+          eventDate: parseEventDate(payload.eventDate),
+          eventTime: payload.eventTime || null,
+          summary: payload.summary,
+          details: payload.details || null,
+          imageUrl: payload.imageUrl || null,
+          ctaLabel: payload.ctaLabel || null,
+          ctaUrl: payload.ctaUrl || null,
+          isPublished: payload.isPublished
+        }
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.put('/events/:id', async (req, res, next) => {
+  try {
+    const payload = eventSchema.parse(req.body);
+
+    res.json(
+      await prisma.bistroEvent.update({
+        where: { id: req.params.id },
+        data: {
+          title: payload.title,
+          eventDate: parseEventDate(payload.eventDate),
+          eventTime: payload.eventTime || null,
+          summary: payload.summary,
+          details: payload.details || null,
+          imageUrl: payload.imageUrl || null,
+          ctaLabel: payload.ctaLabel || null,
+          ctaUrl: payload.ctaUrl || null,
+          isPublished: payload.isPublished
+        }
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.delete('/events/:id', async (req, res, next) => {
+  try {
+    await prisma.bistroEvent.delete({ where: { id: req.params.id } });
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.post('/gallery', async (req, res, next) => {
+  try {
+    const payload = galleryPhotoSchema.parse(req.body);
+    const imageUrl = payload.imageUrl ?? '';
+
+    res.status(201).json(
+      await prisma.galleryPhoto.create({
+        data: {
+          title: payload.title,
+          category: payload.category,
+          alt: payload.alt || null,
+          imageUrl,
+          sortOrder: payload.sortOrder,
+          isPublished: payload.isPublished
+        }
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.put('/gallery/:id', async (req, res, next) => {
+  try {
+    const payload = galleryPhotoSchema.parse(req.body);
+    const imageUrl = payload.imageUrl ?? '';
+
+    res.json(
+      await prisma.galleryPhoto.update({
+        where: { id: req.params.id },
+        data: {
+          title: payload.title,
+          category: payload.category,
+          alt: payload.alt || null,
+          imageUrl,
+          sortOrder: payload.sortOrder,
+          isPublished: payload.isPublished
+        }
+      })
+    );
+  } catch (error) {
+    next(error);
+  }
+});
+
+adminRouter.delete('/gallery/:id', async (req, res, next) => {
+  try {
+    await prisma.galleryPhoto.delete({ where: { id: req.params.id } });
+    res.status(204).end();
+  } catch (error) {
+    next(error);
+  }
 });
 
 adminRouter.get('/reservations', async (req, res, next) => {

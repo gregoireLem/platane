@@ -67,3 +67,41 @@ model ServiceSchedule {
 
   @@unique([weekday, service])
 }
+
+model SiteContent {
+  key       String   @id
+  value     Json
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BistroEvent {
+  id          String   @id @default(cuid())
+  title       String
+  eventDate   DateTime
+  eventTime   String?
+  summary     String
+  details     String?
+  imageUrl    String?
+  ctaLabel    String?
+  ctaUrl      String?
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([eventDate, isPublished])
+}
+
+model GalleryPhoto {
+  id          String   @id @default(cuid())
+  title       String
+  category    String
+  alt         String?
+  imageUrl    String
+  sortOrder   Int      @default(0)
+  isPublished Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([category, isPublished, sortOrder])
+}

@@ -14,6 +14,7 @@ Ce dossier contient un backend separe pour gerer les reservations du site Au Pla
 ### Public
 
 - `GET /health`
+- `GET /content/editorial`
 - `GET /reservations/availability?date=2026-05-01&service=soir`
 - `POST /reservations`
 
@@ -39,6 +40,14 @@ Les routes admin utilisent une session HTTP-only creee par `POST /admin/login`.
 - `POST /admin/login`
 - `POST /admin/logout`
 - `GET /admin/me`
+- `GET /admin/content`
+- `PUT /admin/content/editorial`
+- `POST /admin/events`
+- `PUT /admin/events/:id`
+- `DELETE /admin/events/:id`
+- `POST /admin/gallery`
+- `PUT /admin/gallery/:id`
+- `DELETE /admin/gallery/:id`
 - `GET /admin/reservations`
 - `PATCH /admin/reservations/:id/status`
 - `PUT /admin/capacities`
@@ -96,6 +105,7 @@ npm run dev
 ## Mise en ligne
 
 Le backend peut etre deploye sur Render, Railway ou Fly.io.
+Le script `npm start` applique les migrations Prisma avec `prisma migrate deploy` avant de lancer l'API.
 
 Variables a configurer en production :
 

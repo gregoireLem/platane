@@ -5,1124 +5,483 @@ import { site } from '../data/site';
 const apiUrl = site.reservationApiUrl;
 ---
 
-<BaseLayout title="Administration" description="Gestion des réservations Au Platane.">
+<BaseLayout title="Administration" description="Outil de communication Au Platane.">
   <section class="section admin-page">
     <div class="admin-heading" data-reveal>
       <div class="admin-brand-bar">
         <img src="/brand/logo-alt-black.jpg" alt="" />
         <div>
           <p class="eyebrow">Administration</p>
-          <p class="admin-brand-bar__tagline">Outil de réservation Au Platane</p>
+          <p class="admin-brand-bar__tagline">Outil de communication Au Platane</p>
         </div>
       </div>
-      <h1>Gérer les réservations.</h1>
+      <h1>Faire vivre le bistrot en ligne.</h1>
       <p class="lead">
-        Un tableau de bord simple pour suivre le planning, ajouter des réservations et ajuster les
-        capacités.
+        Carte, suggestions, événements et galerie : l’admin sert à raconter ce qui se passe au
+        Platane, sans devenir un deuxième logiciel de caisse.
       </p>
     </div>
 
     <section class="admin-card" data-reveal>
       <div class="admin-card__header">
-        <h2>Navigation</h2>
-        <p>Commencez par la vue planning, puis ouvrez l'action dont vous avez besoin.</p>
+        <h2>Accès</h2>
+        <p>Connectez-vous avec le compte admin pour modifier les contenus publics.</p>
       </div>
 
-      <div class="admin-view-switcher" data-admin-view-switcher>
-        <button class="button button--primary" type="button" data-admin-view-target="planning">
-          Vue planning
-        </button>
-        <button class="button button--secondary" type="button" data-admin-view-target="manual">
-          Ajouter une réservation
-        </button>
-        <button class="button button--secondary" type="button" data-admin-view-target="reservations">
-          Gérer les réservations
-        </button>
-        <button class="button button--secondary" type="button" data-admin-view-target="settings">
-          Capacités & horaires
-        </button>
-      </div>
-    </section>
-
-    <div class="admin-grid admin-grid--single">
-      <section class="admin-card" data-reveal>
-        <div class="admin-card__header">
-          <h2>Accès</h2>
-          <p>Connectez-vous avec le compte admin pour gérer les réservations.</p>
-        </div>
-
-        <form class="admin-login-form" data-admin-login-form data-api-url={apiUrl}>
+      <form class="admin-login-form" data-admin-login-form data-api-url={apiUrl}>
+        <div class="field-grid">
           <div class="field">
             <label for="admin-username">Identifiant</label>
-            <input
-              id="admin-username"
-              name="username"
-              type="text"
-              autocomplete="username"
-              placeholder="Identifiant admin"
-            />
+            <input id="admin-username" name="username" type="text" autocomplete="username" />
           </div>
           <div class="field">
             <label for="admin-password">Mot de passe</label>
-            <input
-              id="admin-password"
-              name="password"
-              type="password"
-              autocomplete="current-password"
-              placeholder="Mot de passe"
-            />
+            <input id="admin-password" name="password" type="password" autocomplete="current-password" />
           </div>
-          <div class="admin-login-form__actions">
-            <button class="button button--primary" type="submit">Se connecter</button>
-            <button class="button button--secondary" type="button" data-admin-logout>
-              Se déconnecter
-            </button>
-          </div>
-          <p class="admin-inline-feedback" data-admin-login-feedback aria-live="polite"></p>
-        </form>
-      </section>
+        </div>
+        <div class="admin-login-form__actions">
+          <button class="button button--primary" type="submit">Se connecter</button>
+          <button class="button button--secondary" type="button" data-admin-logout disabled>
+            Se déconnecter
+          </button>
+        </div>
+        <p class="admin-inline-feedback" data-admin-login-feedback aria-live="polite"></p>
+      </form>
+    </section>
 
-      <section class="admin-card" data-reveal>
+    <section class="admin-card admin-dashboard-intro" data-admin-dashboard hidden>
+      <div class="admin-card__header">
+        <h2>Tableau de bord éditorial</h2>
+        <p>Choisissez l’espace à mettre à jour. Les changements sont visibles sur le site sans rebuild.</p>
+      </div>
+      <div class="admin-view-switcher" data-admin-view-switcher>
+        <button class="button button--primary" type="button" data-admin-view-target="menu">Carte & menus</button>
+        <button class="button button--secondary" type="button" data-admin-view-target="events">Événements</button>
+        <button class="button button--secondary" type="button" data-admin-view-target="suggestions">Suggestions</button>
+        <button class="button button--secondary" type="button" data-admin-view-target="gallery">Galerie</button>
+      </div>
+    </section>
+
+    <section class="admin-view-panel" data-admin-view="menu" hidden>
+      <section class="admin-card">
         <div class="admin-card__header">
-          <h2>Filtres</h2>
-          <p>Ces filtres servent au planning et à la liste des réservations.</p>
+          <h2>Modifier la carte et les menus</h2>
+          <p>Une saisie simple, pensée comme une ardoise. Séparez les colonnes avec le caractère <strong>|</strong>.</p>
         </div>
 
-        <form class="admin-filters" data-admin-filters>
-          <div class="admin-filter-presets">
-            <button class="button button--ghost" type="button" data-filter-preset="all">Tout voir</button>
-            <button class="button button--ghost" type="button" data-filter-preset="today">Aujourd'hui</button>
-            <button class="button button--ghost" type="button" data-filter-preset="tomorrow">Demain</button>
-          </div>
-
+        <form class="admin-editor-form" data-menu-form>
           <div class="field-grid">
             <div class="field">
-              <label for="admin-date">Date</label>
-              <input id="admin-date" name="date" type="date" />
+              <label for="menu-title">Titre</label>
+              <input id="menu-title" name="title" type="text" />
             </div>
             <div class="field">
-              <label for="admin-service">Service</label>
-              <select id="admin-service" name="service">
-                <option value="">Tous</option>
-                <option value="midi">Midi</option>
-                <option value="soir">Soir</option>
-              </select>
+              <label for="menu-period">Période</label>
+              <input id="menu-period" name="period" type="text" />
             </div>
           </div>
-
           <div class="field-grid">
             <div class="field">
-              <label for="admin-status">Statut</label>
-              <select id="admin-status" name="status">
-                <option value="">Tous</option>
-                <option value="PENDING">En attente</option>
-                <option value="CONFIRMED">Confirmée</option>
-                <option value="DECLINED">Refusée</option>
-                <option value="CANCELLED">Annulée</option>
-                <option value="NO_SHOW">No-show</option>
-              </select>
+              <label for="menu-updated">Mis à jour le</label>
+              <input id="menu-updated" name="updatedAt" type="text" placeholder="16 mai 2026" />
             </div>
-
             <div class="field">
-              <label for="admin-sort">Tri</label>
-              <select id="admin-sort" name="sort">
-                <option value="date-asc">Date la plus proche</option>
-                <option value="date-desc">Date la plus lointaine</option>
-                <option value="created-desc">Demande la plus récente</option>
-                <option value="party-desc">Plus grandes tables</option>
-              </select>
+              <label for="menu-intro">Introduction</label>
+              <input id="menu-intro" name="intro" type="text" />
             </div>
           </div>
-
           <div class="field">
-            <label for="admin-search">Recherche</label>
-            <input
-              id="admin-search"
-              name="search"
-              type="search"
-              placeholder="Nom, téléphone, email, note ou message"
-            />
+            <label for="menu-formulas">Formules</label>
+            <textarea id="menu-formulas" name="formulas" rows="5" placeholder="Le midi | 19€ | Entrée + plat + dessert"></textarea>
           </div>
-
+          <div class="field">
+            <label for="menu-sections">Carte</label>
+            <textarea id="menu-sections" name="sections" rows="14" placeholder={`Entrées\nŒuf mayonnaise | 7€ | Pickles maison\n\nPlats\nBurger du Platane | 18€ | Sauce maison, tomme locale`}></textarea>
+          </div>
+          <div class="field">
+            <label for="menu-notes">Notes</label>
+            <textarea id="menu-notes" name="notes" rows="4" placeholder="Une note par ligne"></textarea>
+          </div>
           <div class="admin-form-actions">
-            <button class="button button--primary" type="submit">Actualiser</button>
+            <button class="button button--primary" type="submit">Publier la carte</button>
           </div>
+          <p class="admin-inline-feedback" data-menu-feedback aria-live="polite"></p>
         </form>
-      </section>
-    </div>
-
-    <section class="admin-view-panel" data-admin-view="planning">
-      <section class="admin-card" data-reveal>
-        <div class="admin-card__header">
-          <h2>Planning mensuel</h2>
-          <p>Repérez rapidement les jours calmes, les jours chargés et le volume midi / soir.</p>
-        </div>
-
-        <div class="admin-planning-toolbar">
-          <div class="field">
-            <label for="admin-month">Mois</label>
-            <input id="admin-month" type="month" data-admin-month />
-          </div>
-        </div>
-        <div class="admin-calendar" data-admin-calendar></div>
       </section>
     </section>
 
-    <section class="admin-view-panel" data-admin-view="manual" hidden>
-      <section class="admin-card" data-reveal>
+    <section class="admin-view-panel" data-admin-view="events" hidden>
+      <div class="admin-grid">
+        <section class="admin-card">
+          <div class="admin-card__header">
+            <h2>Créer un événement</h2>
+            <p>Photo, date, texte court. Le badge “Ce week-end” est généré automatiquement.</p>
+          </div>
+          <form class="admin-editor-form" data-event-form>
+            <div class="field">
+              <label for="event-title">Titre</label>
+              <input id="event-title" name="title" type="text" required />
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="event-date">Date</label>
+                <input id="event-date" name="eventDate" type="date" required />
+              </div>
+              <div class="field">
+                <label for="event-time">Horaire</label>
+                <input id="event-time" name="eventTime" type="text" placeholder="20h30" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="event-summary">Résumé</label>
+              <textarea id="event-summary" name="summary" rows="3" required></textarea>
+            </div>
+            <div class="field">
+              <label for="event-image">Photo</label>
+              <input id="event-image" name="image" type="file" accept="image/*" />
+            </div>
+            <div class="admin-form-actions">
+              <button class="button button--primary" type="submit">Publier l’événement</button>
+            </div>
+            <p class="admin-inline-feedback" data-event-feedback aria-live="polite"></p>
+          </form>
+        </section>
+
+        <section class="admin-card">
+          <div class="admin-card__header">
+            <h2>Événements publiés</h2>
+            <p>Les prochains événements remontent automatiquement sur la page d’accueil.</p>
+          </div>
+          <div class="admin-content-list" data-events-list></div>
+        </section>
+      </div>
+    </section>
+
+    <section class="admin-view-panel" data-admin-view="suggestions" hidden>
+      <section class="admin-card">
         <div class="admin-card__header">
-          <h2>Ajouter une réservation</h2>
-          <p>Saisissez ici les demandes reçues par téléphone, sur place ou par message.</p>
+          <h2>Suggestions du jour</h2>
+          <p>Plat du jour, boisson et bière pression du moment.</p>
         </div>
-
-        <form class="admin-manual-form" data-admin-manual-form>
+        <form class="admin-editor-form" data-suggestions-form>
           <div class="field-grid">
             <div class="field">
-              <label for="manual-date">Date</label>
-              <input id="manual-date" name="reservationDate" type="date" required />
+              <label for="suggestion-dish">Plat du jour</label>
+              <input id="suggestion-dish" name="dish" type="text" />
             </div>
             <div class="field">
-              <label for="manual-time">Heure</label>
-              <input id="manual-time" name="reservationTime" type="time" required />
+              <label for="suggestion-drink">Boisson du moment</label>
+              <input id="suggestion-drink" name="drink" type="text" />
             </div>
           </div>
-
           <div class="field-grid">
             <div class="field">
-              <label for="manual-service">Service</label>
-              <select id="manual-service" name="service">
-                <option value="midi">Midi</option>
-                <option value="soir" selected>Soir</option>
-              </select>
+              <label for="suggestion-beer">Bière pression</label>
+              <input id="suggestion-beer" name="beer" type="text" />
             </div>
             <div class="field">
-              <label for="manual-party">Nombre de personnes</label>
-              <input id="manual-party" name="partySize" type="number" min="1" max="20" value="2" required />
+              <label for="suggestion-updated">Mis à jour le</label>
+              <input id="suggestion-updated" name="updatedAt" type="text" placeholder="Aujourd’hui" />
             </div>
           </div>
-
-          <div class="field-grid">
-            <div class="field">
-              <label for="manual-name">Nom</label>
-              <input id="manual-name" name="name" type="text" placeholder="Nom du client" required />
-            </div>
-            <div class="field">
-              <label for="manual-phone">Téléphone</label>
-              <input id="manual-phone" name="phone" type="tel" placeholder="06..." required />
-            </div>
-          </div>
-
-          <div class="field-grid">
-            <div class="field">
-              <label for="manual-email">Email</label>
-              <input id="manual-email" name="email" type="email" placeholder="Optionnel" />
-            </div>
-            <div class="field">
-              <label for="manual-source">Source</label>
-              <select id="manual-source" name="source">
-                <option value="telephone">Téléphone</option>
-                <option value="sur-place">Sur place</option>
-                <option value="sms">SMS</option>
-                <option value="instagram">Instagram</option>
-                <option value="autre">Autre</option>
-              </select>
-            </div>
-          </div>
-
-          <div class="field-grid">
-            <div class="field">
-              <label for="manual-status">Statut</label>
-              <select id="manual-status" name="status">
-                <option value="CONFIRMED" selected>Confirmée</option>
-                <option value="PENDING">En attente</option>
-                <option value="DECLINED">Refusée</option>
-                <option value="CANCELLED">Annulée</option>
-                <option value="NO_SHOW">No-show</option>
-              </select>
-            </div>
-            <div class="field">
-              <label for="manual-notes">Notes internes</label>
-              <input id="manual-notes" name="notes" type="text" placeholder="Allergie, terrasse, poussette..." />
-            </div>
-          </div>
-
-          <div class="field">
-            <label for="manual-message">Message</label>
-            <textarea id="manual-message" name="message" rows="3" placeholder="Demande client, précision d'horaire, occasion..."></textarea>
-          </div>
-
           <div class="admin-form-actions">
-            <button class="button button--primary" type="submit">Ajouter la réservation</button>
+            <button class="button button--primary" type="submit">Publier les suggestions</button>
           </div>
-          <p class="admin-inline-feedback" data-admin-manual-feedback aria-live="polite"></p>
+          <p class="admin-inline-feedback" data-suggestions-feedback aria-live="polite"></p>
         </form>
       </section>
     </section>
 
-    <section class="admin-view-panel" data-admin-view="reservations" hidden>
-      <section class="admin-card" data-reveal>
-        <div class="admin-card__header">
-          <h2>Réservations</h2>
-          <p>Une vue de service simple pour retrouver vite une réservation et traiter les demandes.</p>
-        </div>
-
-        <div class="admin-reservations-toolbar">
-          <div class="admin-reservation-tabs" data-admin-reservation-tabs>
-            <button class="button button--primary" type="button" data-reservation-mode="service">
-              À venir
-            </button>
-            <button class="button button--secondary" type="button" data-reservation-mode="pending">
-              En attente
-            </button>
-            <button class="button button--secondary" type="button" data-reservation-mode="all">
-              Toutes
-            </button>
+    <section class="admin-view-panel" data-admin-view="gallery" hidden>
+      <div class="admin-grid">
+        <section class="admin-card">
+          <div class="admin-card__header">
+            <h2>Ajouter une photo</h2>
+            <p>Plats, terrasse, soirées, fournisseurs, village, équipe.</p>
           </div>
-          <div class="admin-upcoming-services" data-admin-upcoming-services></div>
-          <div class="admin-service-focus" data-admin-service-focus></div>
-        </div>
+          <form class="admin-editor-form" data-gallery-form>
+            <div class="field">
+              <label for="gallery-title">Titre</label>
+              <input id="gallery-title" name="title" type="text" required />
+            </div>
+            <div class="field">
+              <label for="gallery-category">Catégorie</label>
+              <select id="gallery-category" name="category">
+                <option value="Plats">Plats</option>
+                <option value="Terrasse">Terrasse</option>
+                <option value="Soirées">Soirées</option>
+                <option value="Fournisseurs locaux">Fournisseurs locaux</option>
+                <option value="Village">Village</option>
+                <option value="Équipe">Équipe</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="gallery-image">Photo</label>
+              <input id="gallery-image" name="image" type="file" accept="image/*" required />
+            </div>
+            <div class="admin-form-actions">
+              <button class="button button--primary" type="submit">Ajouter à la galerie</button>
+            </div>
+            <p class="admin-inline-feedback" data-gallery-feedback aria-live="polite"></p>
+          </form>
+        </section>
 
-        <div class="admin-summary" data-admin-summary></div>
-        <p class="admin-inline-feedback" data-admin-reservations-feedback aria-live="polite"></p>
-        <div class="admin-reservations" data-admin-reservations></div>
-      </section>
-    </section>
-
-    <section class="admin-view-panel" data-admin-view="settings" hidden>
-      <section class="admin-card" data-reveal>
-        <div class="admin-card__header">
-          <h2>Capacités & horaires hebdomadaires</h2>
-          <p>Réglez les horaires d'ouverture et les capacités par jour de semaine, pas seulement date par date.</p>
-        </div>
-
-        <div class="admin-schedule-grid" data-admin-schedules></div>
-        <p class="admin-inline-feedback" data-admin-schedule-feedback aria-live="polite"></p>
-      </section>
-
-      <section class="admin-card" data-reveal>
-        <div class="admin-card__header">
-          <h2>Ajustement ponctuel d'une date</h2>
-          <p>Si besoin, gardez une exception pour un jour particulier.</p>
-        </div>
-
-        <div class="admin-capacity-grid" data-admin-capacities></div>
-        <p class="admin-inline-feedback" data-admin-capacity-feedback aria-live="polite"></p>
-      </section>
+        <section class="admin-card">
+          <div class="admin-card__header">
+            <h2>Galerie publiée</h2>
+            <p>Les dernières photos enrichissent l’accueil.</p>
+          </div>
+          <div class="admin-content-list admin-content-list--gallery" data-gallery-list></div>
+        </section>
+      </div>
     </section>
   </section>
 </BaseLayout>
 
 <script is:inline>
   (() => {
-    const weekdayLabels = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
-    const statusLabels = {
-      PENDING: 'En attente',
-      CONFIRMED: 'Confirmee',
-      DECLINED: 'Refusee',
-      CANCELLED: 'Annulee',
-      NO_SHOW: 'No-show'
-    };
-    const serviceLabels = {
-      midi: 'Midi',
-      soir: 'Soir',
-      MIDI: 'Midi',
-      SOIR: 'Soir'
-    };
-
     const initAdminPage = () => {
-      const adminPage = document.querySelector('.admin-page');
-      if (!(adminPage instanceof HTMLElement)) return;
-      if (adminPage.dataset.adminInitBound === 'true') return;
-      adminPage.dataset.adminInitBound = 'true';
-
       const loginForm = document.querySelector('[data-admin-login-form]');
-      const filtersForm = document.querySelector('[data-admin-filters]');
-      const capacitiesNode = document.querySelector('[data-admin-capacities]');
-      const schedulesNode = document.querySelector('[data-admin-schedules]');
-      const summaryNode = document.querySelector('[data-admin-summary]');
-      const upcomingServicesNode = document.querySelector('[data-admin-upcoming-services]');
-      const serviceFocusNode = document.querySelector('[data-admin-service-focus]');
-      const calendarNode = document.querySelector('[data-admin-calendar]');
-      const reservationsNode = document.querySelector('[data-admin-reservations]');
-      const loginFeedback = document.querySelector('[data-admin-login-feedback]');
-      const capacityFeedback = document.querySelector('[data-admin-capacity-feedback]');
-      const scheduleFeedback = document.querySelector('[data-admin-schedule-feedback]');
-      const reservationsFeedback = document.querySelector('[data-admin-reservations-feedback]');
-      const manualForm = document.querySelector('[data-admin-manual-form]');
-      const manualFeedback = document.querySelector('[data-admin-manual-feedback]');
-      const viewSwitcher = document.querySelector('[data-admin-view-switcher]');
-      const reservationTabs = document.querySelector('[data-admin-reservation-tabs]');
-
-      if (
-        !(loginForm instanceof HTMLFormElement) ||
-        !(filtersForm instanceof HTMLFormElement) ||
-        !(capacitiesNode instanceof HTMLElement) ||
-        !(schedulesNode instanceof HTMLElement) ||
-        !(summaryNode instanceof HTMLElement) ||
-        !(upcomingServicesNode instanceof HTMLElement) ||
-        !(serviceFocusNode instanceof HTMLElement) ||
-        !(calendarNode instanceof HTMLElement) ||
-        !(reservationsNode instanceof HTMLElement) ||
-        !(loginFeedback instanceof HTMLElement) ||
-        !(capacityFeedback instanceof HTMLElement) ||
-        !(scheduleFeedback instanceof HTMLElement) ||
-        !(reservationsFeedback instanceof HTMLElement) ||
-        !(manualForm instanceof HTMLFormElement) ||
-        !(manualFeedback instanceof HTMLElement) ||
-        !(viewSwitcher instanceof HTMLElement) ||
-        !(reservationTabs instanceof HTMLElement)
-      ) {
-        return;
-      }
+      if (!(loginForm instanceof HTMLFormElement) || loginForm.dataset.bound === 'true') return;
+      loginForm.dataset.bound = 'true';
 
       const apiRoot = loginForm.dataset.apiUrl;
-      if (!apiRoot) return;
-
+      const dashboard = document.querySelector('[data-admin-dashboard]');
+      const loginFeedback = document.querySelector('[data-admin-login-feedback]');
+      const logoutButton = loginForm.querySelector('[data-admin-logout]');
+      const loginButton = loginForm.querySelector('button[type="submit"]');
       const usernameInput = loginForm.querySelector('#admin-username');
       const passwordInput = loginForm.querySelector('#admin-password');
-      const loginButton = loginForm.querySelector('button[type="submit"]');
-      const logoutButton = loginForm.querySelector('[data-admin-logout]');
-      const dateInput = filtersForm.querySelector('#admin-date');
-      const serviceInput = filtersForm.querySelector('#admin-service');
-      const statusInput = filtersForm.querySelector('#admin-status');
-      const sortInput = filtersForm.querySelector('#admin-sort');
-      const searchInput = filtersForm.querySelector('#admin-search');
-      const monthInput = document.querySelector('[data-admin-month]');
       const viewButtons = Array.from(document.querySelectorAll('[data-admin-view-target]'));
       const viewPanels = Array.from(document.querySelectorAll('[data-admin-view]'));
+      const menuForm = document.querySelector('[data-menu-form]');
+      const eventForm = document.querySelector('[data-event-form]');
+      const suggestionsForm = document.querySelector('[data-suggestions-form]');
+      const galleryForm = document.querySelector('[data-gallery-form]');
+      const eventsList = document.querySelector('[data-events-list]');
+      const galleryList = document.querySelector('[data-gallery-list]');
 
       if (
+        !apiRoot ||
+        !(dashboard instanceof HTMLElement) ||
+        !(loginFeedback instanceof HTMLElement) ||
+        !(logoutButton instanceof HTMLButtonElement) ||
+        !(loginButton instanceof HTMLButtonElement) ||
         !(usernameInput instanceof HTMLInputElement) ||
         !(passwordInput instanceof HTMLInputElement) ||
-        !(loginButton instanceof HTMLButtonElement) ||
-        !(logoutButton instanceof HTMLButtonElement) ||
-        !(dateInput instanceof HTMLInputElement) ||
-        !(serviceInput instanceof HTMLSelectElement) ||
-        !(statusInput instanceof HTMLSelectElement) ||
-        !(sortInput instanceof HTMLSelectElement) ||
-        !(searchInput instanceof HTMLInputElement) ||
-        !(monthInput instanceof HTMLInputElement)
+        !(menuForm instanceof HTMLFormElement) ||
+        !(eventForm instanceof HTMLFormElement) ||
+        !(suggestionsForm instanceof HTMLFormElement) ||
+        !(galleryForm instanceof HTMLFormElement) ||
+        !(eventsList instanceof HTMLElement) ||
+        !(galleryList instanceof HTMLElement)
       ) {
         return;
       }
 
       const state = {
         isAuthenticated: false,
-        reservations: [],
-        filteredReservations: [],
-        schedules: [],
-        availability: null,
-        view: 'planning',
-        reservationMode: 'service'
+        content: null
       };
-
-      const today = () => new Date().toISOString().slice(0, 10);
-      const tomorrow = () => {
-        const date = new Date();
-        date.setDate(date.getDate() + 1);
-        return date.toISOString().slice(0, 10);
-      };
-      const currentMonth = () => new Date().toISOString().slice(0, 7);
-      const defaultService = () => (new Date().getHours() < 15 ? 'midi' : 'soir');
-      const nextSevenDays = () =>
-        Array.from({ length: 7 }, (_, index) => {
-          const date = new Date();
-          date.setDate(date.getDate() + index);
-          return date.toISOString().slice(0, 10);
-        });
-
-      const formatDay = (value) =>
-        new Intl.DateTimeFormat('fr-FR', {
-          weekday: 'short',
-          day: 'numeric',
-          month: 'short'
-        }).format(new Date(`${value}T12:00:00`));
 
       const setFeedback = (node, message, tone = '') => {
         node.textContent = message;
         node.dataset.tone = tone;
       };
 
-      const jsonHeaders = () => ({
-        'Content-Type': 'application/json'
-      });
-
       const adminFetch = (path, options = {}) =>
         fetch(`${apiRoot}${path}`, {
           ...options,
           credentials: 'include',
           headers: {
-            ...jsonHeaders(),
+            'Content-Type': 'application/json',
             ...(options.headers ?? {})
           }
         });
 
       const setAuthenticated = (isAuthenticated, username = '') => {
         state.isAuthenticated = isAuthenticated;
+        dashboard.hidden = !isAuthenticated;
         usernameInput.disabled = isAuthenticated;
         loginButton.disabled = isAuthenticated;
-        passwordInput.value = '';
         logoutButton.disabled = !isAuthenticated;
-
-        if (isAuthenticated) {
-          setFeedback(loginFeedback, `Connecté${username ? ` en tant que ${username}` : ''}.`, 'success');
-        }
+        passwordInput.value = '';
+        viewPanels.forEach((panel) => {
+          if (panel instanceof HTMLElement) panel.hidden = !isAuthenticated || panel.dataset.adminView !== 'menu';
+        });
+        if (isAuthenticated) setFeedback(loginFeedback, `Connecté${username ? ` en tant que ${username}` : ''}.`, 'success');
       };
 
-      const setActiveView = (view, syncHash = true) => {
-        state.view = view;
-
+      const setActiveView = (view) => {
         viewPanels.forEach((panel) => {
-          if (!(panel instanceof HTMLElement)) return;
-          panel.hidden = panel.dataset.adminView !== view;
+          if (panel instanceof HTMLElement) panel.hidden = panel.dataset.adminView !== view;
         });
-
         viewButtons.forEach((button) => {
           if (!(button instanceof HTMLButtonElement)) return;
-          const isActive = button.dataset.adminViewTarget === view;
-          button.classList.toggle('button--primary', isActive);
-          button.classList.toggle('button--secondary', !isActive);
-        });
-
-        if (syncHash) {
-          history.replaceState(null, '', `#${view}`);
-        }
-      };
-
-      const setReservationMode = (mode) => {
-        state.reservationMode = mode;
-
-        Array.from(reservationTabs.querySelectorAll('[data-reservation-mode]')).forEach((button) => {
-          if (!(button instanceof HTMLButtonElement)) return;
-          const isActive = button.dataset.reservationMode === mode;
-          button.classList.toggle('button--primary', isActive);
-          button.classList.toggle('button--secondary', !isActive);
+          const active = button.dataset.adminViewTarget === view;
+          button.classList.toggle('button--primary', active);
+          button.classList.toggle('button--secondary', !active);
         });
       };
 
-      const renderUpcomingServices = () => {
-        const days = nextSevenDays();
-        const selectedService = serviceInput.value || defaultService();
-        const activeDate = dateInput.value || today();
-
-        upcomingServicesNode.innerHTML = days
-          .map((dateKey) => {
-            const counts = state.reservations.reduce(
-              (acc, reservation) => {
-                if (reservation.reservationDate.slice(0, 10) !== dateKey) return acc;
-                const serviceKey = reservation.service.toLowerCase();
-                acc[serviceKey].reservations += 1;
-                acc[serviceKey].seats += reservation.partySize;
-                return acc;
-              },
-              {
-                midi: { reservations: 0, seats: 0 },
-                soir: { reservations: 0, seats: 0 }
-              }
-            );
-
-            const selectedCounts = counts[selectedService];
-            return `
-              <button
-                class="admin-upcoming-day${activeDate === dateKey ? ' is-active' : ''}"
-                type="button"
-                data-upcoming-date="${dateKey}"
-              >
-                <strong>${formatDay(dateKey)}</strong>
-                <span>${selectedCounts.reservations} resa • ${selectedCounts.seats} cvt</span>
-                <small>Midi ${counts.midi.reservations} · Soir ${counts.soir.reservations}</small>
-              </button>
-            `;
-          })
-          .join('');
+      const eventDateValue = (value) => String(value ?? '').slice(0, 10);
+      const lineValue = (value) => String(value ?? '').trim();
+      const splitLines = (value) => value.split('\n').map((line) => line.trim()).filter(Boolean);
+      const field = (form, name) => form.elements.namedItem(name);
+      const inputValue = (form, name) => {
+        const node = field(form, name);
+        return node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement || node instanceof HTMLSelectElement
+          ? node.value
+          : '';
+      };
+      const setInputValue = (form, name, value) => {
+        const node = field(form, name);
+        if (node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement || node instanceof HTMLSelectElement) {
+          node.value = value;
+        }
       };
 
-      const ensureServiceSelection = () => {
-        if (!dateInput.value) dateInput.value = today();
-        if (!serviceInput.value) serviceInput.value = defaultService();
-      };
+      const formulasToText = (items) =>
+        (items ?? []).map((item) => [item.name, item.price, item.description].filter(Boolean).join(' | ')).join('\n');
 
-      const renderSummary = () => {
-        if (!state.filteredReservations.length) {
-          summaryNode.innerHTML = '<p class="admin-empty">Aucune reservation pour ce filtre.</p>';
-          return;
-        }
+      const sectionsToText = (sections) =>
+        (sections ?? [])
+          .map((section) => `${section.title}\n${section.items.map((item) => [item.name, item.price, item.description].filter(Boolean).join(' | ')).join('\n')}`)
+          .join('\n\n');
 
-        const counters = state.filteredReservations.reduce(
-          (acc, reservation) => {
-            acc.total += 1;
-            acc.seats += reservation.partySize;
-            acc[reservation.status] = (acc[reservation.status] ?? 0) + 1;
-            return acc;
-          },
-          { total: 0, seats: 0, PENDING: 0, CONFIRMED: 0 }
-        );
+      const parseFormulas = (value) =>
+        splitLines(value).map((line) => {
+          const [name = '', price = '', description = ''] = line.split('|').map(lineValue);
+          return { name, price, description };
+        }).filter((item) => item.name);
 
-        summaryNode.innerHTML = `
-          <div class="admin-summary-card">
-            <strong>${counters.CONFIRMED}</strong>
-            <span>confirmées</span>
-          </div>
-          <div class="admin-summary-card">
-            <strong>${counters.PENDING}</strong>
-            <span>en attente</span>
-          </div>
-          <div class="admin-summary-card">
-            <strong>${counters.seats}</strong>
-            <span>couverts</span>
-          </div>
-          <div class="admin-summary-card">
-            <strong>${counters.total}</strong>
-            <span>affichées</span>
-          </div>
-        `;
-      };
+      const parseSections = (value) =>
+        value
+          .split(/\n\s*\n/g)
+          .map((block) => splitLines(block))
+          .filter((lines) => lines.length)
+          .map(([title, ...items]) => ({
+            title,
+            items: items
+              .map((line) => {
+                const [name = '', price = '', description = ''] = line.split('|').map(lineValue);
+                return { name, price, description };
+              })
+              .filter((item) => item.name)
+          }))
+          .filter((section) => section.title && section.items.length);
 
-      const renderServiceFocus = () => {
-        if (state.reservationMode === 'pending') {
-          upcomingServicesNode.hidden = true;
-          serviceFocusNode.innerHTML = `
-            <article class="admin-focus-card">
-              <span class="admin-focus-card__eyebrow">Demandes à traiter</span>
-              <h3>En attente de réponse</h3>
-              <p>On affiche d'abord les réservations à confirmer ou rappeler.</p>
-            </article>
-          `;
-          return;
-        }
-
-        if (state.reservationMode === 'all') {
-          upcomingServicesNode.hidden = true;
-          serviceFocusNode.innerHTML = `
-            <article class="admin-focus-card">
-              <span class="admin-focus-card__eyebrow">Vue complète</span>
-              <h3>Toutes les réservations</h3>
-              <p>Utilisez la recherche et les filtres pour retrouver un client ou vérifier un service.</p>
-            </article>
-          `;
-          return;
-        }
-
-        upcomingServicesNode.hidden = false;
-        const selectedDate = dateInput.value || today();
-        const selectedService = serviceInput.value || defaultService();
-        const availability = state.availability;
-        const filled =
-          availability && typeof availability.capacity === 'number'
-            ? `${availability.reservedSeats} / ${availability.capacity} couverts`
-            : `${state.filteredReservations.reduce((total, item) => total + item.partySize, 0)} couverts`;
-
-        serviceFocusNode.innerHTML = `
-          <article class="admin-focus-card">
-            <span class="admin-focus-card__eyebrow">Service sélectionné</span>
-            <h3>${formatDay(selectedDate)} • ${serviceLabels[selectedService]}</h3>
-            <p>${filled}${availability ? ` • ${availability.remainingSeats} places restantes` : ''}</p>
-          </article>
-        `;
-      };
-
-      const renderCalendar = () => {
-        const monthValue = monthInput.value || currentMonth();
-        const [year, month] = monthValue.split('-').map(Number);
-        const firstDay = new Date(year, month - 1, 1);
-        const lastDay = new Date(year, month, 0);
-        const startWeekday = (firstDay.getDay() + 6) % 7;
-        const totalDays = lastDay.getDate();
-        const cells = [];
-        const reservationsByDate = new Map();
-
-        for (const reservation of state.reservations) {
-          const dateKey = reservation.reservationDate.slice(0, 10);
-          if (!dateKey.startsWith(monthValue)) continue;
-
-          const current = reservationsByDate.get(dateKey) ?? {
-            total: 0,
-            seats: 0,
-            services: {
-              midi: { total: 0, seats: 0 },
-              soir: { total: 0, seats: 0 }
-            }
-          };
-
-          const serviceKey = reservation.service.toLowerCase();
-          current.total += 1;
-          current.seats += reservation.partySize;
-          current.services[serviceKey].total += 1;
-          current.services[serviceKey].seats += reservation.partySize;
-          reservationsByDate.set(dateKey, current);
-        }
-
-        for (let i = 0; i < startWeekday; i += 1) {
-          cells.push('<div class="admin-calendar__cell admin-calendar__cell--empty"></div>');
-        }
-
-        for (let day = 1; day <= totalDays; day += 1) {
-          const date = new Date(year, month - 1, day);
-          const dateKey = date.toISOString().slice(0, 10);
-          const dayData = reservationsByDate.get(dateKey);
-
-          cells.push(`
-            <button class="admin-calendar__cell" type="button" data-calendar-date="${dateKey}">
-              <div class="admin-calendar__cell-top">
-                <strong>${day}</strong>
-                ${dayData ? `<span>${dayData.total} resa</span>` : '<span>Libre</span>'}
-              </div>
-              <div class="admin-calendar__services">
-                <div class="admin-calendar__service">
-                  <span>Midi</span>
-                  <strong>${dayData?.services.midi.total ?? 0}</strong>
-                  <small>${dayData?.services.midi.seats ?? 0} cvt</small>
-                </div>
-                <div class="admin-calendar__service">
-                  <span>Soir</span>
-                  <strong>${dayData?.services.soir.total ?? 0}</strong>
-                  <small>${dayData?.services.soir.seats ?? 0} cvt</small>
-                </div>
-              </div>
-            </button>
-          `);
-        }
-
-        calendarNode.innerHTML = `
-          <div class="admin-calendar__weekdays">
-            <span>Lun</span>
-            <span>Mar</span>
-            <span>Mer</span>
-            <span>Jeu</span>
-            <span>Ven</span>
-            <span>Sam</span>
-            <span>Dim</span>
-          </div>
-          <div class="admin-calendar__grid">${cells.join('')}</div>
-        `;
-      };
-
-      const renderSchedules = () => {
-        if (!state.schedules.length) {
-          schedulesNode.innerHTML = '<p class="admin-empty">Impossible de charger les réglages hebdomadaires.</p>';
-          return;
-        }
-
-        const grouped = new Map();
-        for (const item of state.schedules) {
-          const current = grouped.get(item.weekday) ?? [];
-          current.push(item);
-          grouped.set(item.weekday, current);
-        }
-
-        schedulesNode.innerHTML = Array.from(grouped.entries())
-          .map(
-            ([weekday, items]) => `
-              <section class="admin-schedule-day">
-                <div class="admin-schedule-day__header">
-                  <h3>${weekdayLabels[weekday]}</h3>
-                </div>
-                <div class="admin-capacity-grid">
-                  ${items
-                    .map(
-                      (item) => `
-                        <form class="admin-capacity-card" data-schedule-form data-weekday="${item.weekday}" data-service="${item.service}">
-                          <div class="admin-capacity-card__top">
-                            <div>
-                              <h3>${serviceLabels[item.service]}</h3>
-                              <p>${item.isClosed ? 'Service fermé' : `${item.openTime} - ${item.closeTime}`}</p>
-                            </div>
-                            <span class="admin-status-badge" data-status="${item.isClosed ? 'DECLINED' : 'CONFIRMED'}">
-                              ${item.isClosed ? 'Fermé' : 'Ouvert'}
-                            </span>
-                          </div>
-
-                          <div class="field-grid">
-                            <div class="field">
-                              <label>Capacité</label>
-                              <input type="number" min="1" max="500" value="${item.capacity}" data-schedule-capacity />
-                            </div>
-                            <label class="admin-checkbox">
-                              <input type="checkbox" data-schedule-closed ${item.isClosed ? 'checked' : ''} />
-                              <span>Fermer ce service</span>
-                            </label>
-                          </div>
-
-                          <div class="field-grid">
-                            <div class="field">
-                              <label>Ouverture</label>
-                              <input type="time" value="${item.openTime}" data-schedule-open />
-                            </div>
-                            <div class="field">
-                              <label>Fermeture</label>
-                              <input type="time" value="${item.closeTime}" data-schedule-close />
-                            </div>
-                          </div>
-
-                          <div class="field">
-                            <label>Note</label>
-                            <input type="text" value="${item.note ?? ''}" data-schedule-note placeholder="Ex: cuisine réduite, terrasse seulement..." />
-                          </div>
-
-                          <div class="admin-reservation-card__actions">
-                            <button class="button button--secondary" type="submit">Mettre à jour</button>
-                          </div>
-                        </form>
-                      `
-                    )
-                    .join('')}
-                </div>
-              </section>
-            `
-          )
-          .join('');
-      };
-
-      const applyClientFilters = () => {
-        const search = searchInput.value.trim().toLowerCase();
-        const selectedDate =
-          state.reservationMode === 'service' ? dateInput.value || today() : dateInput.value;
-        const selectedService =
-          state.reservationMode === 'service' ? serviceInput.value || defaultService() : serviceInput.value;
-        const selectedStatus = statusInput.value;
-
-        const filtered = state.reservations.filter((reservation) => {
-          const dateKey = reservation.reservationDate.slice(0, 10);
-          const serviceKey = reservation.service.toLowerCase();
-
-          if (state.reservationMode === 'pending' && reservation.status !== 'PENDING') return false;
-
-          if (selectedDate && dateKey !== selectedDate) return false;
-          if (selectedService && serviceKey !== selectedService) return false;
-          if (selectedStatus && state.reservationMode !== 'pending' && reservation.status !== selectedStatus) return false;
-
-          if (!search) return true;
-
-          const haystack = [
-            reservation.name,
-            reservation.phone,
-            reservation.email,
-            reservation.message,
-            reservation.notes,
-            reservation.reservationTime,
-            dateKey,
-            serviceLabels[reservation.service]
-          ]
-            .filter(Boolean)
-            .join(' ')
-            .toLowerCase();
-
-          return haystack.includes(search);
+      const readImageAsDataUrl = (input) =>
+        new Promise((resolve, reject) => {
+          const file = input.files?.[0];
+          if (!file) {
+            resolve('');
+            return;
+          }
+          if (file.size > 1_800_000) {
+            reject(new Error('image-size'));
+            return;
+          }
+          const reader = new FileReader();
+          reader.addEventListener('load', () => resolve(String(reader.result ?? '')));
+          reader.addEventListener('error', () => reject(new Error('image-read')));
+          reader.readAsDataURL(file);
         });
 
-        const sortValue = sortInput.value;
-        filtered.sort((left, right) => {
-          const leftDate = `${left.reservationDate.slice(0, 10)}T${left.reservationTime}`;
-          const rightDate = `${right.reservationDate.slice(0, 10)}T${right.reservationTime}`;
+      const fillForms = (content) => {
+        setInputValue(menuForm, 'title', content.menu.title);
+        setInputValue(menuForm, 'period', content.menu.period);
+        setInputValue(menuForm, 'updatedAt', content.menu.updatedAt);
+        setInputValue(menuForm, 'intro', content.menu.intro);
+        setInputValue(menuForm, 'formulas', formulasToText(content.menu.formulas));
+        setInputValue(menuForm, 'sections', sectionsToText(content.menu.sections));
+        setInputValue(menuForm, 'notes', (content.menu.notes ?? []).join('\n'));
 
-          if (sortValue === 'date-desc') return rightDate.localeCompare(leftDate);
-          if (sortValue === 'created-desc') return new Date(right.createdAt) - new Date(left.createdAt);
-          if (sortValue === 'party-desc') return right.partySize - left.partySize || leftDate.localeCompare(rightDate);
-          return leftDate.localeCompare(rightDate);
-        });
-
-        state.filteredReservations = filtered;
+        setInputValue(suggestionsForm, 'dish', content.suggestions.dish);
+        setInputValue(suggestionsForm, 'drink', content.suggestions.drink);
+        setInputValue(suggestionsForm, 'beer', content.suggestions.beer);
+        setInputValue(suggestionsForm, 'updatedAt', content.suggestions.updatedAt);
       };
 
-      const renderReservationItem = (reservation, compact = false) => `
-        <details class="admin-reservation-row"${reservation.status === 'PENDING' ? ' open' : ''}>
-          <summary class="admin-reservation-row__summary">
-            <div class="admin-reservation-row__main">
-              <strong>${reservation.name}</strong>
-              <span>${reservation.partySize} pers • ${reservation.reservationTime}${compact ? '' : ` • ${formatDay(
-                reservation.reservationDate.slice(0, 10)
-              )} • ${serviceLabels[reservation.service]}`}</span>
-            </div>
-            <div class="admin-reservation-row__meta">
-              <span>${reservation.phone}</span>
-              <span class="admin-status-badge" data-status="${reservation.status}">
-                ${statusLabels[reservation.status]}
-              </span>
-            </div>
-          </summary>
-
-          <div class="admin-reservation-row__detail">
-            <div class="admin-reservation-row__detail-copy">
-              <p><strong>Service:</strong> ${formatDay(reservation.reservationDate.slice(0, 10))} • ${serviceLabels[reservation.service]} • ${reservation.reservationTime}</p>
-              <p><strong>Contact:</strong> ${reservation.phone}${reservation.email ? ` • ${reservation.email}` : ''}</p>
-              <p><strong>Source:</strong> ${reservation.source || '—'}</p>
-              <p><strong>Message:</strong> ${reservation.message || 'Aucun message.'}</p>
-            </div>
-
-            <div class="field-grid">
-              <div class="field">
-                <label for="status-${reservation.id}">Statut</label>
-                <select id="status-${reservation.id}" data-reservation-status>
-                  ${Object.entries(statusLabels)
-                    .map(
-                      ([value, label]) =>
-                        `<option value="${value}"${reservation.status === value ? ' selected' : ''}>${label}</option>`
-                    )
-                    .join('')}
-                </select>
-              </div>
-
-              <div class="field">
-                <label for="notes-${reservation.id}">Notes</label>
-                <textarea id="notes-${reservation.id}" rows="3" data-reservation-notes>${reservation.notes ?? ''}</textarea>
-              </div>
-            </div>
-
-            <div class="admin-reservation-card__actions">
-              <button class="button button--primary" type="button" data-save-reservation data-id="${reservation.id}">
-                Enregistrer
-              </button>
-            </div>
-          </div>
-        </details>
-      `;
-
-      const renderReservations = () => {
-        if (!state.filteredReservations.length) {
-          reservationsNode.innerHTML = '<p class="admin-empty">Aucune reservation trouvee.</p>';
-          return;
-        }
-
-        if (state.reservationMode === 'service') {
-          reservationsNode.innerHTML = `
-            <section class="admin-reservation-service-list">
-              ${state.filteredReservations.map((reservation) => renderReservationItem(reservation, true)).join('')}
-            </section>
-          `;
-          return;
-        }
-
-        if (state.reservationMode === 'pending') {
-          reservationsNode.innerHTML = `
-            <section class="admin-reservation-service-list">
-              ${state.filteredReservations.map((reservation) => renderReservationItem(reservation)).join('')}
-            </section>
-          `;
-          return;
-        }
-
-        const groups = new Map();
-        for (const reservation of state.filteredReservations) {
-          const dateKey = reservation.reservationDate.slice(0, 10);
-          const serviceKey = reservation.service.toLowerCase();
-          const groupKey = `${dateKey}-${serviceKey}`;
-          const bucket = groups.get(groupKey) ?? { dateKey, serviceKey, seats: 0, items: [] };
-          bucket.seats += reservation.partySize;
-          bucket.items.push(reservation);
-          groups.set(groupKey, bucket);
-        }
-
-        reservationsNode.innerHTML = Array.from(groups.values())
-          .map(
-            (group) => `
-              <section class="admin-reservation-group">
-                <div class="admin-reservation-group__header">
-                  <div>
-                    <h3>${formatDay(group.dateKey)} • ${serviceLabels[group.serviceKey]}</h3>
-                    <p>${group.items.length} reservation(s) • ${group.seats} couvert(s)</p>
-                  </div>
-                  <button class="button button--ghost" type="button" data-copy-date="${group.dateKey}">
-                    Voir les capacités du jour
-                  </button>
-                </div>
-
-                <div class="admin-reservation-list">
-                  ${group.items
-                    .map((reservation) => renderReservationItem(reservation))
-                    .join('')}
-                </div>
-              </section>
-            `
-          )
-          .join('');
-      };
-
-      const loadServiceAvailability = async () => {
-        if (state.reservationMode !== 'service') {
-          state.availability = null;
-          return;
-        }
-
-        ensureServiceSelection();
-
-        try {
-          const response = await fetch(
-            `${apiRoot}/reservations/availability?date=${encodeURIComponent(dateInput.value)}&service=${encodeURIComponent(
-              serviceInput.value
-            )}`
-          );
-
-          if (!response.ok) throw new Error('availability');
-          state.availability = await response.json();
-        } catch (_error) {
-          state.availability = null;
-        }
-      };
-
-      const renderCapacities = async () => {
-        if (!dateInput.value) {
-          capacitiesNode.innerHTML = '<p class="admin-empty">Choisissez une date pour gerer les capacites.</p>';
-          return;
-        }
-
-        try {
-          const results = await Promise.all(
-            ['midi', 'soir'].map(async (service) => {
-              const response = await fetch(
-                `${apiRoot}/reservations/availability?date=${encodeURIComponent(dateInput.value)}&service=${service}`
-              );
-
-              if (!response.ok) throw new Error('capacity');
-              return response.json();
-            })
-          );
-
-          capacitiesNode.innerHTML = results
-            .map(
-              (serviceData) => `
-                <form class="admin-capacity-card" data-capacity-form data-service="${serviceData.service}">
-                  <div class="admin-capacity-card__top">
+      const renderEvents = (events) => {
+        eventsList.innerHTML = events.length
+          ? events
+              .map(
+                (event) => `
+                  <article class="admin-content-item">
+                    ${event.imageUrl ? `<img src="${event.imageUrl}" alt="" />` : ''}
                     <div>
-                      <h3>${serviceLabels[serviceData.service]}</h3>
-                      <p>${serviceData.openTime} - ${serviceData.closeTime} • ${serviceData.remainingSeats} place(s) restantes sur ${serviceData.capacity}</p>
+                      <span>${eventDateValue(event.eventDate)}${event.eventTime ? ` · ${event.eventTime}` : ''}</span>
+                      <strong>${event.title}</strong>
+                      <p>${event.summary}</p>
                     </div>
-                    <span class="admin-status-badge" data-status="${serviceData.remainingSeats <= 0 || serviceData.isClosed ? 'DECLINED' : 'CONFIRMED'}">
-                      ${serviceData.remainingSeats <= 0 || serviceData.isClosed ? 'Complet' : 'Disponible'}
-                    </span>
-                  </div>
+                    <button class="button button--ghost" type="button" data-delete-event="${event.id}">Supprimer</button>
+                  </article>
+                `
+              )
+              .join('')
+          : '<p class="admin-empty">Aucun événement pour le moment.</p>';
+      };
 
-                  <div class="field-grid">
-                    <div class="field">
-                      <label>Capacité</label>
-                      <input type="number" min="1" max="500" value="${serviceData.capacity}" data-capacity-value />
+      const renderGallery = (gallery) => {
+        galleryList.innerHTML = gallery.length
+          ? gallery
+              .map(
+                (photo) => `
+                  <article class="admin-content-item">
+                    <img src="${photo.imageUrl}" alt="" />
+                    <div>
+                      <span>${photo.category}</span>
+                      <strong>${photo.title}</strong>
                     </div>
-                    <label class="admin-checkbox">
-                      <input type="checkbox" data-capacity-closed ${serviceData.isClosed ? 'checked' : ''} />
-                      <span>Fermer ce service</span>
-                    </label>
-                  </div>
-
-                  <div class="field">
-                    <label>Note</label>
-                    <textarea rows="2" data-capacity-note>${serviceData.note ?? ''}</textarea>
-                  </div>
-
-                  <div class="admin-reservation-card__actions">
-                    <button class="button button--secondary" type="submit">Mettre à jour</button>
-                  </div>
-                </form>
-              `
-            )
-            .join('');
-        } catch (_error) {
-          capacitiesNode.innerHTML = '<p class="admin-empty">Impossible de charger les capacites.</p>';
-        }
+                    <button class="button button--ghost" type="button" data-delete-gallery="${photo.id}">Supprimer</button>
+                  </article>
+                `
+              )
+              .join('')
+          : '<p class="admin-empty">Aucune photo publiée.</p>';
       };
 
-      const loadSchedules = async () => {
-        if (!state.isAuthenticated) {
-          schedulesNode.innerHTML = '<p class="admin-empty">Connexion admin requise.</p>';
-          return;
-        }
-
-        try {
-          const response = await adminFetch('/admin/schedules');
-
-          if (!response.ok) throw new Error('schedules');
-          state.schedules = await response.json();
-          renderSchedules();
-        } catch (_error) {
-          schedulesNode.innerHTML = '<p class="admin-empty">Impossible de charger les réglages hebdomadaires.</p>';
-        }
+      const loadContent = async () => {
+        const response = await adminFetch('/admin/content');
+        if (!response.ok) throw new Error('content');
+        state.content = await response.json();
+        fillForms(state.content);
+        renderEvents(state.content.events);
+        renderGallery(state.content.gallery);
       };
 
-      const loadReservations = async () => {
-        if (!state.isAuthenticated) {
-          setFeedback(loginFeedback, 'Connectez-vous pour charger les reservations.', 'warning');
-          reservationsNode.innerHTML = '<p class="admin-empty">Connexion admin requise.</p>';
-          summaryNode.innerHTML = '';
-          upcomingServicesNode.innerHTML = '';
-          serviceFocusNode.innerHTML = '';
-          return;
+      const editorialPayload = () => ({
+        menu: {
+          title: inputValue(menuForm, 'title').trim(),
+          period: inputValue(menuForm, 'period').trim(),
+          updatedAt: inputValue(menuForm, 'updatedAt').trim(),
+          intro: inputValue(menuForm, 'intro').trim(),
+          formulas: parseFormulas(inputValue(menuForm, 'formulas')),
+          sections: parseSections(inputValue(menuForm, 'sections')),
+          notes: splitLines(inputValue(menuForm, 'notes'))
+        },
+        suggestions: {
+          dish: inputValue(suggestionsForm, 'dish').trim(),
+          drink: inputValue(suggestionsForm, 'drink').trim(),
+          beer: inputValue(suggestionsForm, 'beer').trim(),
+          updatedAt: inputValue(suggestionsForm, 'updatedAt').trim()
         }
-
-        setFeedback(reservationsFeedback, 'Chargement des reservations...', '');
-
-        try {
-          const response = await adminFetch('/admin/reservations');
-
-          if (!response.ok) {
-            throw new Error(`admin:${response.status}`);
-          }
-
-          state.reservations = await response.json();
-
-          try {
-            await loadServiceAvailability();
-            applyClientFilters();
-            renderUpcomingServices();
-            renderSummary();
-            renderServiceFocus();
-            renderCalendar();
-            renderReservations();
-          } catch (renderError) {
-            console.error('Admin reservations render error', renderError);
-            throw new Error('admin:render');
-          }
-
-          setFeedback(
-            reservationsFeedback,
-            `${state.filteredReservations.length} reservation(s) affichee(s) sur ${state.reservations.length} chargee(s).`,
-            'success'
-          );
-        } catch (error) {
-          console.error('Admin reservations load error', error);
-          state.reservations = [];
-          state.filteredReservations = [];
-          state.availability = null;
-          upcomingServicesNode.innerHTML = '';
-          renderSummary();
-          renderServiceFocus();
-          renderCalendar();
-          renderReservations();
-          setFeedback(
-            reservationsFeedback,
-            'Impossible de charger les reservations. Rechargez la page puis reconnectez-vous si besoin.',
-            'error'
-          );
-        }
-      };
-
-      monthInput.value = currentMonth();
-      const manualDateInput = manualForm.querySelector('#manual-date');
-      const manualTimeInput = manualForm.querySelector('#manual-time');
-      if (manualDateInput instanceof HTMLInputElement) manualDateInput.value = today();
-      if (manualTimeInput instanceof HTMLInputElement) manualTimeInput.value = '19:30';
+      });
 
       loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const username = usernameInput.value.trim();
-        const password = passwordInput.value;
-
-        if (!username || !password) {
-          setFeedback(loginFeedback, 'Identifiant et mot de passe requis.', 'warning');
-          return;
-        }
-
-        setFeedback(loginFeedback, 'Connexion...', '');
-
         try {
           const response = await adminFetch('/admin/login', {
             method: 'POST',
-            body: JSON.stringify({ username, password })
+            body: JSON.stringify({
+              username: usernameInput.value.trim(),
+              password: passwordInput.value
+            })
           });
-
           if (!response.ok) throw new Error('login');
-
-          setAuthenticated(true, username);
-          await renderCapacities();
-          await loadSchedules();
-          await loadReservations();
+          setAuthenticated(true, usernameInput.value.trim());
+          await loadContent();
         } catch (_error) {
           setAuthenticated(false);
           setFeedback(loginFeedback, 'Identifiant ou mot de passe incorrect.', 'error');
@@ -1133,325 +492,135 @@ const apiUrl = site.reservationApiUrl;
         await adminFetch('/admin/logout', { method: 'POST' }).catch(() => {});
         setAuthenticated(false);
         usernameInput.value = '';
-        state.reservations = [];
-        state.filteredReservations = [];
-        state.schedules = [];
-        summaryNode.innerHTML = '';
-        upcomingServicesNode.innerHTML = '';
-        serviceFocusNode.innerHTML = '';
-        reservationsNode.innerHTML = '<p class="admin-empty">Connexion admin requise.</p>';
-        schedulesNode.innerHTML = '<p class="admin-empty">Connexion admin requise.</p>';
         setFeedback(loginFeedback, 'Déconnecté.', 'warning');
       });
 
-      filtersForm.addEventListener('submit', async (event) => {
+      viewButtons.forEach((button) => {
+        button.addEventListener('click', () => {
+          if (!(button instanceof HTMLButtonElement) || !button.dataset.adminViewTarget) return;
+          setActiveView(button.dataset.adminViewTarget);
+        });
+      });
+
+      menuForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        if (state.reservationMode === 'service') ensureServiceSelection();
-        await renderCapacities();
-        await loadReservations();
-      });
-
-      filtersForm.addEventListener('input', () => {
-        if (!state.reservations.length) return;
-        if (state.reservationMode === 'service') ensureServiceSelection();
-        applyClientFilters();
-        renderUpcomingServices();
-        renderSummary();
-        renderServiceFocus();
-        renderCalendar();
-        renderReservations();
-      });
-
-      filtersForm.addEventListener('click', async (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLElement)) return;
-        const button = target.closest('[data-filter-preset]');
-        if (!(button instanceof HTMLButtonElement)) return;
-
-        const preset = button.dataset.filterPreset;
-        if (preset === 'all') {
-          dateInput.value = '';
-        } else if (preset === 'today') {
-          dateInput.value = today();
-        } else if (preset === 'tomorrow') {
-          dateInput.value = tomorrow();
-        }
-
-        await renderCapacities();
-        await loadReservations();
-      });
-
-      reservationTabs.addEventListener('click', async (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLElement)) return;
-        const button = target.closest('[data-reservation-mode]');
-        if (!(button instanceof HTMLButtonElement)) return;
-        const mode = button.dataset.reservationMode;
-        if (!mode) return;
-        setReservationMode(mode);
-        if (mode === 'service') ensureServiceSelection();
-        await loadReservations();
-      });
-
-      upcomingServicesNode.addEventListener('click', async (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLElement)) return;
-        const button = target.closest('[data-upcoming-date]');
-        if (!(button instanceof HTMLButtonElement)) return;
-        const nextDate = button.dataset.upcomingDate;
-        if (!nextDate) return;
-        dateInput.value = nextDate;
-        setReservationMode('service');
-        await loadReservations();
-      });
-
-      monthInput.addEventListener('change', () => {
-        renderCalendar();
-      });
-
-      capacitiesNode.addEventListener('submit', async (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLFormElement) || !target.matches('[data-capacity-form]')) return;
-        event.preventDefault();
-
-        if (!state.isAuthenticated) {
-          setFeedback(capacityFeedback, 'Connexion admin requise pour modifier les capacites.', 'error');
-          return;
-        }
-
-        const service = target.dataset.service;
-        const capacityInput = target.querySelector('[data-capacity-value]');
-        const closedInput = target.querySelector('[data-capacity-closed]');
-        const noteInput = target.querySelector('[data-capacity-note]');
-
-        if (
-          !service ||
-          !(capacityInput instanceof HTMLInputElement) ||
-          !(closedInput instanceof HTMLInputElement) ||
-          !(noteInput instanceof HTMLTextAreaElement)
-        ) {
-          return;
-        }
-
+        const feedback = document.querySelector('[data-menu-feedback]');
+        if (!(feedback instanceof HTMLElement)) return;
         try {
-          const response = await adminFetch('/admin/capacities', {
+          const response = await adminFetch('/admin/content/editorial', {
             method: 'PUT',
-            body: JSON.stringify({
-              date: dateInput.value,
-              service,
-              capacity: Number(capacityInput.value),
-              isClosed: closedInput.checked,
-              note: noteInput.value.trim()
-            })
+            body: JSON.stringify(editorialPayload())
           });
-
-          if (!response.ok) throw new Error('capacity');
-
-          setFeedback(capacityFeedback, `Capacite du ${serviceLabels[service]} mise a jour.`, 'success');
-          await renderCapacities();
+          if (!response.ok) throw new Error('menu');
+          setFeedback(feedback, 'Carte publiée.', 'success');
+          await loadContent();
         } catch (_error) {
-          setFeedback(capacityFeedback, 'Impossible de mettre a jour la capacite.', 'error');
+          setFeedback(feedback, 'Impossible de publier la carte.', 'error');
         }
       });
 
-      schedulesNode.addEventListener('submit', async (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLFormElement) || !target.matches('[data-schedule-form]')) return;
+      suggestionsForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-
-        if (!state.isAuthenticated) {
-          setFeedback(scheduleFeedback, 'Connexion admin requise pour modifier les horaires.', 'error');
-          return;
-        }
-
-        const service = target.dataset.service;
-        const weekday = target.dataset.weekday;
-        const capacityInput = target.querySelector('[data-schedule-capacity]');
-        const closedInput = target.querySelector('[data-schedule-closed]');
-        const openInput = target.querySelector('[data-schedule-open]');
-        const closeInput = target.querySelector('[data-schedule-close]');
-        const noteInput = target.querySelector('[data-schedule-note]');
-
-        if (
-          !service ||
-          !weekday ||
-          !(capacityInput instanceof HTMLInputElement) ||
-          !(closedInput instanceof HTMLInputElement) ||
-          !(openInput instanceof HTMLInputElement) ||
-          !(closeInput instanceof HTMLInputElement) ||
-          !(noteInput instanceof HTMLInputElement)
-        ) {
-          return;
-        }
-
+        const feedback = document.querySelector('[data-suggestions-feedback]');
+        if (!(feedback instanceof HTMLElement)) return;
         try {
-          const response = await adminFetch('/admin/schedules', {
+          const response = await adminFetch('/admin/content/editorial', {
             method: 'PUT',
-            body: JSON.stringify({
-              weekday: Number(weekday),
-              service,
-              capacity: Number(capacityInput.value),
-              isClosed: closedInput.checked,
-              openTime: openInput.value,
-              closeTime: closeInput.value,
-              note: noteInput.value.trim()
-            })
+            body: JSON.stringify(editorialPayload())
           });
-
-          if (!response.ok) throw new Error('schedule');
-
-          setFeedback(scheduleFeedback, `${serviceLabels[service]} mis à jour pour ${weekdayLabels[Number(weekday)]}.`, 'success');
-          await loadSchedules();
-          await renderCapacities();
+          if (!response.ok) throw new Error('suggestions');
+          setFeedback(feedback, 'Suggestions publiées.', 'success');
+          await loadContent();
         } catch (_error) {
-          setFeedback(scheduleFeedback, 'Impossible de mettre à jour les horaires hebdomadaires.', 'error');
+          setFeedback(feedback, 'Impossible de publier les suggestions.', 'error');
         }
       });
 
-      manualForm.addEventListener('submit', async (event) => {
+      eventForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-
-        if (!state.isAuthenticated) {
-          setFeedback(manualFeedback, 'Connexion admin requise pour ajouter une reservation.', 'error');
-          return;
-        }
-
-        const formData = new FormData(manualForm);
-        setFeedback(manualFeedback, 'Ajout de la reservation...', '');
-
+        const feedback = document.querySelector('[data-event-feedback]');
+        const imageInput = field(eventForm, 'image');
+        if (!(feedback instanceof HTMLElement) || !(imageInput instanceof HTMLInputElement)) return;
         try {
-          const response = await adminFetch('/admin/reservations', {
+          const imageUrl = await readImageAsDataUrl(imageInput);
+          const response = await adminFetch('/admin/events', {
             method: 'POST',
             body: JSON.stringify({
-              name: formData.get('name')?.toString().trim(),
-              phone: formData.get('phone')?.toString().trim(),
-              email: formData.get('email')?.toString().trim(),
-              reservationDate: formData.get('reservationDate')?.toString().trim(),
-              reservationTime: formData.get('reservationTime')?.toString().trim(),
-              service: formData.get('service')?.toString().trim(),
-              partySize: formData.get('partySize')?.toString().trim(),
-              message: formData.get('message')?.toString().trim(),
-              notes: formData.get('notes')?.toString().trim(),
-              source: formData.get('source')?.toString().trim(),
-              status: formData.get('status')?.toString().trim()
+              title: inputValue(eventForm, 'title').trim(),
+              eventDate: inputValue(eventForm, 'eventDate'),
+              eventTime: inputValue(eventForm, 'eventTime').trim(),
+              summary: inputValue(eventForm, 'summary').trim(),
+              imageUrl,
+              isPublished: true
             })
           });
-
-          if (!response.ok) throw new Error('manual');
-
-          manualForm.reset();
-          if (manualDateInput instanceof HTMLInputElement) manualDateInput.value = today();
-          if (manualTimeInput instanceof HTMLInputElement) manualTimeInput.value = '19:30';
-          setFeedback(manualFeedback, 'Reservation ajoutée.', 'success');
-          setActiveView('reservations');
-          await renderCapacities();
-          await loadReservations();
+          if (!response.ok) throw new Error('event');
+          eventForm.reset();
+          setFeedback(feedback, 'Événement publié.', 'success');
+          await loadContent();
         } catch (_error) {
-          setFeedback(manualFeedback, "Impossible d'ajouter la reservation.", 'error');
+          setFeedback(feedback, 'Impossible de publier l’événement. Image max 1,8 Mo.', 'error');
         }
       });
 
-      calendarNode.addEventListener('click', async (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLElement)) return;
-
-        const calendarDateButton = target.closest('[data-calendar-date]');
-        if (!(calendarDateButton instanceof HTMLButtonElement)) return;
-        const clickedDate = calendarDateButton.dataset.calendarDate;
-        if (!clickedDate) return;
-
-        dateInput.value = clickedDate;
-        setActiveView('settings');
-        await renderCapacities();
-        await loadReservations();
-      });
-
-      reservationsNode.addEventListener('click', async (event) => {
-        const target = event.target;
-        if (!(target instanceof HTMLElement)) return;
-
-        const focusDateButton = target.closest('[data-copy-date]');
-        if (focusDateButton instanceof HTMLButtonElement) {
-          const focusDate = focusDateButton.dataset.copyDate;
-          if (focusDate) {
-            dateInput.value = focusDate;
-            setActiveView('settings');
-            await renderCapacities();
-            await loadReservations();
-          }
-          return;
-        }
-
-        const button = target.closest('[data-save-reservation]');
-        if (!(button instanceof HTMLButtonElement)) return;
-
-        if (!state.isAuthenticated) {
-          setFeedback(reservationsFeedback, 'Connexion admin requise pour modifier une reservation.', 'error');
-          return;
-        }
-
-        const card = button.closest('.admin-reservation-card, .admin-reservation-row');
-        const reservationId = button.dataset.id;
-        const statusSelect = card?.querySelector('[data-reservation-status]');
-        const notesInput = card?.querySelector('[data-reservation-notes]');
-
-        if (
-          !reservationId ||
-          !(statusSelect instanceof HTMLSelectElement) ||
-          !(notesInput instanceof HTMLTextAreaElement)
-        ) {
-          return;
-        }
-
+      galleryForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        const feedback = document.querySelector('[data-gallery-feedback]');
+        const imageInput = field(galleryForm, 'image');
+        if (!(feedback instanceof HTMLElement) || !(imageInput instanceof HTMLInputElement)) return;
         try {
-          const response = await adminFetch(`/admin/reservations/${reservationId}/status`, {
-            method: 'PATCH',
+          const imageUrl = await readImageAsDataUrl(imageInput);
+          const response = await adminFetch('/admin/gallery', {
+            method: 'POST',
             body: JSON.stringify({
-              status: statusSelect.value,
-              notes: notesInput.value.trim()
+              title: inputValue(galleryForm, 'title').trim(),
+              category: inputValue(galleryForm, 'category'),
+              alt: inputValue(galleryForm, 'title').trim(),
+              imageUrl,
+              isPublished: true
             })
           });
-
-          if (!response.ok) throw new Error('reservation');
-
-          setFeedback(reservationsFeedback, 'Reservation mise a jour.', 'success');
-          await renderCapacities();
-          await loadReservations();
+          if (!response.ok) throw new Error('gallery');
+          galleryForm.reset();
+          setFeedback(feedback, 'Photo ajoutée.', 'success');
+          await loadContent();
         } catch (_error) {
-          setFeedback(reservationsFeedback, 'Impossible de mettre a jour la reservation.', 'error');
+          setFeedback(feedback, 'Impossible d’ajouter la photo. Image max 1,8 Mo.', 'error');
         }
       });
 
-      renderCapacities();
-      viewSwitcher.addEventListener('click', (event) => {
+      eventsList.addEventListener('click', async (event) => {
         const target = event.target;
         if (!(target instanceof HTMLElement)) return;
-        const button = target.closest('[data-admin-view-target]');
+        const button = target.closest('[data-delete-event]');
         if (!(button instanceof HTMLButtonElement)) return;
-        const nextView = button.dataset.adminViewTarget;
-        if (!nextView) return;
-        setActiveView(nextView);
+        const id = button.dataset.deleteEvent;
+        if (!id) return;
+        await adminFetch(`/admin/events/${id}`, { method: 'DELETE' });
+        await loadContent();
       });
 
-      const initialView = location.hash.replace('#', '');
-      setActiveView(
-        ['manual', 'reservations', 'settings'].includes(initialView) ? initialView : 'planning',
-        false
-      );
-      setReservationMode('service');
-      ensureServiceSelection();
-      renderUpcomingServices();
+      galleryList.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest('[data-delete-gallery]');
+        if (!(button instanceof HTMLButtonElement)) return;
+        const id = button.dataset.deleteGallery;
+        if (!id) return;
+        await adminFetch(`/admin/gallery/${id}`, { method: 'DELETE' });
+        await loadContent();
+      });
+
       setAuthenticated(false);
       adminFetch('/admin/me')
         .then(async (response) => {
           if (!response.ok) throw new Error('session');
           const session = await response.json();
           setAuthenticated(true, session.username);
-          await loadSchedules();
-          await loadReservations();
+          await loadContent();
         })
         .catch(() => {
-          setFeedback(loginFeedback, 'Connectez-vous pour accéder aux données admin.', 'warning');
+          setFeedback(loginFeedback, 'Connectez-vous pour modifier les contenus.', 'warning');
         });
     };
 

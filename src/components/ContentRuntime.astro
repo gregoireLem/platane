@@ -1,0 +1,10 @@
+<script>
+  import { initContentRuntime } from '../lib/content-runtime';
+
+  const run = () => {
+    initContentRuntime(import.meta.env.PUBLIC_RESERVATION_API_URL || 'http://127.0.0.1:8787');
+  };
+
+  document.addEventListener('astro:page-load', run);
+  run();
+</script>
