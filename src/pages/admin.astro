@@ -48,26 +48,37 @@ const apiUrl = site.reservationApiUrl;
       <section class="admin-card" data-reveal>
         <div class="admin-card__header">
           <h2>Accès</h2>
-          <p>Le token admin reste enregistré uniquement dans ce navigateur.</p>
+          <p>Connectez-vous avec le compte admin pour gérer les réservations.</p>
         </div>
 
-        <form class="admin-token-form" data-admin-token-form data-api-url={apiUrl}>
+        <form class="admin-login-form" data-admin-login-form data-api-url={apiUrl}>
           <div class="field">
-            <label for="admin-token">Token admin</label>
+            <label for="admin-username">Identifiant</label>
             <input
-              id="admin-token"
-              name="token"
-              type="password"
-              placeholder="Collez le token du backend"
+              id="admin-username"
+              name="username"
+              type="text"
+              autocomplete="username"
+              placeholder="Identifiant admin"
             />
           </div>
-          <div class="admin-token-form__actions">
-            <button class="button button--primary" type="submit">Enregistrer le token</button>
-            <button class="button button--secondary" type="button" data-admin-token-clear>
-              Effacer
+          <div class="field">
+            <label for="admin-password">Mot de passe</label>
+            <input
+              id="admin-password"
+              name="password"
+              type="password"
+              autocomplete="current-password"
+              placeholder="Mot de passe"
+            />
+          </div>
+          <div class="admin-login-form__actions">
+            <button class="button button--primary" type="submit">Se connecter</button>
+            <button class="button button--secondary" type="button" data-admin-logout>
+              Se déconnecter
             </button>
           </div>
-          <p class="admin-inline-feedback" data-admin-token-feedback aria-live="polite"></p>
+          <p class="admin-inline-feedback" data-admin-login-feedback aria-live="polite"></p>
         </form>
       </section>
 
@@ -133,7 +144,7 @@ const apiUrl = site.reservationApiUrl;
             />
           </div>
 
-          <div class="admin-token-form__actions">
+          <div class="admin-form-actions">
             <button class="button button--primary" type="submit">Actualiser</button>
           </div>
         </form>
@@ -240,7 +251,7 @@ const apiUrl = site.reservationApiUrl;
             <textarea id="manual-message" name="message" rows="3" placeholder="Demande client, précision d'horaire, occasion..."></textarea>
           </div>
 
-          <div class="admin-token-form__actions">
+          <div class="admin-form-actions">
             <button class="button button--primary" type="submit">Ajouter la réservation</button>
           </div>
           <p class="admin-inline-feedback" data-admin-manual-feedback aria-live="polite"></p>
@@ -303,7 +314,6 @@ const apiUrl = site.reservationApiUrl;
 
 <script is:inline>
   (() => {
-    const tokenStorageKey = 'au-platane-admin-token';
     const weekdayLabels = ['Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche'];
     const statusLabels = {
       PENDING: 'En attente',
@@ -325,7 +335,7 @@ const apiUrl = site.reservationApiUrl;
       if (adminPage.dataset.adminInitBound === 'true') return;
       adminPage.dataset.adminInitBound = 'true';
 
-      const tokenForm = document.querySelector('[data-admin-token-form]');
+      const loginForm = document.querySelector('[data-admin-login-form]');
       const filtersForm = document.querySelector('[data-admin-filters]');
       const capacitiesNode = document.querySelector('[data-admin-capacities]');
       const schedulesNode = document.querySelector('[data-admin-schedules]');
@@ -334,7 +344,7 @@ const apiUrl = site.reservationApiUrl;
       const serviceFocusNode = document.querySelector('[data-admin-service-focus]');
       const calendarNode = document.querySelector('[data-admin-calendar]');
       const reservationsNode = document.querySelector('[data-admin-reservations]');
-      const tokenFeedback = document.querySelector('[data-admin-token-feedback]');
+      const loginFeedback = document.querySelector('[data-admin-login-feedback]');
       const capacityFeedback = document.querySelector('[data-admin-capacity-feedback]');
       const scheduleFeedback = document.querySelector('[data-admin-schedule-feedback]');
       const reservationsFeedback = document.querySelector('[data-admin-reservations-feedback]');
@@ -344,7 +354,7 @@ const apiUrl = site.reservationApiUrl;
       const reservationTabs = document.querySelector('[data-admin-reservation-tabs]');
 
       if (
-        !(tokenForm instanceof HTMLFormElement) ||
+        !(loginForm instanceof HTMLFormElement) ||
         !(filtersForm instanceof HTMLFormElement) ||
         !(capacitiesNode instanceof HTMLElement) ||
         !(schedulesNode instanceof HTMLElement) ||
@@ -353,7 +363,7 @@ const apiUrl = site.reservationApiUrl;
         !(serviceFocusNode instanceof HTMLElement) ||
         !(calendarNode instanceof HTMLElement) ||
         !(reservationsNode instanceof HTMLElement) ||
-        !(tokenFeedback instanceof HTMLElement) ||
+        !(loginFeedback instanceof HTMLElement) ||
         !(capacityFeedback instanceof HTMLElement) ||
         !(scheduleFeedback instanceof HTMLElement) ||
         !(reservationsFeedback instanceof HTMLElement) ||
@@ -365,11 +375,13 @@ const apiUrl = site.reservationApiUrl;
         return;
       }
 
-      const apiRoot = tokenForm.dataset.apiUrl;
+      const apiRoot = loginForm.dataset.apiUrl;
       if (!apiRoot) return;
 
-      const tokenInput = tokenForm.querySelector('#admin-token');
-      const clearButton = tokenForm.querySelector('[data-admin-token-clear]');
+      const usernameInput = loginForm.querySelector('#admin-username');
+      const passwordInput = loginForm.querySelector('#admin-password');
+      const loginButton = loginForm.querySelector('button[type="submit"]');
+      const logoutButton = loginForm.querySelector('[data-admin-logout]');
       const dateInput = filtersForm.querySelector('#admin-date');
       const serviceInput = filtersForm.querySelector('#admin-service');
       const statusInput = filtersForm.querySelector('#admin-status');
@@ -380,8 +392,10 @@ const apiUrl = site.reservationApiUrl;
       const viewPanels = Array.from(document.querySelectorAll('[data-admin-view]'));
 
       if (
-        !(tokenInput instanceof HTMLInputElement) ||
-        !(clearButton instanceof HTMLButtonElement) ||
+        !(usernameInput instanceof HTMLInputElement) ||
+        !(passwordInput instanceof HTMLInputElement) ||
+        !(loginButton instanceof HTMLButtonElement) ||
+        !(logoutButton instanceof HTMLButtonElement) ||
         !(dateInput instanceof HTMLInputElement) ||
         !(serviceInput instanceof HTMLSelectElement) ||
         !(statusInput instanceof HTMLSelectElement) ||
@@ -393,7 +407,7 @@ const apiUrl = site.reservationApiUrl;
       }
 
       const state = {
-        token: localStorage.getItem(tokenStorageKey) ?? '',
+        isAuthenticated: false,
         reservations: [],
         filteredReservations: [],
         schedules: [],
@@ -429,10 +443,31 @@ const apiUrl = site.reservationApiUrl;
         node.dataset.tone = tone;
       };
 
-      const authHeaders = () => ({
-        'Content-Type': 'application/json',
-        'x-admin-token': state.token
+      const jsonHeaders = () => ({
+        'Content-Type': 'application/json'
       });
+
+      const adminFetch = (path, options = {}) =>
+        fetch(`${apiRoot}${path}`, {
+          ...options,
+          credentials: 'include',
+          headers: {
+            ...jsonHeaders(),
+            ...(options.headers ?? {})
+          }
+        });
+
+      const setAuthenticated = (isAuthenticated, username = '') => {
+        state.isAuthenticated = isAuthenticated;
+        usernameInput.disabled = isAuthenticated;
+        loginButton.disabled = isAuthenticated;
+        passwordInput.value = '';
+        logoutButton.disabled = !isAuthenticated;
+
+        if (isAuthenticated) {
+          setFeedback(loginFeedback, `Connecté${username ? ` en tant que ${username}` : ''}.`, 'success');
+        }
+      };
 
       const setActiveView = (view, syncHash = true) => {
         state.view = view;
@@ -985,15 +1020,13 @@ const apiUrl = site.reservationApiUrl;
       };
 
       const loadSchedules = async () => {
-        if (!state.token) {
-          schedulesNode.innerHTML = '<p class="admin-empty">Token manquant.</p>';
+        if (!state.isAuthenticated) {
+          schedulesNode.innerHTML = '<p class="admin-empty">Connexion admin requise.</p>';
           return;
         }
 
         try {
-          const response = await fetch(`${apiRoot}/admin/schedules`, {
-            headers: authHeaders()
-          });
+          const response = await adminFetch('/admin/schedules');
 
           if (!response.ok) throw new Error('schedules');
           state.schedules = await response.json();
@@ -1004,9 +1037,9 @@ const apiUrl = site.reservationApiUrl;
       };
 
       const loadReservations = async () => {
-        if (!state.token) {
-          setFeedback(tokenFeedback, 'Ajoutez le token admin pour charger les reservations.', 'warning');
-          reservationsNode.innerHTML = '<p class="admin-empty">Token manquant.</p>';
+        if (!state.isAuthenticated) {
+          setFeedback(loginFeedback, 'Connectez-vous pour charger les reservations.', 'warning');
+          reservationsNode.innerHTML = '<p class="admin-empty">Connexion admin requise.</p>';
           summaryNode.innerHTML = '';
           upcomingServicesNode.innerHTML = '';
           serviceFocusNode.innerHTML = '';
@@ -1016,9 +1049,7 @@ const apiUrl = site.reservationApiUrl;
         setFeedback(reservationsFeedback, 'Chargement des reservations...', '');
 
         try {
-          const response = await fetch(`${apiRoot}/admin/reservations`, {
-            headers: authHeaders()
-          });
+          const response = await adminFetch('/admin/reservations');
 
           if (!response.ok) {
             throw new Error(`admin:${response.status}`);
@@ -1056,41 +1087,61 @@ const apiUrl = site.reservationApiUrl;
           renderReservations();
           setFeedback(
             reservationsFeedback,
-            'Impossible de charger les reservations. Rechargez la page puis reenregistrez le token si besoin.',
+            'Impossible de charger les reservations. Rechargez la page puis reconnectez-vous si besoin.',
             'error'
           );
         }
       };
 
-      tokenInput.value = state.token;
       monthInput.value = currentMonth();
       const manualDateInput = manualForm.querySelector('#manual-date');
       const manualTimeInput = manualForm.querySelector('#manual-time');
       if (manualDateInput instanceof HTMLInputElement) manualDateInput.value = today();
       if (manualTimeInput instanceof HTMLInputElement) manualTimeInput.value = '19:30';
 
-      tokenForm.addEventListener('submit', async (event) => {
+      loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        state.token = tokenInput.value.trim();
+        const username = usernameInput.value.trim();
+        const password = passwordInput.value;
 
-        if (!state.token) {
-          localStorage.removeItem(tokenStorageKey);
-          setFeedback(tokenFeedback, 'Token vide.', 'warning');
+        if (!username || !password) {
+          setFeedback(loginFeedback, 'Identifiant et mot de passe requis.', 'warning');
           return;
         }
 
-        localStorage.setItem(tokenStorageKey, state.token);
-        setFeedback(tokenFeedback, 'Token enregistre sur ce navigateur.', 'success');
-        await renderCapacities();
-        await loadSchedules();
-        await loadReservations();
+        setFeedback(loginFeedback, 'Connexion...', '');
+
+        try {
+          const response = await adminFetch('/admin/login', {
+            method: 'POST',
+            body: JSON.stringify({ username, password })
+          });
+
+          if (!response.ok) throw new Error('login');
+
+          setAuthenticated(true, username);
+          await renderCapacities();
+          await loadSchedules();
+          await loadReservations();
+        } catch (_error) {
+          setAuthenticated(false);
+          setFeedback(loginFeedback, 'Identifiant ou mot de passe incorrect.', 'error');
+        }
       });
 
-      clearButton.addEventListener('click', () => {
-        state.token = '';
-        tokenInput.value = '';
-        localStorage.removeItem(tokenStorageKey);
-        setFeedback(tokenFeedback, 'Token efface.', 'warning');
+      logoutButton.addEventListener('click', async () => {
+        await adminFetch('/admin/logout', { method: 'POST' }).catch(() => {});
+        setAuthenticated(false);
+        usernameInput.value = '';
+        state.reservations = [];
+        state.filteredReservations = [];
+        state.schedules = [];
+        summaryNode.innerHTML = '';
+        upcomingServicesNode.innerHTML = '';
+        serviceFocusNode.innerHTML = '';
+        reservationsNode.innerHTML = '<p class="admin-empty">Connexion admin requise.</p>';
+        schedulesNode.innerHTML = '<p class="admin-empty">Connexion admin requise.</p>';
+        setFeedback(loginFeedback, 'Déconnecté.', 'warning');
       });
 
       filtersForm.addEventListener('submit', async (event) => {
@@ -1163,8 +1214,8 @@ const apiUrl = site.reservationApiUrl;
         if (!(target instanceof HTMLFormElement) || !target.matches('[data-capacity-form]')) return;
         event.preventDefault();
 
-        if (!state.token) {
-          setFeedback(capacityFeedback, 'Token admin requis pour modifier les capacites.', 'error');
+        if (!state.isAuthenticated) {
+          setFeedback(capacityFeedback, 'Connexion admin requise pour modifier les capacites.', 'error');
           return;
         }
 
@@ -1183,9 +1234,8 @@ const apiUrl = site.reservationApiUrl;
         }
 
         try {
-          const response = await fetch(`${apiRoot}/admin/capacities`, {
+          const response = await adminFetch('/admin/capacities', {
             method: 'PUT',
-            headers: authHeaders(),
             body: JSON.stringify({
               date: dateInput.value,
               service,
@@ -1209,8 +1259,8 @@ const apiUrl = site.reservationApiUrl;
         if (!(target instanceof HTMLFormElement) || !target.matches('[data-schedule-form]')) return;
         event.preventDefault();
 
-        if (!state.token) {
-          setFeedback(scheduleFeedback, 'Token admin requis pour modifier les horaires.', 'error');
+        if (!state.isAuthenticated) {
+          setFeedback(scheduleFeedback, 'Connexion admin requise pour modifier les horaires.', 'error');
           return;
         }
 
@@ -1235,9 +1285,8 @@ const apiUrl = site.reservationApiUrl;
         }
 
         try {
-          const response = await fetch(`${apiRoot}/admin/schedules`, {
+          const response = await adminFetch('/admin/schedules', {
             method: 'PUT',
-            headers: authHeaders(),
             body: JSON.stringify({
               weekday: Number(weekday),
               service,
@@ -1262,8 +1311,8 @@ const apiUrl = site.reservationApiUrl;
       manualForm.addEventListener('submit', async (event) => {
         event.preventDefault();
 
-        if (!state.token) {
-          setFeedback(manualFeedback, 'Token admin requis pour ajouter une reservation.', 'error');
+        if (!state.isAuthenticated) {
+          setFeedback(manualFeedback, 'Connexion admin requise pour ajouter une reservation.', 'error');
           return;
         }
 
@@ -1271,9 +1320,8 @@ const apiUrl = site.reservationApiUrl;
         setFeedback(manualFeedback, 'Ajout de la reservation...', '');
 
         try {
-          const response = await fetch(`${apiRoot}/admin/reservations`, {
+          const response = await adminFetch('/admin/reservations', {
             method: 'POST',
-            headers: authHeaders(),
             body: JSON.stringify({
               name: formData.get('name')?.toString().trim(),
               phone: formData.get('phone')?.toString().trim(),
@@ -1337,8 +1385,8 @@ const apiUrl = site.reservationApiUrl;
         const button = target.closest('[data-save-reservation]');
         if (!(button instanceof HTMLButtonElement)) return;
 
-        if (!state.token) {
-          setFeedback(reservationsFeedback, 'Token admin requis pour modifier une reservation.', 'error');
+        if (!state.isAuthenticated) {
+          setFeedback(reservationsFeedback, 'Connexion admin requise pour modifier une reservation.', 'error');
           return;
         }
 
@@ -1356,9 +1404,8 @@ const apiUrl = site.reservationApiUrl;
         }
 
         try {
-          const response = await fetch(`${apiRoot}/admin/reservations/${reservationId}/status`, {
+          const response = await adminFetch(`/admin/reservations/${reservationId}/status`, {
             method: 'PATCH',
-            headers: authHeaders(),
             body: JSON.stringify({
               status: statusSelect.value,
               notes: notesInput.value.trim()
@@ -1394,11 +1441,18 @@ const apiUrl = site.reservationApiUrl;
       setReservationMode('service');
       ensureServiceSelection();
       renderUpcomingServices();
-      if (state.token) {
-        setFeedback(tokenFeedback, 'Token charge depuis ce navigateur.', 'success');
-        loadSchedules();
-        loadReservations();
-      }
+      setAuthenticated(false);
+      adminFetch('/admin/me')
+        .then(async (response) => {
+          if (!response.ok) throw new Error('session');
+          const session = await response.json();
+          setAuthenticated(true, session.username);
+          await loadSchedules();
+          await loadReservations();
+        })
+        .catch(() => {
+          setFeedback(loginFeedback, 'Connectez-vous pour accéder aux données admin.', 'warning');
+        });
     };
 
     document.addEventListener('astro:page-load', initAdminPage);

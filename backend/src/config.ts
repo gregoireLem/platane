@@ -17,7 +17,14 @@ const configSchema = z.object({
   DATABASE_URL: z.string().min(1),
   PORT: z.coerce.number().int().positive().default(8787),
   FRONTEND_ORIGINS: frontendOriginsSchema,
-  ADMIN_TOKEN: z.string().min(1)
+  ADMIN_USERNAME: z.string().min(1),
+  ADMIN_PASSWORD: z.string().min(1),
+  ADMIN_SESSION_SECRET: z.string().min(32).optional()
 });
 
-export const config = configSchema.parse(process.env);
+const parsedConfig = configSchema.parse(process.env);
+
+export const config = {
+  ...parsedConfig,
+  ADMIN_SESSION_SECRET: parsedConfig.ADMIN_SESSION_SECRET ?? parsedConfig.ADMIN_PASSWORD
+};

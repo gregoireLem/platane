@@ -34,11 +34,25 @@ Exemple de payload :
 
 ### Admin
 
-Les routes admin demandent un header `x-admin-token`.
+Les routes admin utilisent une session HTTP-only creee par `POST /admin/login`.
 
+- `POST /admin/login`
+- `POST /admin/logout`
+- `GET /admin/me`
 - `GET /admin/reservations`
 - `PATCH /admin/reservations/:id/status`
 - `PUT /admin/capacities`
+- `GET /admin/schedules`
+- `PUT /admin/schedules`
+
+Exemple de login :
+
+```json
+{
+  "username": "admin",
+  "password": "mot-de-passe"
+}
+```
 
 Exemple mise a jour statut :
 
@@ -64,7 +78,7 @@ Exemple capacite :
 ## Demarrage local
 
 1. Copier `backend/.env.example` vers `backend/.env`
-2. Renseigner `DATABASE_URL`, `ADMIN_TOKEN` et `FRONTEND_ORIGIN`
+2. Renseigner `DATABASE_URL`, `ADMIN_USERNAME`, `ADMIN_PASSWORD` et `FRONTEND_ORIGINS`
 3. Installer les dependances dans `backend/`
 4. Generer Prisma puis lancer les migrations
 5. Lancer le serveur
@@ -90,7 +104,9 @@ DATABASE_URL=postgresql://...
 DIRECT_URL=postgresql://...
 PORT=8787
 FRONTEND_ORIGINS=https://auplatane.com
-ADMIN_TOKEN=un-secret-tres-long
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=un-mot-de-passe-tres-long
+ADMIN_SESSION_SECRET=un-secret-de-session-tres-long-et-unique
 ```
 
 Une fois le backend publie, recopiez son URL publique dans le front Astro via :

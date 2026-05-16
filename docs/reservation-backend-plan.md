@@ -27,8 +27,10 @@ Option retenue : garder le site Astro statique et brancher un backend separe.
 ```bash
 DATABASE_URL=postgresql://...
 PORT=8787
-FRONTEND_ORIGIN=https://auplatane.com
-ADMIN_TOKEN=un-secret-long
+FRONTEND_ORIGINS=https://auplatane.com
+ADMIN_USERNAME=admin
+ADMIN_PASSWORD=un-mot-de-passe-long
+ADMIN_SESSION_SECRET=un-secret-de-session-long-et-unique
 ```
 
 ## Endpoints a utiliser cote front

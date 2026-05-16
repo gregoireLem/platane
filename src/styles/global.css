@@ -1687,7 +1687,7 @@ p {
   color: var(--muted);
 }
 
-.admin-token-form,
+.admin-login-form,
 .admin-manual-form,
 .admin-filters,
 .admin-reservations {
@@ -1710,7 +1710,8 @@ p {
 .admin-view-switcher,
 .admin-filter-presets,
 .admin-reservation-tabs,
-.admin-token-form__actions,
+.admin-login-form__actions,
+.admin-form-actions,
 .admin-reservation-card__actions {
   display: flex;
   flex-wrap: wrap;
@@ -2471,7 +2472,8 @@ p {
   }
 
   .admin-summary,
-  .admin-token-form__actions,
+  .admin-login-form__actions,
+  .admin-form-actions,
   .admin-reservation-card__actions {
     display: grid;
     grid-template-columns: 1fr;

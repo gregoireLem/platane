@@ -1,4 +1,5 @@
 import { ReservationStatus } from '@prisma/client';
+import crypto from 'node:crypto';
 import { Router } from 'express';
 import { z } from 'zod';
 import { config } from '../config.js';
@@ -12,7 +13,13 @@ import {
   serviceLabel
 } from '../lib/reservations.js';
 
-const adminTokenHeader = 'x-admin-token';
+const adminSessionCookie = 'au_platane_admin_session';
+const sessionMaxAgeMs = 12 * 60 * 60 * 1000;
+
+const loginSchema = z.object({
+  username: z.string().trim().min(1),
+  password: z.string().min(1)
+});
 
 const listReservationsSchema = z.object({
   date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/).optional(),
@@ -59,8 +66,106 @@ const upsertScheduleSchema = z.object({
 
 export const adminRouter = Router();
 
+const safeCompare = (value: string, expected: string) => {
+  const valueBuffer = Buffer.from(value);
+  const expectedBuffer = Buffer.from(expected);
+
+  return (
+    valueBuffer.length === expectedBuffer.length &&
+    crypto.timingSafeEqual(valueBuffer, expectedBuffer)
+  );
+};
+
+const signSessionPayload = (payload: string) =>
+  crypto.createHmac('sha256', config.ADMIN_SESSION_SECRET).update(payload).digest('base64url');
+
+const createSessionValue = () => {
+  const payload = Buffer.from(
+    JSON.stringify({
+      username: config.ADMIN_USERNAME,
+      expiresAt: Date.now() + sessionMaxAgeMs
+    })
+  ).toString('base64url');
+
+  return `${payload}.${signSessionPayload(payload)}`;
+};
+
+const readCookie = (cookieHeader: string | undefined, name: string) => {
+  if (!cookieHeader) return null;
+
+  return (
+    cookieHeader
+      .split(';')
+      .map((item) => item.trim())
+      .find((item) => item.startsWith(`${name}=`))
+      ?.slice(name.length + 1) ?? null
+  );
+};
+
+const isValidSession = (value: string | null) => {
+  if (!value) return false;
+
+  const [payload, signature] = value.split('.');
+  if (!payload || !signature || !safeCompare(signature, signSessionPayload(payload))) {
+    return false;
+  }
+
+  try {
+    const session = JSON.parse(Buffer.from(payload, 'base64url').toString('utf8')) as {
+      username?: string;
+      expiresAt?: number;
+    };
+
+    return session.username === config.ADMIN_USERNAME && Number(session.expiresAt) > Date.now();
+  } catch (_error) {
+    return false;
+  }
+};
+
+const sessionCookieOptions = {
+  httpOnly: true,
+  maxAge: sessionMaxAgeMs,
+  sameSite: process.env.NODE_ENV === 'production' ? 'none' : 'lax',
+  secure: process.env.NODE_ENV === 'production',
+  path: '/admin'
+} as const;
+
+const clearSessionCookieOptions = {
+  httpOnly: true,
+  sameSite: sessionCookieOptions.sameSite,
+  secure: sessionCookieOptions.secure,
+  path: sessionCookieOptions.path
+} as const;
+
+adminRouter.post('/login', (req, res) => {
+  const payload = loginSchema.parse(req.body);
+
+  if (
+    !safeCompare(payload.username, config.ADMIN_USERNAME) ||
+    !safeCompare(payload.password, config.ADMIN_PASSWORD)
+  ) {
+    return res.status(401).json({ error: 'UNAUTHORIZED' });
+  }
+
+  res.cookie(adminSessionCookie, createSessionValue(), sessionCookieOptions);
+  res.json({ ok: true });
+});
+
+adminRouter.post('/logout', (_req, res) => {
+  res.clearCookie(adminSessionCookie, clearSessionCookieOptions);
+  res.json({ ok: true });
+});
+
+adminRouter.get('/me', (req, res) => {
+  if (!isValidSession(readCookie(req.header('cookie'), adminSessionCookie))) {
+    return res.status(401).json({ error: 'UNAUTHORIZED' });
+  }
+
+  res.json({ username: config.ADMIN_USERNAME });
+});
+
 adminRouter.use((req, res, next) => {
-  if (req.header(adminTokenHeader) !== config.ADMIN_TOKEN) {
+  if (!isValidSession(readCookie(req.header('cookie'), adminSessionCookie))) {
     return res.status(401).json({ error: 'UNAUTHORIZED' });
   }
 
