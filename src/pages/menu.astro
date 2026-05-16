@@ -1,4 +1,5 @@
 ---
+import Icon from '../components/Icon.astro';
 import MenuRuntime from '../components/MenuRuntime.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { weeklyMenu } from '../data/menu';
@@ -24,11 +25,14 @@ import { menuSourceLabel } from '../data/menu-source';
       <span data-menu-period>{weeklyMenu.period}</span>
       <strong data-menu-updated-at>Mis à jour le {weeklyMenu.updatedAt}</strong>
       <p data-menu-source-badge>{menuSourceLabel}</p>
+      <a class="menu-scroll-cue" href="#menu-ardoise" aria-label="Voir la carte">
+        <Icon name="arrow-right" />
+      </a>
     </div>
   </section>
 
-  <section class="section">
-    <div class="menu-sheet" data-reveal>
+  <section class="section" id="menu-ardoise">
+    <div class="menu-sheet">
       <div class="menu-sheet__ardoise">
         <div>
           <p class="eyebrow">L’ardoise du moment</p>
@@ -91,7 +95,6 @@ import { menuSourceLabel } from '../data/menu-source';
       <div class="menu-sheet__signature">
         <div class="menu-sheet__signature-note">
           <p class="eyebrow">Au Platane</p>
-          <p>Une carte pensée pour le site, mais aussi comme une ardoise simple à faire vivre au quotidien.</p>
         </div>
         <img src="/brand/logo-horizontal-black.jpg" alt="Au Platane" />
       </div>

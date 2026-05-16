@@ -46,6 +46,11 @@ export const weeklyMenu = {
         {
           name: 'Escargots des Frères Royé en persillade',
           description: '6 ou 12 escargots'
+        },
+        {
+          name: 'Croquette de bœuf bourguignonne',
+          description:
+            'Bœuf mijoté longuement, pané et croustillant, servi avec sauce blanche aux herbes'
         }
       ]
     },
@@ -70,6 +75,11 @@ export const weeklyMenu = {
           name: 'Salade de chèvre chaud',
           description:
             'Chèvre de « Le Piqueberle », miel, noix torréfiées, crudités de saison & vinaigrette aux herbes'
+        },
+        {
+          name: 'Bœuf mijoté au vin rouge',
+          description:
+            'Bœuf mijoté au vin rouge, cuisson lente, légumes et purée de saison'
         }
       ]
     },
