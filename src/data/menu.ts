@@ -18,7 +18,7 @@ export type MenuSection = {
 export const weeklyMenu = {
   title: 'La cuisine du Platane',
   period: 'L’ardoise du moment',
-  updatedAt: '12 mai 2026',
+  updatedAt: '18 mai 2026',
   intro:
     'Une cuisine simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
   formulas: [
@@ -38,14 +38,13 @@ export const weeklyMenu = {
       title: 'Entrées',
       items: [
         {
-          name: 'Œuf mayonnaise fermier & pickles maison'
+          name: 'Œuf fermier mayonnaise & pickles maison'
         },
         {
           name: 'Gaspacho de tomates anciennes, basilic & huile verte'
         },
         {
-          name: 'Escargots des Frères Royé en persillade',
-          description: '6 ou 12 escargots'
+          name: 'Œuf parfait, escargots snackés des "frères Royé", champignons et émulsion ail-persil'
         },
         {
           name: 'Croquette de bœuf bourguignonne',
@@ -60,21 +59,21 @@ export const weeklyMenu = {
         {
           name: 'Le Burger du Platane',
           description:
-            'Steak haché, tomme de vache de Sanhiac « Le Piqueberle », sauce maison, oignons confits & pain artisanal du chef'
+            'Steak haché, tomme de vache, ketchup de carottes, oignons confits & pain artisanal du chef'
         },
         {
           name: 'Burger des Bois',
           description:
-            'Champignons MYCA Ardèche rôtis, garniture de saison, tomme de vache de Sanhiac « Le Piqueberle », sauce maison & pain artisanal du chef'
+            'Champignons MYCA Ardèche rôtis, garniture de saison, tomme de vache, ketchup de carottes & pain artisanal du chef'
         },
         {
           name: 'Tartare de truite',
-          description: 'Truite fraîche assaisonnée, herbes, condiments & fraîcheur du moment'
+          description: 'Truite fraîche d’Ardèche, herbes, condiments & fraîcheur du moment'
         },
         {
           name: 'Salade de chèvre chaud',
           description:
-            'Chèvre de « Le Piqueberle », miel, noix torréfiées, crudités de saison & vinaigrette aux herbes'
+            'Chèvre croustillant de « Le Piqueberle », miel, noix torréfiées, crudités de saison & vinaigrette aux herbes'
         },
         {
           name: 'Bœuf mijoté au vin rouge',
@@ -104,19 +103,20 @@ export const weeklyMenu = {
       title: 'Le soir à partager',
       items: [
         {
-          name: 'Les frites du bistrot & mayonnaise fumée'
+          name: 'Les frites du bistrot'
         },
         {
-          name: 'Cromesqui de chèvre « Le Piqueberle »'
+          name: 'Cromesquis de chèvre « Le Piqueberle »'
         },
         {
           name: 'Planche des salaisons'
         },
         {
-          name: 'Fromages des fermes voisines'
+          name: 'Planche fromages des fermes voisines'
         },
         {
-          name: 'Planche du pays'
+          name: 'Planche du pays',
+          description: 'Salaisons, fromages des fermes voisines & terroir'
         },
         {
           name: 'Camembert rôti'
@@ -125,7 +125,7 @@ export const weeklyMenu = {
           name: 'Feta rôtie, poivron confit & sauce tomate'
         },
         {
-          name: 'Tartinade du moment'
+          name: 'À tartiner du moment'
         }
       ]
     }

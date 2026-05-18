@@ -43,7 +43,7 @@ export const defaultEditorialContent: EditorialContent = {
   menu: {
     title: 'La cuisine du Platane',
     period: 'L’ardoise du moment',
-    updatedAt: '12 mai 2026',
+    updatedAt: '18 mai 2026',
     intro:
       'Une cuisine simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
     formulas: [
@@ -64,9 +64,13 @@ export const defaultEditorialContent: EditorialContent = {
       {
         title: 'Entrées',
         items: [
-          { name: 'Œuf mayonnaise fermier & pickles maison', price: '', description: '' },
+          { name: 'Œuf fermier mayonnaise & pickles maison', price: '', description: '' },
           { name: 'Gaspacho de tomates anciennes, basilic & huile verte', price: '', description: '' },
-          { name: 'Escargots des Frères Royé en persillade', price: '', description: '6 ou 12 escargots' },
+          {
+            name: 'Œuf parfait, escargots snackés des "frères Royé", champignons et émulsion ail-persil',
+            price: '',
+            description: ''
+          },
           {
             name: 'Croquette de bœuf bourguignonne',
             price: '',
@@ -81,24 +85,24 @@ export const defaultEditorialContent: EditorialContent = {
             name: 'Le Burger du Platane',
             price: '',
             description:
-              'Steak haché, tomme de vache de Sanhiac « Le Piqueberle », sauce maison, oignons confits & pain artisanal du chef'
+              'Steak haché, tomme de vache, ketchup de carottes, oignons confits & pain artisanal du chef'
           },
           {
             name: 'Burger des Bois',
             price: '',
             description:
-              'Champignons MYCA Ardèche rôtis, garniture de saison, tomme de vache de Sanhiac « Le Piqueberle », sauce maison & pain artisanal du chef'
+              'Champignons MYCA Ardèche rôtis, garniture de saison, tomme de vache, ketchup de carottes & pain artisanal du chef'
           },
           {
             name: 'Tartare de truite',
             price: '',
-            description: 'Truite fraîche assaisonnée, herbes, condiments & fraîcheur du moment'
+            description: 'Truite fraîche d’Ardèche, herbes, condiments & fraîcheur du moment'
           },
           {
             name: 'Salade de chèvre chaud',
             price: '',
             description:
-              'Chèvre de « Le Piqueberle », miel, noix torréfiées, crudités de saison & vinaigrette aux herbes'
+              'Chèvre croustillant de « Le Piqueberle », miel, noix torréfiées, crudités de saison & vinaigrette aux herbes'
           },
           {
             name: 'Bœuf mijoté au vin rouge',
@@ -119,14 +123,18 @@ export const defaultEditorialContent: EditorialContent = {
       {
         title: 'Le soir à partager',
         items: [
-          { name: 'Les frites du bistrot & mayonnaise fumée', price: '', description: '' },
-          { name: 'Cromesqui de chèvre « Le Piqueberle »', price: '', description: '' },
+          { name: 'Les frites du bistrot', price: '', description: '' },
+          { name: 'Cromesquis de chèvre « Le Piqueberle »', price: '', description: '' },
           { name: 'Planche des salaisons', price: '', description: '' },
-          { name: 'Fromages des fermes voisines', price: '', description: '' },
-          { name: 'Planche du pays', price: '', description: '' },
+          { name: 'Planche fromages des fermes voisines', price: '', description: '' },
+          {
+            name: 'Planche du pays',
+            price: '',
+            description: 'Salaisons, fromages des fermes voisines & terroir'
+          },
           { name: 'Camembert rôti', price: '', description: '' },
           { name: 'Feta rôtie, poivron confit & sauce tomate', price: '', description: '' },
-          { name: 'Tartinade du moment', price: '', description: '' }
+          { name: 'À tartiner du moment', price: '', description: '' }
         ]
       }
     ],
