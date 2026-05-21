@@ -4,6 +4,38 @@ import Icon from '../components/Icon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { weeklyMenu } from '../data/menu';
 import { menuSourceLabel } from '../data/menu-source';
+
+const weeklyFormulaGroups = [
+  { key: 'starter', title: 'Entrées', aliases: ['entrée', 'entree'] },
+  { key: 'main', title: 'Plats', aliases: ['plat'] },
+  { key: 'dessert', title: 'Desserts', aliases: ['dessert'] }
+];
+
+const normalizeMenuLabel = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+const parseWeeklyFormula = (description: string) => {
+  const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());
+  return { name, detail };
+};
+
+const weeklyFormulaSections = weeklyFormulaGroups
+  .map((group) => ({
+    title: group.title,
+    items: weeklyMenu.formulas
+      .filter((formula) => {
+        const name = normalizeMenuLabel(formula.name);
+        return group.aliases.some((alias) => name.includes(alias));
+      })
+      .map((formula) => parseWeeklyFormula(formula.description))
+      .filter((item) => item.name)
+  }))
+  .filter((section) => section.items.length);
+
+const hasWeeklyFormula = weeklyFormulaSections.length > 0;
 ---
 
 <BaseLayout
@@ -45,22 +77,30 @@ import { menuSourceLabel } from '../data/menu-source';
         </div>
       </div>
 
-      <div class:list={['menu-sheet__top', !weeklyMenu.formulas.length && 'menu-sheet__top--notes-only']}>
-        {weeklyMenu.formulas.length > 0 && (
-          <div class="menu-sheet__story">
-            <p class="eyebrow">Menu de la semaine</p>
-            <div class="menu-formulas" data-menu-formulas>
-              {weeklyMenu.formulas.map((formula) => (
-                <article class="menu-formula">
-                  <p class="menu-formula__name">{formula.name}</p>
-                  <strong class="menu-formula__price">{formula.price}</strong>
-                  <p class="menu-formula__description">{formula.description}</p>
-                </article>
-              ))}
-            </div>
-          </div>
-        )}
+      <section class="weekly-menu-card" data-weekly-menu hidden={!hasWeeklyFormula}>
+        <div class="weekly-menu-card__heading">
+          <p class="eyebrow">Menu de la semaine</p>
+          <h2>17 €</h2>
+          <p>Entrée + plat ou plat + dessert</p>
+        </div>
+        <div class="weekly-menu-card__grid" data-weekly-menu-sections>
+          {weeklyFormulaSections.map((section) => (
+            <article class="weekly-menu-card__section">
+              <h3>{section.title}</h3>
+              <ul>
+                {section.items.map((item) => (
+                  <li>
+                    <strong>{item.name}</strong>
+                    {item.detail && <span>{item.detail}</span>}
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
 
+      <div class="menu-sheet__top menu-sheet__top--notes-only">
         <div class="menu-sheet__notes">
           <p class="eyebrow">Esprit de la carte</p>
           <ul class="notes-list" data-menu-notes>

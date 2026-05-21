@@ -64,6 +64,37 @@ const formatEventDate = (value: string) =>
     month: 'long'
   }).format(new Date(value));
 
+const weeklyFormulaGroups = [
+  { title: 'Entrées', aliases: ['entrée', 'entree'] },
+  { title: 'Plats', aliases: ['plat'] },
+  { title: 'Desserts', aliases: ['dessert'] }
+];
+
+const normalizeMenuLabel = (value: string) =>
+  value
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '');
+
+const parseWeeklyFormula = (description: string) => {
+  const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());
+  return { name, detail };
+};
+
+const groupWeeklyFormulas = (formulas: RuntimeMenu['formulas']) =>
+  weeklyFormulaGroups
+    .map((group) => ({
+      title: group.title,
+      items: formulas
+        .filter((formula) => {
+          const name = normalizeMenuLabel(formula.name);
+          return group.aliases.some((alias) => name.includes(alias));
+        })
+        .map((formula) => parseWeeklyFormula(formula.description))
+        .filter((item) => item.name)
+    }))
+    .filter((section) => section.items.length);
+
 const isThisWeekend = (value: string) => {
   const eventDate = new Date(value);
   const now = new Date();
@@ -200,15 +231,28 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
   const updatedLabel = menu.updatedAt ? `Mis à jour le ${menu.updatedAt}` : 'Menu mis à jour depuis l’admin';
   setText('[data-menu-updated-at]', updatedLabel);
 
-  const formulaGrid = document.querySelector<HTMLElement>('[data-menu-formulas]');
-  if (formulaGrid) {
-    formulaGrid.innerHTML = menu.formulas
+  const weeklyMenuCard = document.querySelector<HTMLElement>('[data-weekly-menu]');
+  const weeklyMenuSections = document.querySelector<HTMLElement>('[data-weekly-menu-sections]');
+  if (weeklyMenuCard && weeklyMenuSections) {
+    const groupedWeeklyMenu = groupWeeklyFormulas(menu.formulas);
+    weeklyMenuCard.hidden = groupedWeeklyMenu.length === 0;
+    weeklyMenuSections.innerHTML = groupedWeeklyMenu
       .map(
-        (formula) => `
-          <article class="menu-formula">
-            <p class="menu-formula__name">${escapeHtml(formula.name)}</p>
-            <strong class="menu-formula__price">${escapeHtml(formula.price)}</strong>
-            <p class="menu-formula__description">${escapeHtml(formula.description)}</p>
+        (section) => `
+          <article class="weekly-menu-card__section">
+            <h3>${escapeHtml(section.title)}</h3>
+            <ul>
+              ${section.items
+                .map(
+                  (item) => `
+                    <li>
+                      <strong>${escapeHtml(item.name)}</strong>
+                      ${item.detail ? `<span>${escapeHtml(item.detail)}</span>` : ''}
+                    </li>
+                  `
+                )
+                .join('')}
+            </ul>
           </article>
         `
       )
