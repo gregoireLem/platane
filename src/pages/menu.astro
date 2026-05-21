@@ -122,11 +122,12 @@ const ardoiseSections = weeklyMenu.sections.filter((section) => !isSweetsSection
         <ul class="afternoon-sweets-card__list" data-afternoon-sweets-list>
           {sweetsSection?.items.map((item) => (
             <li>
-              <strong>{item.name}</strong>
+              <strong>{item.name}*</strong>
               {item.description && <span>{item.description}</span>}
             </li>
           ))}
         </ul>
+        <p class="afternoon-sweets-card__note">* fabrication artisanale par "Sylvie, Biscuits & cie"</p>
       </section>
 
       <div class="menu-sheet__intro" id="ardoise-du-moment">

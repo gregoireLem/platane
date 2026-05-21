@@ -281,7 +281,7 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
           .map(
             (item) => `
               <li>
-                <strong>${escapeHtml(item.name)}</strong>
+                <strong>${escapeHtml(item.name)}*</strong>
                 ${item.description ? `<span>${escapeHtml(item.description)}</span>` : ''}
               </li>
             `
