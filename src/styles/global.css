@@ -1579,13 +1579,6 @@ p {
   color: rgba(255, 246, 230, 0.76);
 }
 
-.afternoon-sweets-card__note {
-  grid-column: 2;
-  margin: 0;
-  color: rgba(255, 246, 230, 0.72);
-  font-size: 0.9rem;
-}
-
 .weekly-menu-card__heading {
   display: grid;
   align-content: start;
@@ -2884,10 +2877,6 @@ p {
   .afternoon-sweets-card__list,
   .weekly-menu-card__grid {
     grid-template-columns: 1fr;
-  }
-
-  .afternoon-sweets-card__note {
-    grid-column: auto;
   }
 
   .admin-variable-grid,
