@@ -17,6 +17,13 @@ const normalizeMenuLabel = (value: string) =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 
+const menuSectionId = (title: string) => {
+  const normalized = normalizeMenuLabel(title);
+  if (normalized.includes('partager')) return 'soir-a-partager';
+  if (normalized.includes('douceurs') || normalized.includes('apres-midi')) return 'douceurs-apres-midi';
+  return normalized.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+};
+
 const parseWeeklyFormula = (description: string) => {
   const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());
   return { name, detail };
@@ -71,13 +78,13 @@ const hasWeeklyFormula = weeklyFormulaSections.length > 0;
           <h2>Une carte courte, vivante et pensée au rythme du lieu.</h2>
         </div>
         <div class="menu-ardoise-heading__chips">
-          <span>Menu de la semaine</span>
-          <span>Les douceurs de l’après-midi</span>
-          <span>Le soir : assiettes à partager</span>
+          <a href="#menu-semaine">Menu de la semaine</a>
+          <a href="#douceurs-apres-midi">Les douceurs de l’après-midi</a>
+          <a href="#soir-a-partager">Le soir : assiettes à partager</a>
         </div>
       </div>
 
-      <section class="weekly-menu-card" data-weekly-menu hidden={!hasWeeklyFormula}>
+      <section class="weekly-menu-card" id="menu-semaine" data-weekly-menu hidden={!hasWeeklyFormula}>
         <div class="weekly-menu-card__heading">
           <p class="eyebrow">Menu de la semaine</p>
           <h2>17 €</h2>
@@ -114,7 +121,7 @@ const hasWeeklyFormula = weeklyFormulaSections.length > 0;
 
       <div class="menu-columns" data-menu-sections>
         {weeklyMenu.sections.map((section) => (
-          <article class="menu-group">
+          <article class="menu-group" id={menuSectionId(section.title)}>
             <h2 class="menu-group__title">{section.title}</h2>
             <ul class="menu-list">
               {section.items.map((item) => (

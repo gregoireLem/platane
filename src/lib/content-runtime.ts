@@ -76,6 +76,13 @@ const normalizeMenuLabel = (value: string) =>
     .normalize('NFD')
     .replace(/[\u0300-\u036f]/g, '');
 
+const menuSectionId = (title: string) => {
+  const normalized = normalizeMenuLabel(title);
+  if (normalized.includes('partager')) return 'soir-a-partager';
+  if (normalized.includes('douceurs') || normalized.includes('apres-midi')) return 'douceurs-apres-midi';
+  return normalized.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+};
+
 const parseWeeklyFormula = (description: string) => {
   const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());
   return { name, detail };
@@ -264,7 +271,7 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
     sections.innerHTML = menu.sections
       .map(
         (section) => `
-          <article class="menu-group is-visible" data-reveal>
+          <article class="menu-group is-visible" id="${escapeHtml(menuSectionId(section.title))}" data-reveal>
             <h2 class="menu-group__title">${escapeHtml(section.title)}</h2>
             <ul class="menu-list">
               ${section.items

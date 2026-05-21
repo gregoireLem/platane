@@ -100,20 +100,6 @@ export const weeklyMenu = {
       ]
     },
     {
-      title: 'Les douceurs de l’après-midi',
-      items: [
-        {
-          name: 'Gâteau maison du moment'
-        },
-        {
-          name: 'Cookie du comptoir'
-        },
-        {
-          name: 'Glaces & sorbets artisanaux'
-        }
-      ]
-    },
-    {
       title: 'Le soir à partager',
       items: [
         {
@@ -140,6 +126,20 @@ export const weeklyMenu = {
         },
         {
           name: 'À tartiner du moment'
+        }
+      ]
+    },
+    {
+      title: 'Les douceurs de l’après-midi',
+      items: [
+        {
+          name: 'Gâteau maison du moment'
+        },
+        {
+          name: 'Cookie du comptoir'
+        },
+        {
+          name: 'Glaces & sorbets artisanaux'
         }
       ]
     }
