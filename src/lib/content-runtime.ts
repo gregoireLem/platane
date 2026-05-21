@@ -83,6 +83,11 @@ const menuSectionId = (title: string) => {
   return normalized.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 };
 
+const isSweetsSection = (title: string) => {
+  const normalized = normalizeMenuLabel(title);
+  return normalized.includes('douceurs') || normalized.includes('apres-midi');
+};
+
 const parseWeeklyFormula = (description: string) => {
   const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());
   return { name, detail };
@@ -266,9 +271,29 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
       .join('');
   }
 
+  const sweetsCard = document.querySelector<HTMLElement>('[data-afternoon-sweets]');
+  const sweetsList = document.querySelector<HTMLElement>('[data-afternoon-sweets-list]');
+  if (sweetsCard && sweetsList) {
+    const sweetsSection = menu.sections.find((section) => isSweetsSection(section.title));
+    sweetsCard.hidden = !sweetsSection || sweetsSection.items.length === 0;
+    sweetsList.innerHTML = sweetsSection
+      ? sweetsSection.items
+          .map(
+            (item) => `
+              <li>
+                <strong>${escapeHtml(item.name)}</strong>
+                ${item.description ? `<span>${escapeHtml(item.description)}</span>` : ''}
+              </li>
+            `
+          )
+          .join('')
+      : '';
+  }
+
   const sections = document.querySelector<HTMLElement>('[data-menu-sections]');
   if (sections) {
     sections.innerHTML = menu.sections
+      .filter((section) => !isSweetsSection(section.title))
       .map(
         (section) => `
           <article class="menu-group is-visible" id="${escapeHtml(menuSectionId(section.title))}" data-reveal>

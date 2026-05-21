@@ -24,6 +24,11 @@ const menuSectionId = (title: string) => {
   return normalized.replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
 };
 
+const isSweetsSection = (title: string) => {
+  const normalized = normalizeMenuLabel(title);
+  return normalized.includes('douceurs') || normalized.includes('apres-midi');
+};
+
 const parseWeeklyFormula = (description: string) => {
   const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());
   return { name, detail };
@@ -43,6 +48,8 @@ const weeklyFormulaSections = weeklyFormulaGroups
   .filter((section) => section.items.length);
 
 const hasWeeklyFormula = weeklyFormulaSections.length > 0;
+const sweetsSection = weeklyMenu.sections.find((section) => isSweetsSection(section.title));
+const ardoiseSections = weeklyMenu.sections.filter((section) => !isSweetsSection(section.title));
 ---
 
 <BaseLayout
@@ -80,7 +87,7 @@ const hasWeeklyFormula = weeklyFormulaSections.length > 0;
         <div class="menu-ardoise-heading__chips">
           <a href="#menu-semaine">Menu de la semaine</a>
           <a href="#douceurs-apres-midi">Les douceurs de l’après-midi</a>
-          <a href="#soir-a-partager">Le soir : assiettes à partager</a>
+          <a href="#ardoise-du-moment">L’ardoise du moment</a>
         </div>
       </div>
 
@@ -107,7 +114,22 @@ const hasWeeklyFormula = weeklyFormulaSections.length > 0;
         </div>
       </section>
 
-      <div class="menu-sheet__intro">
+      <section class="afternoon-sweets-card" id="douceurs-apres-midi" data-afternoon-sweets hidden={!sweetsSection}>
+        <div class="afternoon-sweets-card__heading">
+          <p class="eyebrow">Les douceurs de l’après-midi</p>
+          <h2>Gâteaux, glaces et pauses sucrées.</h2>
+        </div>
+        <ul class="afternoon-sweets-card__list" data-afternoon-sweets-list>
+          {sweetsSection?.items.map((item) => (
+            <li>
+              <strong>{item.name}</strong>
+              {item.description && <span>{item.description}</span>}
+            </li>
+          ))}
+        </ul>
+      </section>
+
+      <div class="menu-sheet__intro" id="ardoise-du-moment">
         <div>
           <p class="eyebrow">L’ardoise du moment</p>
           <h2>Une cuisine courte, locale et mouvante.</h2>
@@ -120,7 +142,7 @@ const hasWeeklyFormula = weeklyFormulaSections.length > 0;
       </div>
 
       <div class="menu-columns" data-menu-sections>
-        {weeklyMenu.sections.map((section) => (
+        {ardoiseSections.map((section) => (
           <article class="menu-group" id={menuSectionId(section.title)}>
             <h2 class="menu-group__title">{section.title}</h2>
             <ul class="menu-list">

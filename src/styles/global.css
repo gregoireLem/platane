@@ -1519,6 +1519,66 @@ p {
   display: none;
 }
 
+.afternoon-sweets-card {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(13rem, 0.36fr) minmax(0, 1fr);
+  gap: 1.2rem;
+  margin-top: 1rem;
+  padding: 1.2rem;
+  border: 1px solid rgba(255, 239, 210, 0.24);
+  border-radius: 8px;
+  background: rgba(255, 239, 210, 0.1);
+  scroll-margin-top: 7rem;
+}
+
+.afternoon-sweets-card[hidden] {
+  display: none;
+}
+
+.afternoon-sweets-card__heading {
+  display: grid;
+  align-content: start;
+  gap: 0.45rem;
+}
+
+.afternoon-sweets-card__heading h2 {
+  max-width: 12ch;
+  margin: 0;
+  color: #fff6e6;
+  font-family: var(--font-display);
+  font-size: clamp(1.9rem, 3.4vw, 3rem);
+  line-height: 0.98;
+}
+
+.afternoon-sweets-card__list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.8rem 1.2rem;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.afternoon-sweets-card__list li {
+  display: grid;
+  gap: 0.2rem;
+  padding-bottom: 0.75rem;
+  border-bottom: 1px dashed rgba(255, 239, 210, 0.2);
+}
+
+.afternoon-sweets-card__list strong {
+  color: #fff6e6;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  line-height: 1;
+}
+
+.afternoon-sweets-card__list span {
+  color: rgba(255, 246, 230, 0.76);
+}
+
 .weekly-menu-card__heading {
   display: grid;
   align-content: start;
@@ -2813,6 +2873,8 @@ p {
 
   .weekly-menu-card,
   .menu-sheet__intro,
+  .afternoon-sweets-card,
+  .afternoon-sweets-card__list,
   .weekly-menu-card__grid {
     grid-template-columns: 1fr;
   }
