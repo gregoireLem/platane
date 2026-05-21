@@ -18,8 +18,8 @@ export const site = {
     { day: 'Mardi', hours: '8h30 - 22h' },
     { day: 'Mercredi', hours: '8h30 - 22h' },
     { day: 'Jeudi', hours: '8h30 - 22h' },
-    { day: 'Vendredi', hours: '8h30 - 23h (hors événement)' },
-    { day: 'Samedi', hours: '8h30 - 23h (hors événement)' },
+    { day: 'Vendredi', hours: '8h30 - 23h (hors évènement)' },
+    { day: 'Samedi', hours: '8h30 - 23h (hors évènement)' },
     { day: 'Dimanche', hours: '8h30 - 18h30' }
   ],
   spaces: [
@@ -54,7 +54,7 @@ export const site = {
       description: 'Des glaces pour les pauses gourmandes et les beaux jours.'
     },
     {
-      title: 'Événements',
+      title: 'Évènements',
       icon: 'spark',
       description: 'Concerts, théâtre, culture, expositions et rendez-vous simples au village.'
     }

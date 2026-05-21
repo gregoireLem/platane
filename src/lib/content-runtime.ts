@@ -123,7 +123,7 @@ const renderEvents = (events: BistroEvent[]) => {
 
   node.innerHTML = `
     <div class="section-heading" data-reveal>
-      <p class="eyebrow">Événements</p>
+      <p class="eyebrow">Évènements</p>
       <h2>Ce qui se passe bientôt au Platane.</h2>
       <p class="lead">Concerts, rencontres, soirées et rendez-vous du village.</p>
     </div>

@@ -28,7 +28,7 @@ const weeklyVariableGroups = [
       </div>
       <h1>Faire vivre le bistrot en ligne.</h1>
       <p class="lead">
-        Carte, suggestions, événements et galerie : l’admin sert à raconter ce qui se passe au
+        Carte, suggestions, évènements et galerie : l’admin sert à raconter ce qui se passe au
         Platane, sans devenir un deuxième logiciel de caisse.
       </p>
     </div>
@@ -67,7 +67,7 @@ const weeklyVariableGroups = [
       </div>
       <div class="admin-view-switcher" data-admin-view-switcher>
         <button class="button button--primary" type="button" data-admin-view-target="menu">Carte & menus</button>
-        <button class="button button--secondary" type="button" data-admin-view-target="events">Événements</button>
+        <button class="button button--secondary" type="button" data-admin-view-target="events">Évènements</button>
         <button class="button button--secondary" type="button" data-admin-view-target="suggestions">Suggestions</button>
         <button class="button button--secondary" type="button" data-admin-view-target="gallery">Galerie</button>
       </div>
@@ -188,7 +188,7 @@ const weeklyVariableGroups = [
       <div class="admin-grid">
         <section class="admin-card">
           <div class="admin-card__header">
-            <h2>Créer un événement</h2>
+            <h2>Créer un évènement</h2>
             <p>Photo, date, texte court. Le badge “Ce week-end” est généré automatiquement.</p>
           </div>
           <form class="admin-editor-form" data-event-form>
@@ -215,7 +215,7 @@ const weeklyVariableGroups = [
               <input id="event-image" name="image" type="file" accept="image/*" />
             </div>
             <div class="admin-form-actions">
-              <button class="button button--primary" type="submit">Publier l’événement</button>
+              <button class="button button--primary" type="submit">Publier l’évènement</button>
             </div>
             <p class="admin-inline-feedback" data-event-feedback aria-live="polite"></p>
           </form>
@@ -223,8 +223,8 @@ const weeklyVariableGroups = [
 
         <section class="admin-card">
           <div class="admin-card__header">
-            <h2>Événements publiés</h2>
-            <p>Les prochains événements remontent automatiquement sur la page d’accueil.</p>
+            <h2>Évènements publiés</h2>
+            <p>Les prochains évènements remontent automatiquement sur la page d’accueil.</p>
           </div>
           <div class="admin-content-list" data-events-list></div>
         </section>
@@ -584,7 +584,7 @@ const weeklyVariableGroups = [
                 `
               )
               .join('')
-          : '<p class="admin-empty">Aucun événement pour le moment.</p>';
+          : '<p class="admin-empty">Aucun évènement pour le moment.</p>';
       };
 
       const renderGallery = (gallery) => {
@@ -738,10 +738,10 @@ const weeklyVariableGroups = [
           });
           if (!response.ok) throw new Error('event');
           eventForm.reset();
-          setFeedback(feedback, 'Événement publié.', 'success');
+          setFeedback(feedback, 'Évènement publié.', 'success');
           await loadContent();
         } catch (_error) {
-          setFeedback(feedback, 'Impossible de publier l’événement. Image max 1,8 Mo.', 'error');
+          setFeedback(feedback, 'Impossible de publier l’évènement. Image max 1,8 Mo.', 'error');
         }
       });
 
