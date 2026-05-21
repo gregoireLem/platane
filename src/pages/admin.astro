@@ -111,14 +111,25 @@ const weeklyVariableGroups = [
                 <legend>{group.title}</legend>
                 <div class="admin-variable-grid">
                   {Array.from({ length: group.count }, (_, index) => (
-                    <div class="field">
-                      <label for={`menu-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
-                      <input
-                        id={`menu-${group.key}-${index + 1}`}
-                        name={`menu-${group.key}-${index + 1}`}
-                        type="text"
-                        placeholder={index === 0 ? 'Nom du plat' : 'rien'}
-                      />
+                    <div class="admin-variable-line">
+                      <div class="field">
+                        <label for={`menu-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
+                        <input
+                          id={`menu-${group.key}-${index + 1}`}
+                          name={`menu-${group.key}-${index + 1}`}
+                          type="text"
+                          placeholder={index === 0 ? 'Nom du plat' : 'rien'}
+                        />
+                      </div>
+                      <div class="field">
+                        <label for={`menu-${group.key}-${index + 1}-description`}>Descriptif</label>
+                        <input
+                          id={`menu-${group.key}-${index + 1}-description`}
+                          name={`menu-${group.key}-${index + 1}-description`}
+                          type="text"
+                          placeholder="Producteur, garniture, cuisson..."
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -136,14 +147,25 @@ const weeklyVariableGroups = [
                 <legend>{group.title}</legend>
                 <div class="admin-variable-grid admin-variable-grid--compact">
                   {Array.from({ length: group.count }, (_, index) => (
-                    <div class="field">
-                      <label for={`weekly-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
-                      <input
-                        id={`weekly-${group.key}-${index + 1}`}
-                        name={`weekly-${group.key}-${index + 1}`}
-                        type="text"
-                        placeholder={index === 0 ? 'Suggestion' : 'rien'}
-                      />
+                    <div class="admin-variable-line">
+                      <div class="field">
+                        <label for={`weekly-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
+                        <input
+                          id={`weekly-${group.key}-${index + 1}`}
+                          name={`weekly-${group.key}-${index + 1}`}
+                          type="text"
+                          placeholder={index === 0 ? 'Suggestion' : 'rien'}
+                        />
+                      </div>
+                      <div class="field">
+                        <label for={`weekly-${group.key}-${index + 1}-description`}>Descriptif</label>
+                        <input
+                          id={`weekly-${group.key}-${index + 1}-description`}
+                          name={`weekly-${group.key}-${index + 1}-description`}
+                          type="text"
+                          placeholder="Détail, accompagnement..."
+                        />
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -429,40 +451,82 @@ const weeklyVariableGroups = [
       const clearVariableGroup = (prefix, group) => {
         Array.from({ length: group.count }, (_, index) => {
           setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}`, '');
+          setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}-description`, '');
         });
       };
 
       const fillVariableGroup = (prefix, group, values) => {
         clearVariableGroup(prefix, group);
         values.slice(0, group.count).forEach((value, index) => {
-          setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}`, value);
+          if (typeof value === 'string') {
+            setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}`, value);
+            return;
+          }
+          setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}`, value.name ?? '');
+          setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}-description`, value.description ?? '');
         });
       };
 
       const readVariableGroup = (prefix, group) =>
-        Array.from({ length: group.count }, (_, index) => inputValue(menuForm, `${prefix}-${group.key}-${index + 1}`))
-          .map(lineValue)
-          .filter(isVisibleMenuValue);
+        Array.from({ length: group.count }, (_, index) => ({
+          name: inputValue(menuForm, `${prefix}-${group.key}-${index + 1}`),
+          description: inputValue(menuForm, `${prefix}-${group.key}-${index + 1}-description`)
+        }))
+          .map((item) => ({
+            name: lineValue(item.name),
+            description: lineValue(item.description)
+          }))
+          .filter((item) => isVisibleMenuValue(item.name));
 
       const readMenuSections = () =>
         menuVariableGroups
           .map((group) => ({
             title: group.title,
-            items: readVariableGroup('menu', group).map(menuItemFromValue)
+            items: readVariableGroup('menu', group).map((item) => ({
+              ...menuItemFromValue(item.name),
+              description: item.description
+            }))
           }))
           .filter((section) => section.items.length);
 
       const readWeeklyFormulas = () =>
-        weeklyVariableGroups
-          .map((group) => {
-            const values = readVariableGroup('weekly', group);
-            return {
-              name: group.title,
-              price: '',
-              description: values.join(' / ')
-            };
+        weeklyVariableGroups.flatMap((group) => {
+          const values = readVariableGroup('weekly', group);
+          return values.map((item, index) => ({
+            name: values.length === 1 ? group.title : `${group.title} ${index + 1}`,
+            price: '',
+            description: item.description ? `${item.name} - ${item.description}` : item.name
+          }));
+        });
+
+      const parseWeeklyFormulaDescription = (value) => {
+        const [name = '', description = ''] = String(value ?? '').split(/\s+-\s+/, 2).map(lineValue);
+        return {
+          name,
+          description
+        };
+      };
+
+      const weeklyItemsForGroup = (formulas, group) => {
+        const values = (formulas ?? [])
+          .filter((formula) => {
+            const title = normalizeMenuKey(formula.name);
+            return group.aliases.some((alias) => title.includes(normalizeMenuKey(alias)));
           })
-          .filter((formula) => formula.description);
+          .flatMap((formula) =>
+            formula.description
+              ? formula.description.split(/\s+\/\s+|\n/).map(parseWeeklyFormulaDescription)
+              : []
+          )
+          .filter((item) => item.name);
+
+        if (values.length) return values;
+
+        const formula = findWeeklyFormula(formulas, group);
+        if (!formula?.description) return [];
+
+        return formula.description.split(/\s+\/\s+|\n/).map(parseWeeklyFormulaDescription).filter((item) => item.name);
+      };
 
       const readImageAsDataUrl = (input) =>
         new Promise((resolve, reject) => {
@@ -490,13 +554,11 @@ const weeklyVariableGroups = [
 
         menuVariableGroups.forEach((group) => {
           const section = findSection(content.menu.sections, group);
-          fillVariableGroup('menu', group, (section?.items ?? []).map((item) => item.name));
+          fillVariableGroup('menu', group, section?.items ?? []);
         });
 
         weeklyVariableGroups.forEach((group) => {
-          const formula = findWeeklyFormula(content.menu.formulas, group);
-          const values = formula?.description ? formula.description.split(/\s+\/\s+|\n/).map(lineValue) : [];
-          fillVariableGroup('weekly', group, values);
+          fillVariableGroup('weekly', group, weeklyItemsForGroup(content.menu.formulas, group));
         });
 
         setInputValue(suggestionsForm, 'dish', content.suggestions.dish);
