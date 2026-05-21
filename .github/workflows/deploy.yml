@@ -19,7 +19,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     env:
-      PUBLIC_RESERVATION_API_URL: https://platane-production.up.railway.app
+      PUBLIC_RESERVATION_API_URL: https://platane-backend.onrender.com
     steps:
       - name: Checkout
         uses: actions/checkout@v6

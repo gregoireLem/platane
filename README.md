@@ -94,7 +94,7 @@ En production, cette variable doit pointer vers l'URL publique du backend reserv
 Le workflow GitHub Pages du projet la renseigne actuellement avec :
 
 ```bash
-https://platane-production.up.railway.app
+https://platane-backend.onrender.com
 ```
 
 ## Déploiement recommandé
