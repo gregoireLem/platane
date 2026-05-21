@@ -3,6 +3,17 @@ import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 
 const apiUrl = site.reservationApiUrl;
+const menuVariableGroups = [
+  { key: 'starter', title: 'Entrées', count: 5 },
+  { key: 'main', title: 'Plats', count: 8 },
+  { key: 'dessert', title: 'Desserts', count: 8 },
+  { key: 'share', title: 'À partager', count: 10 }
+];
+const weeklyVariableGroups = [
+  { key: 'starter', title: 'Entrées de la semaine', count: 2 },
+  { key: 'main', title: 'Plats de la semaine', count: 2 },
+  { key: 'dessert', title: 'Desserts de la semaine', count: 2 }
+];
 ---
 
 <BaseLayout title="Administration" description="Outil de communication Au Platane.">
@@ -66,7 +77,7 @@ const apiUrl = site.reservationApiUrl;
       <section class="admin-card">
         <div class="admin-card__header">
           <h2>Modifier la carte et les menus</h2>
-          <p>Une saisie simple, pensée comme une ardoise : un titre de rubrique avec <strong>:</strong>, puis un plat par ligne.</p>
+          <p>Remplissez les variables utiles. Une ligne contenant <strong>rien</strong> ou <strong>none</strong> ne s’affichera pas sur le site.</p>
         </div>
 
         <form class="admin-editor-form" data-menu-form>
@@ -90,13 +101,54 @@ const apiUrl = site.reservationApiUrl;
               <input id="menu-intro" name="intro" type="text" />
             </div>
           </div>
-          <div class="field">
-            <label for="menu-formulas">Formules</label>
-            <textarea id="menu-formulas" name="formulas" rows="5" placeholder="Le midi : Formule du jour maison&#10;Le soir : Assiettes à partager"></textarea>
+          <div class="admin-variable-area">
+            <div class="admin-variable-area__heading">
+              <h3>Carte du moment</h3>
+              <p>5 entrées, 8 plats, 8 desserts et 10 assiettes à partager maximum.</p>
+            </div>
+            {menuVariableGroups.map((group) => (
+              <fieldset class="admin-variable-group" data-menu-variable-group={group.key}>
+                <legend>{group.title}</legend>
+                <div class="admin-variable-grid">
+                  {Array.from({ length: group.count }, (_, index) => (
+                    <div class="field">
+                      <label for={`menu-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
+                      <input
+                        id={`menu-${group.key}-${index + 1}`}
+                        name={`menu-${group.key}-${index + 1}`}
+                        type="text"
+                        placeholder={index === 0 ? 'Nom du plat' : 'rien'}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </fieldset>
+            ))}
           </div>
-          <div class="field">
-            <label for="menu-sections">Carte</label>
-            <textarea id="menu-sections" name="sections" rows="16" placeholder={`Entrées:\nŒuf mayonnaise fermier\nGaspacho de tomates anciennes\n\nPlats:\nLe Burger du Platane\nBœuf mijoté au vin rouge`}></textarea>
+
+          <div class="admin-variable-area">
+            <div class="admin-variable-area__heading">
+              <h3>Menu de la semaine</h3>
+              <p>Deux variables par catégorie. Les lignes vides ou “rien” sont ignorées.</p>
+            </div>
+            {weeklyVariableGroups.map((group) => (
+              <fieldset class="admin-variable-group" data-weekly-variable-group={group.key}>
+                <legend>{group.title}</legend>
+                <div class="admin-variable-grid admin-variable-grid--compact">
+                  {Array.from({ length: group.count }, (_, index) => (
+                    <div class="field">
+                      <label for={`weekly-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
+                      <input
+                        id={`weekly-${group.key}-${index + 1}`}
+                        name={`weekly-${group.key}-${index + 1}`}
+                        type="text"
+                        placeholder={index === 0 ? 'Suggestion' : 'rien'}
+                      />
+                    </div>
+                  ))}
+                </div>
+              </fieldset>
+            ))}
           </div>
           <div class="field">
             <label for="menu-notes">Notes</label>
@@ -341,56 +393,76 @@ const apiUrl = site.reservationApiUrl;
         }
       };
 
-      const formulasToText = (items) =>
-        (items ?? []).map((item) => `${item.name}${item.description ? ` : ${item.description}` : ''}`).join('\n');
+      const menuVariableGroups = [
+        { key: 'starter', title: 'Entrées', count: 5, aliases: ['entrees', 'entrées'] },
+        { key: 'main', title: 'Plats', count: 8, aliases: ['plats'] },
+        { key: 'dessert', title: 'Desserts', count: 8, aliases: ['desserts'] },
+        { key: 'share', title: 'Le soir à partager', count: 10, aliases: ['a partager', 'à partager', 'partager', 'le soir a partager'] }
+      ];
+      const weeklyVariableGroups = [
+        { key: 'starter', title: 'Entrées de la semaine', count: 2, aliases: ['entrees de la semaine', 'entrées de la semaine'] },
+        { key: 'main', title: 'Plats de la semaine', count: 2, aliases: ['plats de la semaine'] },
+        { key: 'dessert', title: 'Desserts de la semaine', count: 2, aliases: ['desserts de la semaine'] }
+      ];
+      const hiddenMenuValues = new Set(['', 'rien', 'none', 'neant', 'néant', 'vide', '-', '—']);
+      const normalizeMenuKey = (value) =>
+        lineValue(value)
+          .toLowerCase()
+          .normalize('NFD')
+          .replace(/[\u0300-\u036f]/g, '')
+          .replace(/\s+/g, ' ');
+      const isVisibleMenuValue = (value) => !hiddenMenuValues.has(normalizeMenuKey(value));
+      const menuItemFromValue = (value) => ({ name: lineValue(value), price: '', description: '' });
 
-      const sectionsToText = (sections) =>
-        (sections ?? [])
-          .map((section) => `${section.title}:\n${section.items.map((item) => item.description ? `${item.name} - ${item.description}` : item.name).join('\n')}`)
-          .join('\n\n');
-
-      const parseFormulas = (value) =>
-        splitLines(value).map((line) => {
-          const parts = line.includes('|') ? line.split('|') : line.split(':');
-          const [name = '', priceOrDescription = '', descriptionValue = ''] = parts.map(lineValue);
-          const description = descriptionValue || priceOrDescription;
-          const price = descriptionValue ? priceOrDescription : '';
-          return { name, price, description };
-        }).filter((item) => item.name);
-
-      const parseMenuLine = (line) => {
-        if (line.includes('|')) {
-          const [name = '', price = '', description = ''] = line.split('|').map(lineValue);
-          return { name, price, description };
-        }
-
-        const [name = '', description = ''] = line.split(/\s+-\s+/, 2).map(lineValue);
-        return { name, price: '', description };
-      };
-
-      const parseSections = (value) => {
-        const sections = [];
-        let current = null;
-
-        splitLines(value).forEach((line) => {
-          if (line.endsWith(':')) {
-            current = { title: line.slice(0, -1).trim(), items: [] };
-            sections.push(current);
-            return;
-          }
-
-          if (!current) {
-            current = { title: line, items: [] };
-            sections.push(current);
-            return;
-          }
-
-          const item = parseMenuLine(line);
-          if (item.name) current.items.push(item);
+      const findSection = (sections, group) =>
+        (sections ?? []).find((section) => {
+          const title = normalizeMenuKey(section.title);
+          return group.aliases.some((alias) => title.includes(normalizeMenuKey(alias)));
         });
 
-        return sections.filter((section) => section.title && section.items.length);
+      const findWeeklyFormula = (formulas, group) =>
+        (formulas ?? []).find((formula) => {
+          const title = normalizeMenuKey(formula.name);
+          return group.aliases.some((alias) => title.includes(normalizeMenuKey(alias)));
+        });
+
+      const clearVariableGroup = (prefix, group) => {
+        Array.from({ length: group.count }, (_, index) => {
+          setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}`, '');
+        });
       };
+
+      const fillVariableGroup = (prefix, group, values) => {
+        clearVariableGroup(prefix, group);
+        values.slice(0, group.count).forEach((value, index) => {
+          setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}`, value);
+        });
+      };
+
+      const readVariableGroup = (prefix, group) =>
+        Array.from({ length: group.count }, (_, index) => inputValue(menuForm, `${prefix}-${group.key}-${index + 1}`))
+          .map(lineValue)
+          .filter(isVisibleMenuValue);
+
+      const readMenuSections = () =>
+        menuVariableGroups
+          .map((group) => ({
+            title: group.title,
+            items: readVariableGroup('menu', group).map(menuItemFromValue)
+          }))
+          .filter((section) => section.items.length);
+
+      const readWeeklyFormulas = () =>
+        weeklyVariableGroups
+          .map((group) => {
+            const values = readVariableGroup('weekly', group);
+            return {
+              name: group.title,
+              price: '',
+              description: values.join(' / ')
+            };
+          })
+          .filter((formula) => formula.description);
 
       const readImageAsDataUrl = (input) =>
         new Promise((resolve, reject) => {
@@ -414,9 +486,18 @@ const apiUrl = site.reservationApiUrl;
         setInputValue(menuForm, 'period', content.menu.period);
         setInputValue(menuForm, 'updatedAt', content.menu.updatedAt);
         setInputValue(menuForm, 'intro', content.menu.intro);
-        setInputValue(menuForm, 'formulas', formulasToText(content.menu.formulas));
-        setInputValue(menuForm, 'sections', sectionsToText(content.menu.sections));
         setInputValue(menuForm, 'notes', (content.menu.notes ?? []).join('\n'));
+
+        menuVariableGroups.forEach((group) => {
+          const section = findSection(content.menu.sections, group);
+          fillVariableGroup('menu', group, (section?.items ?? []).map((item) => item.name));
+        });
+
+        weeklyVariableGroups.forEach((group) => {
+          const formula = findWeeklyFormula(content.menu.formulas, group);
+          const values = formula?.description ? formula.description.split(/\s+\/\s+|\n/).map(lineValue) : [];
+          fillVariableGroup('weekly', group, values);
+        });
 
         setInputValue(suggestionsForm, 'dish', content.suggestions.dish);
         setInputValue(suggestionsForm, 'drink', content.suggestions.drink);
@@ -479,7 +560,7 @@ const apiUrl = site.reservationApiUrl;
         } catch (_error) {
           setFeedback(
             loginFeedback,
-            'Connecté, mais le backend contenu n’est pas encore déployé. Redéployez Railway sur le dernier commit.',
+            'Connecté, mais le backend contenu n’est pas encore disponible. Vérifiez le service Render.',
             'warning'
           );
           return false;
@@ -492,8 +573,8 @@ const apiUrl = site.reservationApiUrl;
           period: inputValue(menuForm, 'period').trim(),
           updatedAt: inputValue(menuForm, 'updatedAt').trim(),
           intro: inputValue(menuForm, 'intro').trim(),
-          formulas: parseFormulas(inputValue(menuForm, 'formulas')),
-          sections: parseSections(inputValue(menuForm, 'sections')),
+          formulas: readWeeklyFormulas(),
+          sections: readMenuSections(),
           notes: splitLines(inputValue(menuForm, 'notes'))
         },
         suggestions: {
