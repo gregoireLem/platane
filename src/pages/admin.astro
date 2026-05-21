@@ -7,6 +7,7 @@ const menuVariableGroups = [
   { key: 'starter', title: 'Entrées', count: 5 },
   { key: 'main', title: 'Plats', count: 8 },
   { key: 'dessert', title: 'Desserts', count: 8 },
+  { key: 'sweet', title: 'Les douceurs de l’après-midi', count: 6 },
   { key: 'share', title: 'À partager', count: 10 }
 ];
 const weeklyVariableGroups = [
@@ -104,7 +105,7 @@ const weeklyVariableGroups = [
           <div class="admin-variable-area">
             <div class="admin-variable-area__heading">
               <h3>Carte du moment</h3>
-              <p>5 entrées, 8 plats, 8 desserts et 10 assiettes à partager maximum.</p>
+              <p>5 entrées, 8 plats, 8 desserts, 6 douceurs et 10 assiettes à partager maximum.</p>
             </div>
             {menuVariableGroups.map((group) => (
               <fieldset class="admin-variable-group" data-menu-variable-group={group.key}>
@@ -449,6 +450,7 @@ const weeklyVariableGroups = [
         { key: 'starter', title: 'Entrées', count: 5, aliases: ['entrees', 'entrées'] },
         { key: 'main', title: 'Plats', count: 8, aliases: ['plats'] },
         { key: 'dessert', title: 'Desserts', count: 8, aliases: ['desserts'] },
+        { key: 'sweet', title: 'Les douceurs de l’après-midi', count: 6, aliases: ['douceurs', 'apres-midi', 'après-midi', 'gateaux', 'gâteaux'] },
         { key: 'share', title: 'Le soir à partager', count: 10, aliases: ['a partager', 'à partager', 'partager', 'le soir a partager'] }
       ];
       const weeklyVariableGroups = [
