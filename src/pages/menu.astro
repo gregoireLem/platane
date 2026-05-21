@@ -99,15 +99,16 @@ const hasWeeklyFormula = weeklyFormulaSections.length > 0;
         </div>
       </section>
 
-      <div class="menu-sheet__top menu-sheet__top--notes-only">
-        <div class="menu-sheet__notes">
-          <p class="eyebrow">Esprit de la carte</p>
-          <ul class="notes-list" data-menu-notes>
+      <div class="menu-sheet__intro">
+        <div>
+          <p class="eyebrow">L’ardoise du moment</p>
+          <h2>Une cuisine courte, locale et mouvante.</h2>
+        </div>
+        <ul class="menu-sheet__intro-copy" data-menu-notes>
             {weeklyMenu.notes.map((note) => (
               <li>{note}</li>
             ))}
-          </ul>
-        </div>
+        </ul>
       </div>
 
       <div class="menu-columns" data-menu-sections>
