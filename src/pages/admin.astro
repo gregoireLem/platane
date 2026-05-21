@@ -363,6 +363,36 @@ const weeklyVariableGroups = [
         node.dataset.tone = tone;
       };
 
+      const resetFeedback = (node) => {
+        node.textContent = '';
+        node.dataset.tone = '';
+      };
+
+      const setFormPending = (form, isPending, label = 'Publication...') => {
+        const submitButton = form.querySelector('button[type="submit"]');
+        if (!(submitButton instanceof HTMLButtonElement)) return;
+
+        if (!submitButton.dataset.defaultLabel) {
+          submitButton.dataset.defaultLabel = submitButton.textContent?.trim() || 'Publier';
+        }
+
+        submitButton.disabled = isPending;
+        submitButton.dataset.pending = isPending ? 'true' : 'false';
+        submitButton.textContent = isPending ? label : submitButton.dataset.defaultLabel;
+      };
+
+      const showTemporaryFeedback = (node, message, tone = 'success') => {
+        setFeedback(node, message, tone);
+        window.setTimeout(() => {
+          if (node.textContent === message) resetFeedback(node);
+        }, 3600);
+      };
+
+      const resetFeedbackOnEdit = (form, node) => {
+        form.addEventListener('input', () => resetFeedback(node));
+        form.addEventListener('change', () => resetFeedback(node));
+      };
+
       const adminFetch = (path, options = {}) =>
         fetch(`${apiRoot}${path}`, {
           ...options,
@@ -647,6 +677,25 @@ const weeklyVariableGroups = [
         }
       });
 
+      const menuFeedback = document.querySelector('[data-menu-feedback]');
+      const suggestionsFeedback = document.querySelector('[data-suggestions-feedback]');
+      const eventFeedback = document.querySelector('[data-event-feedback]');
+      const galleryFeedback = document.querySelector('[data-gallery-feedback]');
+
+      if (
+        !(menuFeedback instanceof HTMLElement) ||
+        !(suggestionsFeedback instanceof HTMLElement) ||
+        !(eventFeedback instanceof HTMLElement) ||
+        !(galleryFeedback instanceof HTMLElement)
+      ) {
+        return;
+      }
+
+      resetFeedbackOnEdit(menuForm, menuFeedback);
+      resetFeedbackOnEdit(suggestionsForm, suggestionsFeedback);
+      resetFeedbackOnEdit(eventForm, eventFeedback);
+      resetFeedbackOnEdit(galleryForm, galleryFeedback);
+
       loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
         try {
@@ -686,43 +735,51 @@ const weeklyVariableGroups = [
 
       menuForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const feedback = document.querySelector('[data-menu-feedback]');
-        if (!(feedback instanceof HTMLElement)) return;
+        resetFeedback(menuFeedback);
+        setFormPending(menuForm, true);
+        setFeedback(menuFeedback, 'Publication de la carte en cours...', 'loading');
         try {
           const response = await adminFetch('/admin/content/editorial', {
             method: 'PUT',
             body: JSON.stringify(editorialPayload())
           });
           if (!response.ok) throw new Error('menu');
-          setFeedback(feedback, 'Carte publiée.', 'success');
           await loadContent();
+          showTemporaryFeedback(menuFeedback, 'Carte publiée.', 'success');
         } catch (_error) {
-          setFeedback(feedback, 'Impossible de publier la carte.', 'error');
+          setFeedback(menuFeedback, 'Impossible de publier la carte.', 'error');
+        } finally {
+          setFormPending(menuForm, false);
         }
       });
 
       suggestionsForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const feedback = document.querySelector('[data-suggestions-feedback]');
-        if (!(feedback instanceof HTMLElement)) return;
+        resetFeedback(suggestionsFeedback);
+        setFormPending(suggestionsForm, true);
+        setFeedback(suggestionsFeedback, 'Publication des suggestions en cours...', 'loading');
         try {
           const response = await adminFetch('/admin/content/editorial', {
             method: 'PUT',
             body: JSON.stringify(editorialPayload())
           });
           if (!response.ok) throw new Error('suggestions');
-          setFeedback(feedback, 'Suggestions publiées.', 'success');
           await loadContent();
+          showTemporaryFeedback(suggestionsFeedback, 'Suggestions publiées.', 'success');
         } catch (_error) {
-          setFeedback(feedback, 'Impossible de publier les suggestions.', 'error');
+          setFeedback(suggestionsFeedback, 'Impossible de publier les suggestions.', 'error');
+        } finally {
+          setFormPending(suggestionsForm, false);
         }
       });
 
       eventForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const feedback = document.querySelector('[data-event-feedback]');
         const imageInput = field(eventForm, 'image');
-        if (!(feedback instanceof HTMLElement) || !(imageInput instanceof HTMLInputElement)) return;
+        if (!(imageInput instanceof HTMLInputElement)) return;
+        resetFeedback(eventFeedback);
+        setFormPending(eventForm, true);
+        setFeedback(eventFeedback, 'Publication de l’évènement en cours...', 'loading');
         try {
           const imageUrl = await readImageAsDataUrl(imageInput);
           const response = await adminFetch('/admin/events', {
@@ -738,18 +795,22 @@ const weeklyVariableGroups = [
           });
           if (!response.ok) throw new Error('event');
           eventForm.reset();
-          setFeedback(feedback, 'Évènement publié.', 'success');
           await loadContent();
+          showTemporaryFeedback(eventFeedback, 'Évènement publié.', 'success');
         } catch (_error) {
-          setFeedback(feedback, 'Impossible de publier l’évènement. Image max 1,8 Mo.', 'error');
+          setFeedback(eventFeedback, 'Impossible de publier l’évènement. Image max 1,8 Mo.', 'error');
+        } finally {
+          setFormPending(eventForm, false);
         }
       });
 
       galleryForm.addEventListener('submit', async (event) => {
         event.preventDefault();
-        const feedback = document.querySelector('[data-gallery-feedback]');
         const imageInput = field(galleryForm, 'image');
-        if (!(feedback instanceof HTMLElement) || !(imageInput instanceof HTMLInputElement)) return;
+        if (!(imageInput instanceof HTMLInputElement)) return;
+        resetFeedback(galleryFeedback);
+        setFormPending(galleryForm, true);
+        setFeedback(galleryFeedback, 'Ajout de la photo en cours...', 'loading');
         try {
           const imageUrl = await readImageAsDataUrl(imageInput);
           const response = await adminFetch('/admin/gallery', {
@@ -764,10 +825,12 @@ const weeklyVariableGroups = [
           });
           if (!response.ok) throw new Error('gallery');
           galleryForm.reset();
-          setFeedback(feedback, 'Photo ajoutée.', 'success');
           await loadContent();
+          showTemporaryFeedback(galleryFeedback, 'Photo ajoutée.', 'success');
         } catch (_error) {
-          setFeedback(feedback, 'Impossible d’ajouter la photo. Image max 1,8 Mo.', 'error');
+          setFeedback(galleryFeedback, 'Impossible d’ajouter la photo. Image max 1,8 Mo.', 'error');
+        } finally {
+          setFormPending(galleryForm, false);
         }
       });
 
