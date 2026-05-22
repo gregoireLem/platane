@@ -35,6 +35,27 @@ type EditorialContent = {
   gallery: GalleryPhoto[];
 };
 
+const editorialContentCacheKey = 'au_platane_editorial_content_v1';
+let contentRuntimeRequest: Promise<void> | null = null;
+
+const readCachedEditorialContent = () => {
+  try {
+    const value = window.localStorage.getItem(editorialContentCacheKey);
+    if (!value) return null;
+    return JSON.parse(value) as EditorialContent;
+  } catch (_error) {
+    return null;
+  }
+};
+
+const writeCachedEditorialContent = (content: EditorialContent) => {
+  try {
+    window.localStorage.setItem(editorialContentCacheKey, JSON.stringify(content));
+  } catch (_error) {
+    // The live content can still render without localStorage.
+  }
+};
+
 const setText = (selector: string, value: string) => {
   if (!value) return;
 
@@ -325,18 +346,42 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
   }
 };
 
+const hydrateEditorialContent = (content: EditorialContent) => {
+  hydrateMenuDom(content.menu);
+  renderSuggestions(content.suggestions);
+  renderEvents(content.events);
+  renderGallery(content.gallery);
+};
+
 export const initContentRuntime = async (apiRoot: string) => {
+  const cachedContent = readCachedEditorialContent();
+  if (cachedContent) {
+    hydrateEditorialContent(cachedContent);
+  }
+
+  if (contentRuntimeRequest) {
+    return contentRuntimeRequest;
+  }
+
+  contentRuntimeRequest = loadFreshEditorialContent(apiRoot, Boolean(cachedContent)).finally(() => {
+    contentRuntimeRequest = null;
+  });
+
+  return contentRuntimeRequest;
+};
+
+const loadFreshEditorialContent = async (apiRoot: string, hasCachedContent: boolean) => {
   try {
-    const response = await fetch(`${apiRoot}/content/editorial`);
+    const response = await fetch(`${apiRoot}/content/editorial`, { cache: 'no-store' });
     if (!response.ok) throw new Error('content');
     const content = (await response.json()) as EditorialContent;
 
-    hydrateMenuDom(content.menu);
-    renderSuggestions(content.suggestions);
-    renderEvents(content.events);
-    renderGallery(content.gallery);
+    writeCachedEditorialContent(content);
+    hydrateEditorialContent(content);
   } catch (error) {
-    console.error('Content runtime error:', error);
+    if (!hasCachedContent) {
+      console.error('Content runtime error:', error);
+    }
   }
 };
 

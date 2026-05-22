@@ -359,6 +359,23 @@ const weeklyVariableGroups = [
         content: null
       };
 
+      const editorialContentCacheKey = 'au_platane_editorial_content_v1';
+
+      const rememberPublicContent = (content) => {
+        try {
+          window.localStorage.setItem(
+            editorialContentCacheKey,
+            JSON.stringify({
+              ...content,
+              events: (content.events ?? []).filter((event) => event.isPublished),
+              gallery: (content.gallery ?? []).filter((photo) => photo.isPublished)
+            })
+          );
+        } catch (_error) {
+          // The admin keeps working even if the browser blocks localStorage.
+        }
+      };
+
       const setFeedback = (node, message, tone = '') => {
         node.textContent = message;
         node.dataset.tone = tone;
@@ -642,6 +659,7 @@ const weeklyVariableGroups = [
         const response = await adminFetch('/admin/content');
         if (!response.ok) throw new Error('content');
         state.content = await response.json();
+        rememberPublicContent(state.content);
         fillForms(state.content);
         renderEvents(state.content.events);
         renderGallery(state.content.gallery);
