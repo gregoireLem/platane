@@ -78,6 +78,35 @@ const escapeUrl = (value: string | null | undefined) => {
   return escapeHtml(url);
 };
 
+const hiddenPriceValues = new Set([
+  '',
+  '0',
+  '0€',
+  '0 €',
+  '0,0',
+  '0,0€',
+  '0,0 €',
+  '0,00',
+  '0,00€',
+  '0,00 €',
+  '0.0',
+  '0.0€',
+  '0.0 €',
+  '0.00',
+  '0.00€',
+  '0.00 €'
+]);
+
+const normalizePriceValue = (value: string | null | undefined) =>
+  String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ');
+
+const shouldShowPrice = (value: string | null | undefined) => !hiddenPriceValues.has(normalizePriceValue(value));
+
 const formatEventDate = (value: string) =>
   new Intl.DateTimeFormat('fr-FR', {
     weekday: 'long',
@@ -302,7 +331,10 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
           .map(
             (item) => `
               <li>
-                <strong>${escapeHtml(item.name)}</strong>
+                <div class="afternoon-sweets-card__item-head">
+                  <strong>${escapeHtml(item.name)}</strong>
+                  ${shouldShowPrice(item.price) ? `<span class="afternoon-sweets-card__price">${escapeHtml(item.price)}</span>` : ''}
+                </div>
                 ${item.description ? `<span>${escapeHtml(item.description)}</span>` : ''}
               </li>
             `
@@ -326,7 +358,7 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
                     <li class="menu-list__item">
                       <div class="menu-list__head">
                         <h3 class="menu-list__name">${escapeHtml(item.name)}</h3>
-                        ${item.price ? `<span class="menu-list__price">${escapeHtml(item.price)}</span>` : ''}
+                        ${shouldShowPrice(item.price) ? `<span class="menu-list__price">${escapeHtml(item.price)}</span>` : ''}
                       </div>
                       ${item.description ? `<p class="menu-list__description">${escapeHtml(item.description)}</p>` : ''}
                     </li>

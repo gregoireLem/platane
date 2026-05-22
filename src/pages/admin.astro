@@ -113,14 +113,26 @@ const weeklyVariableGroups = [
                 <div class="admin-variable-grid">
                   {Array.from({ length: group.count }, (_, index) => (
                     <div class="admin-variable-line">
-                      <div class="field">
-                        <label for={`menu-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
-                        <input
-                          id={`menu-${group.key}-${index + 1}`}
-                          name={`menu-${group.key}-${index + 1}`}
-                          type="text"
-                          placeholder={index === 0 ? 'Nom du plat' : 'rien'}
-                        />
+                      <div class="admin-variable-line__top">
+                        <div class="field">
+                          <label for={`menu-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
+                          <input
+                            id={`menu-${group.key}-${index + 1}`}
+                            name={`menu-${group.key}-${index + 1}`}
+                            type="text"
+                            placeholder={index === 0 ? 'Nom du plat' : 'rien'}
+                          />
+                        </div>
+                        <div class="field">
+                          <label for={`menu-${group.key}-${index + 1}-price`}>Prix</label>
+                          <input
+                            id={`menu-${group.key}-${index + 1}-price`}
+                            name={`menu-${group.key}-${index + 1}-price`}
+                            type="text"
+                            inputmode="decimal"
+                            placeholder="0 = masqué"
+                          />
+                        </div>
                       </div>
                       <div class="field">
                         <label for={`menu-${group.key}-${index + 1}-description`}>Descriptif</label>
@@ -482,6 +494,24 @@ const weeklyVariableGroups = [
         { key: 'dessert', title: 'Desserts de la semaine', count: 2, aliases: ['desserts de la semaine'] }
       ];
       const hiddenMenuValues = new Set(['', 'rien', 'none', 'neant', 'néant', 'vide', '-', '—']);
+      const hiddenPriceValues = new Set([
+        '',
+        '0',
+        '0€',
+        '0 €',
+        '0,0',
+        '0,0€',
+        '0,0 €',
+        '0,00',
+        '0,00€',
+        '0,00 €',
+        '0.0',
+        '0.0€',
+        '0.0 €',
+        '0.00',
+        '0.00€',
+        '0.00 €'
+      ]);
       const normalizeMenuKey = (value) =>
         lineValue(value)
           .toLowerCase()
@@ -489,7 +519,12 @@ const weeklyVariableGroups = [
           .replace(/[\u0300-\u036f]/g, '')
           .replace(/\s+/g, ' ');
       const isVisibleMenuValue = (value) => !hiddenMenuValues.has(normalizeMenuKey(value));
-      const menuItemFromValue = (value) => ({ name: lineValue(value), price: '', description: '' });
+      const isVisiblePriceValue = (value) => !hiddenPriceValues.has(normalizeMenuKey(value));
+      const normalizePriceValue = (value) => {
+        const price = lineValue(value);
+        return isVisiblePriceValue(price) ? price : '';
+      };
+      const menuItemFromValue = (value, price = '') => ({ name: lineValue(value), price: normalizePriceValue(price), description: '' });
 
       const findSection = (sections, group) =>
         (sections ?? []).find((section) => {
@@ -507,6 +542,7 @@ const weeklyVariableGroups = [
         Array.from({ length: group.count }, (_, index) => {
           setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}`, '');
           setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}-description`, '');
+          setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}-price`, '');
         });
       };
 
@@ -519,17 +555,20 @@ const weeklyVariableGroups = [
           }
           setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}`, value.name ?? '');
           setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}-description`, value.description ?? '');
+          setInputValue(menuForm, `${prefix}-${group.key}-${index + 1}-price`, normalizePriceValue(value.price ?? ''));
         });
       };
 
       const readVariableGroup = (prefix, group) =>
         Array.from({ length: group.count }, (_, index) => ({
           name: inputValue(menuForm, `${prefix}-${group.key}-${index + 1}`),
-          description: inputValue(menuForm, `${prefix}-${group.key}-${index + 1}-description`)
+          description: inputValue(menuForm, `${prefix}-${group.key}-${index + 1}-description`),
+          price: inputValue(menuForm, `${prefix}-${group.key}-${index + 1}-price`)
         }))
           .map((item) => ({
             name: lineValue(item.name),
-            description: lineValue(item.description)
+            description: lineValue(item.description),
+            price: normalizePriceValue(item.price)
           }))
           .filter((item) => isVisibleMenuValue(item.name));
 
@@ -538,7 +577,7 @@ const weeklyVariableGroups = [
           .map((group) => ({
             title: group.title,
             items: readVariableGroup('menu', group).map((item) => ({
-              ...menuItemFromValue(item.name),
+              ...menuItemFromValue(item.name, item.price),
               description: item.description
             }))
           }))

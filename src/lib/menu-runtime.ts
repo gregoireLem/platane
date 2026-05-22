@@ -108,6 +108,35 @@ const isEnabled = (row: SheetRow) => {
   return ['1', 'true', 'yes', 'oui', 'y', 'x'].includes(rawValue.trim().toLowerCase());
 };
 
+const hiddenPriceValues = new Set([
+  '',
+  '0',
+  '0€',
+  '0 €',
+  '0,0',
+  '0,0€',
+  '0,0 €',
+  '0,00',
+  '0,00€',
+  '0,00 €',
+  '0.0',
+  '0.0€',
+  '0.0 €',
+  '0.00',
+  '0.00€',
+  '0.00 €'
+]);
+
+const normalizePriceValue = (value: string | null | undefined) =>
+  String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ');
+
+const shouldShowPrice = (value: string | null | undefined) => !hiddenPriceValues.has(normalizePriceValue(value));
+
 export const loadRemoteMenu = async (config: MenuRuntimeConfig): Promise<RuntimeMenu | null> => {
   if (!config.googleSheetId) return null;
 
@@ -217,7 +246,7 @@ const createMenuLineElement = (itemData: RuntimeMenuItem) => {
 
   head.appendChild(name);
 
-  if (itemData.price) {
+  if (shouldShowPrice(itemData.price)) {
     const price = document.createElement('span');
     price.className = 'menu-list__price';
     price.textContent = itemData.price;

@@ -29,6 +29,39 @@ const isSweetsSection = (title: string) => {
   return normalized.includes('douceurs') || normalized.includes('apres-midi');
 };
 
+const hiddenPriceValues = new Set([
+  '',
+  '0',
+  '0€',
+  '0 €',
+  '0,0',
+  '0,0€',
+  '0,0 €',
+  '0,00',
+  '0,00€',
+  '0,00 €',
+  '0.0',
+  '0.0€',
+  '0.0 €',
+  '0.00',
+  '0.00€',
+  '0.00 €'
+]);
+
+const shouldShowPrice = (value?: string) => {
+  const normalized = String(value ?? '')
+    .trim()
+    .toLowerCase()
+    .normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '')
+    .replace(/\s+/g, ' ');
+
+  return !hiddenPriceValues.has(normalized);
+};
+
+const itemPrice = (item: unknown) =>
+  item && typeof item === 'object' && 'price' in item ? String(item.price ?? '') : '';
+
 const parseWeeklyFormula = (description: string) => {
   const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());
   return { name, detail };
@@ -122,7 +155,10 @@ const ardoiseSections = weeklyMenu.sections.filter((section) => !isSweetsSection
         <ul class="afternoon-sweets-card__list" data-afternoon-sweets-list>
           {sweetsSection?.items.map((item) => (
             <li>
-              <strong>{item.name}</strong>
+              <div class="afternoon-sweets-card__item-head">
+                <strong>{item.name}</strong>
+                {shouldShowPrice(itemPrice(item)) && <span class="afternoon-sweets-card__price">{itemPrice(item)}</span>}
+              </div>
               {item.description && <span>{item.description}</span>}
             </li>
           ))}
@@ -151,8 +187,8 @@ const ardoiseSections = weeklyMenu.sections.filter((section) => !isSweetsSection
                 <li class="menu-list__item">
                   <div class="menu-list__head">
                     <h3 class="menu-list__name">{item.name}</h3>
-                    {'price' in item && item.price && (
-                      <span class="menu-list__price">{item.price}</span>
+                    {shouldShowPrice(itemPrice(item)) && (
+                      <span class="menu-list__price">{itemPrice(item)}</span>
                     )}
                   </div>
                   {item.description && <p class="menu-list__description">{item.description}</p>}
