@@ -399,6 +399,12 @@ const weeklyVariableGroups = [
         submitButton.textContent = isPending ? label : submitButton.dataset.defaultLabel;
       };
 
+      const setLoginPending = (isPending) => {
+        setFormPending(loginForm, isPending, 'Connexion...');
+        usernameInput.disabled = isPending;
+        passwordInput.disabled = isPending;
+      };
+
       const showTemporaryFeedback = (node, message, tone = 'success') => {
         setFeedback(node, message, tone);
         window.setTimeout(() => {
@@ -718,6 +724,8 @@ const weeklyVariableGroups = [
 
       loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
+        setLoginPending(true);
+        setFeedback(loginFeedback, 'Connexion en cours...', 'loading');
         try {
           const response = await adminFetch('/admin/login', {
             method: 'POST',
@@ -732,10 +740,15 @@ const weeklyVariableGroups = [
             return;
           }
           setAuthenticated(true, usernameInput.value.trim());
-          await loadContentOrWarn();
+          const isContentLoaded = await loadContentOrWarn();
+          if (isContentLoaded) {
+            showTemporaryFeedback(loginFeedback, 'Connexion validée.', 'success');
+          }
         } catch (_error) {
           setAuthenticated(false);
           setFeedback(loginFeedback, 'Impossible de joindre le backend admin.', 'error');
+        } finally {
+          setLoginPending(false);
         }
       });
 
