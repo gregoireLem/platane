@@ -137,6 +137,12 @@ const normalizePriceValue = (value: string | null | undefined) =>
 
 const shouldShowPrice = (value: string | null | undefined) => !hiddenPriceValues.has(normalizePriceValue(value));
 
+const formatPriceValue = (value: string | null | undefined) => {
+  const price = String(value ?? '').trim();
+  if (!price || price.includes('€')) return price;
+  return /^\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
+};
+
 export const loadRemoteMenu = async (config: MenuRuntimeConfig): Promise<RuntimeMenu | null> => {
   if (!config.googleSheetId) return null;
 
@@ -249,7 +255,7 @@ const createMenuLineElement = (itemData: RuntimeMenuItem) => {
   if (shouldShowPrice(itemData.price)) {
     const price = document.createElement('span');
     price.className = 'menu-list__price';
-    price.textContent = itemData.price;
+    price.textContent = formatPriceValue(itemData.price);
     head.appendChild(price);
   }
 

@@ -59,8 +59,14 @@ const shouldShowPrice = (value?: string) => {
   return !hiddenPriceValues.has(normalized);
 };
 
+const formatPriceValue = (value?: string) => {
+  const price = String(value ?? '').trim();
+  if (!price || price.includes('€')) return price;
+  return /^\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
+};
+
 const itemPrice = (item: unknown) =>
-  item && typeof item === 'object' && 'price' in item ? String(item.price ?? '') : '';
+  item && typeof item === 'object' && 'price' in item ? formatPriceValue(String(item.price ?? '')) : '';
 
 const parseWeeklyFormula = (description: string) => {
   const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());

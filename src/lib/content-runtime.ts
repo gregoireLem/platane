@@ -107,6 +107,12 @@ const normalizePriceValue = (value: string | null | undefined) =>
 
 const shouldShowPrice = (value: string | null | undefined) => !hiddenPriceValues.has(normalizePriceValue(value));
 
+const formatPriceValue = (value: string | null | undefined) => {
+  const price = String(value ?? '').trim();
+  if (!price || price.includes('€')) return price;
+  return /^\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
+};
+
 const formatEventDate = (value: string) =>
   new Intl.DateTimeFormat('fr-FR', {
     weekday: 'long',
@@ -333,7 +339,7 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
               <li>
                 <div class="afternoon-sweets-card__item-head">
                   <strong>${escapeHtml(item.name)}</strong>
-                  ${shouldShowPrice(item.price) ? `<span class="afternoon-sweets-card__price">${escapeHtml(item.price)}</span>` : ''}
+                  ${shouldShowPrice(item.price) ? `<span class="afternoon-sweets-card__price">${escapeHtml(formatPriceValue(item.price))}</span>` : ''}
                 </div>
                 ${item.description ? `<span>${escapeHtml(item.description)}</span>` : ''}
               </li>
@@ -358,7 +364,7 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
                     <li class="menu-list__item">
                       <div class="menu-list__head">
                         <h3 class="menu-list__name">${escapeHtml(item.name)}</h3>
-                        ${shouldShowPrice(item.price) ? `<span class="menu-list__price">${escapeHtml(item.price)}</span>` : ''}
+                        ${shouldShowPrice(item.price) ? `<span class="menu-list__price">${escapeHtml(formatPriceValue(item.price))}</span>` : ''}
                       </div>
                       ${item.description ? `<p class="menu-list__description">${escapeHtml(item.description)}</p>` : ''}
                     </li>

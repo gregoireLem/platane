@@ -520,9 +520,14 @@ const weeklyVariableGroups = [
           .replace(/\s+/g, ' ');
       const isVisibleMenuValue = (value) => !hiddenMenuValues.has(normalizeMenuKey(value));
       const isVisiblePriceValue = (value) => !hiddenPriceValues.has(normalizeMenuKey(value));
+      const formatPriceValue = (value) => {
+        const price = lineValue(value);
+        if (!price || price.includes('€')) return price;
+        return /^\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
+      };
       const normalizePriceValue = (value) => {
         const price = lineValue(value);
-        return isVisiblePriceValue(price) ? price : '';
+        return isVisiblePriceValue(price) ? formatPriceValue(price) : '';
       };
       const menuItemFromValue = (value, price = '') => ({ name: lineValue(value), price: normalizePriceValue(price), description: '' });
 
