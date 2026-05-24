@@ -258,8 +258,8 @@ const weeklyVariableGroups = [
       <div class="admin-grid">
         <section class="admin-card">
           <div class="admin-card__header">
-            <h2>Créer un évènement</h2>
-            <p>Photo, date, texte court. Le badge “Ce week-end” est généré automatiquement.</p>
+            <h2 data-event-form-title>Créer un évènement</h2>
+            <p data-event-form-help>Photo, date, texte court. Le badge “Ce week-end” est généré automatiquement.</p>
           </div>
           <form class="admin-editor-form" data-event-form>
             <div class="field">
@@ -284,9 +284,11 @@ const weeklyVariableGroups = [
             <div class="field">
               <label for="event-image">Photo</label>
               <input id="event-image" name="image" type="file" accept="image/*" />
+              <p class="field-hint" data-event-image-hint hidden></p>
             </div>
             <div class="admin-form-actions">
-              <button class="button button--primary" type="submit">Publier l’évènement</button>
+              <button class="button button--primary" type="submit" data-event-submit>Publier l’évènement</button>
+              <button class="button button--secondary" type="button" data-event-cancel hidden>Annuler la modification</button>
             </div>
             <p class="admin-inline-feedback" data-event-feedback aria-live="polite"></p>
           </form>
@@ -407,6 +409,11 @@ const weeklyVariableGroups = [
       const galleryList = document.querySelector('[data-gallery-list]');
       const eventSummaryInput = eventForm?.querySelector('#event-summary');
       const eventSummaryCount = document.querySelector('[data-event-summary-count]');
+      const eventFormTitle = document.querySelector('[data-event-form-title]');
+      const eventFormHelp = document.querySelector('[data-event-form-help]');
+      const eventImageHint = document.querySelector('[data-event-image-hint]');
+      const eventSubmitButton = document.querySelector('[data-event-submit]');
+      const eventCancelButton = document.querySelector('[data-event-cancel]');
 
       if (
         !apiRoot ||
@@ -423,14 +430,21 @@ const weeklyVariableGroups = [
         !(eventsList instanceof HTMLElement) ||
         !(galleryList instanceof HTMLElement) ||
         !(eventSummaryInput instanceof HTMLTextAreaElement) ||
-        !(eventSummaryCount instanceof HTMLElement)
+        !(eventSummaryCount instanceof HTMLElement) ||
+        !(eventFormTitle instanceof HTMLElement) ||
+        !(eventFormHelp instanceof HTMLElement) ||
+        !(eventImageHint instanceof HTMLElement) ||
+        !(eventSubmitButton instanceof HTMLButtonElement) ||
+        !(eventCancelButton instanceof HTMLButtonElement)
       ) {
         return;
       }
 
       const state = {
         isAuthenticated: false,
-        content: null
+        content: null,
+        editingEventId: null,
+        editingEvent: null
       };
 
       const editorialContentCacheKey = 'au_platane_editorial_content_v1';
@@ -459,6 +473,14 @@ const weeklyVariableGroups = [
         node.textContent = '';
         node.dataset.tone = '';
       };
+
+      const escapeHtml = (value) =>
+        String(value ?? '')
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
 
       const setFormPending = (form, isPending, label = 'Publication...') => {
         const submitButton = form.querySelector('button[type="submit"]');
@@ -767,19 +789,58 @@ const weeklyVariableGroups = [
         setInputValue(suggestionsForm, 'updatedAt', content.suggestions.updatedAt);
       };
 
+      const resetEventEditor = () => {
+        state.editingEventId = null;
+        state.editingEvent = null;
+        eventForm.reset();
+        eventFormTitle.textContent = 'Créer un évènement';
+        eventFormHelp.textContent = 'Photo, date, texte court. Le badge “Ce week-end” est généré automatiquement.';
+        eventSubmitButton.textContent = 'Publier l’évènement';
+        eventSubmitButton.dataset.defaultLabel = 'Publier l’évènement';
+        eventCancelButton.hidden = true;
+        eventImageHint.hidden = true;
+        eventImageHint.textContent = '';
+        updateEventSummaryCount();
+      };
+
+      const editEvent = (eventItem) => {
+        state.editingEventId = eventItem.id;
+        state.editingEvent = eventItem;
+        setInputValue(eventForm, 'title', eventItem.title ?? '');
+        setInputValue(eventForm, 'eventDate', eventDateValue(eventItem.eventDate));
+        setInputValue(eventForm, 'eventTime', eventItem.eventTime ?? '');
+        setInputValue(eventForm, 'summary', eventItem.summary ?? '');
+        setInputValue(eventForm, 'image', '');
+        eventFormTitle.textContent = 'Modifier l’évènement';
+        eventFormHelp.textContent = 'Corrigez le texte, la date ou l’horaire. Choisissez une nouvelle photo seulement si vous voulez la remplacer.';
+        eventSubmitButton.textContent = 'Enregistrer les modifications';
+        eventSubmitButton.dataset.defaultLabel = 'Enregistrer les modifications';
+        eventCancelButton.hidden = false;
+        eventImageHint.hidden = false;
+        eventImageHint.textContent = eventItem.imageUrl
+          ? 'Photo actuelle conservée si aucun nouveau fichier n’est choisi.'
+          : 'Aucune photo actuelle. Choisissez un fichier si besoin.';
+        updateEventSummaryCount();
+        renderEvents(state.content?.events ?? []);
+        eventForm.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      };
+
       const renderEvents = (events) => {
         eventsList.innerHTML = events.length
           ? events
               .map(
                 (event) => `
-                  <article class="admin-content-item">
-                    ${event.imageUrl ? `<img src="${event.imageUrl}" alt="" />` : ''}
+                  <article class="admin-content-item${state.editingEventId === event.id ? ' is-editing' : ''}">
+                    ${event.imageUrl ? `<img src="${escapeHtml(event.imageUrl)}" alt="" />` : ''}
                     <div>
-                      <span>${eventDateValue(event.eventDate)}${event.eventTime ? ` · ${event.eventTime}` : ''}</span>
-                      <strong>${event.title}</strong>
-                      <p>${event.summary}</p>
+                      <span>${escapeHtml(eventDateValue(event.eventDate))}${event.eventTime ? ` · ${escapeHtml(event.eventTime)}` : ''}</span>
+                      <strong>${escapeHtml(event.title)}</strong>
+                      <p>${escapeHtml(event.summary)}</p>
                     </div>
-                    <button class="button button--ghost" type="button" data-delete-event="${event.id}">Supprimer</button>
+                    <div class="admin-content-item__actions">
+                      <button class="button button--secondary" type="button" data-edit-event="${escapeHtml(event.id)}">Modifier</button>
+                      <button class="button button--ghost" type="button" data-delete-event="${escapeHtml(event.id)}">Supprimer</button>
+                    </div>
                   </article>
                 `
               )
@@ -875,6 +936,10 @@ const weeklyVariableGroups = [
       resetFeedbackOnEdit(galleryForm, galleryFeedback);
       eventSummaryInput.addEventListener('input', updateEventSummaryCount);
       updateEventSummaryCount();
+      eventCancelButton.addEventListener('click', () => {
+        resetEventEditor();
+        resetFeedback(eventFeedback);
+      });
 
       loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -964,36 +1029,54 @@ const weeklyVariableGroups = [
         event.preventDefault();
         const imageInput = field(eventForm, 'image');
         if (!(imageInput instanceof HTMLInputElement)) return;
+        const isEditingEvent = Boolean(state.editingEventId);
         resetFeedback(eventFeedback);
         setFormPending(eventForm, true);
-        setFeedback(eventFeedback, 'Publication de l’évènement en cours...', 'loading');
+        setFeedback(
+          eventFeedback,
+          isEditingEvent ? 'Modification de l’évènement en cours...' : 'Publication de l’évènement en cours...',
+          'loading'
+        );
         try {
-          const imageUrl = await readImageAsDataUrl(imageInput);
-          const response = await adminFetch('/admin/events', {
-            method: 'POST',
-            body: JSON.stringify({
-              title: inputValue(eventForm, 'title').trim(),
-              eventDate: inputValue(eventForm, 'eventDate'),
-              eventTime: inputValue(eventForm, 'eventTime').trim(),
-              summary: inputValue(eventForm, 'summary').trim(),
-              imageUrl,
-              isPublished: true
-            })
-          });
+          const newImageUrl = await readImageAsDataUrl(imageInput);
+          const imageUrl = newImageUrl || state.editingEvent?.imageUrl || '';
+          const response = await adminFetch(
+            state.editingEventId ? `/admin/events/${state.editingEventId}` : '/admin/events',
+            {
+              method: state.editingEventId ? 'PUT' : 'POST',
+              body: JSON.stringify({
+                title: inputValue(eventForm, 'title').trim(),
+                eventDate: inputValue(eventForm, 'eventDate'),
+                eventTime: inputValue(eventForm, 'eventTime').trim(),
+                summary: inputValue(eventForm, 'summary').trim(),
+                details: state.editingEvent?.details ?? '',
+                imageUrl,
+                ctaLabel: state.editingEvent?.ctaLabel ?? '',
+                ctaUrl: state.editingEvent?.ctaUrl ?? '',
+                isPublished: true
+              })
+            }
+          );
           if (!response.ok) {
-            throw new Error(await adminErrorMessage(response, 'Impossible de publier l’évènement.'));
+            throw new Error(
+              await adminErrorMessage(
+                response,
+                isEditingEvent ? 'Impossible de modifier l’évènement.' : 'Impossible de publier l’évènement.'
+              )
+            );
           }
-          eventForm.reset();
-          updateEventSummaryCount();
+          resetEventEditor();
           await loadContent();
-          showTemporaryFeedback(eventFeedback, 'Évènement publié.', 'success');
+          showTemporaryFeedback(eventFeedback, isEditingEvent ? 'Évènement modifié.' : 'Évènement publié.', 'success');
         } catch (error) {
           const message =
             error instanceof Error && error.message === 'image-size'
               ? 'La photo est trop lourde. Maximum 4 Mo.'
               : error instanceof Error
                 ? error.message
-                : 'Impossible de publier l’évènement.';
+                : isEditingEvent
+                  ? 'Impossible de modifier l’évènement.'
+                  : 'Impossible de publier l’évènement.';
           setFeedback(
             eventFeedback,
             message,
@@ -1037,11 +1120,19 @@ const weeklyVariableGroups = [
       eventsList.addEventListener('click', async (event) => {
         const target = event.target;
         if (!(target instanceof HTMLElement)) return;
-        const button = target.closest('[data-delete-event]');
-        if (!(button instanceof HTMLButtonElement)) return;
-        const id = button.dataset.deleteEvent;
+        const editButton = target.closest('[data-edit-event]');
+        if (editButton instanceof HTMLButtonElement) {
+          const eventItem = state.content?.events?.find((item) => item.id === editButton.dataset.editEvent);
+          if (eventItem) editEvent(eventItem);
+          return;
+        }
+
+        const deleteButton = target.closest('[data-delete-event]');
+        if (!(deleteButton instanceof HTMLButtonElement)) return;
+        const id = deleteButton.dataset.deleteEvent;
         if (!id) return;
         await adminFetch(`/admin/events/${id}`, { method: 'DELETE' });
+        if (state.editingEventId === id) resetEventEditor();
         await loadContent();
       });
 
