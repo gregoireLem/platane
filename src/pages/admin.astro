@@ -278,7 +278,8 @@ const weeklyVariableGroups = [
             </div>
             <div class="field">
               <label for="event-summary">Résumé</label>
-              <textarea id="event-summary" name="summary" rows="8" maxlength="8000" required></textarea>
+              <textarea id="event-summary" name="summary" rows="8" required></textarea>
+              <p class="field-hint" data-event-summary-count>0 caractère</p>
             </div>
             <div class="field">
               <label for="event-image">Photo</label>
@@ -404,6 +405,8 @@ const weeklyVariableGroups = [
       const galleryForm = document.querySelector('[data-gallery-form]');
       const eventsList = document.querySelector('[data-events-list]');
       const galleryList = document.querySelector('[data-gallery-list]');
+      const eventSummaryInput = eventForm?.querySelector('#event-summary');
+      const eventSummaryCount = document.querySelector('[data-event-summary-count]');
 
       if (
         !apiRoot ||
@@ -418,7 +421,9 @@ const weeklyVariableGroups = [
         !(suggestionsForm instanceof HTMLFormElement) ||
         !(galleryForm instanceof HTMLFormElement) ||
         !(eventsList instanceof HTMLElement) ||
-        !(galleryList instanceof HTMLElement)
+        !(galleryList instanceof HTMLElement) ||
+        !(eventSummaryInput instanceof HTMLTextAreaElement) ||
+        !(eventSummaryCount instanceof HTMLElement)
       ) {
         return;
       }
@@ -484,6 +489,11 @@ const weeklyVariableGroups = [
       const resetFeedbackOnEdit = (form, node) => {
         form.addEventListener('input', () => resetFeedback(node));
         form.addEventListener('change', () => resetFeedback(node));
+      };
+
+      const updateEventSummaryCount = () => {
+        const length = eventSummaryInput.value.trim().length;
+        eventSummaryCount.textContent = `${length.toLocaleString('fr-FR')} caractère${length > 1 ? 's' : ''}`;
       };
 
       const adminFetch = (path, options = {}) =>
@@ -715,7 +725,7 @@ const weeklyVariableGroups = [
 
         const fieldErrors = payload?.details?.fieldErrors ?? {};
         if (fieldErrors.summary?.length) {
-          return 'Le résumé est trop long. Maximum 8 000 caractères.';
+          return 'Le résumé doit contenir au moins 2 caractères.';
         }
         if (fieldErrors.imageUrl?.length) {
           return 'La photo est trop lourde. Maximum 4 Mo.';
@@ -863,6 +873,8 @@ const weeklyVariableGroups = [
       resetFeedbackOnEdit(suggestionsForm, suggestionsFeedback);
       resetFeedbackOnEdit(eventForm, eventFeedback);
       resetFeedbackOnEdit(galleryForm, galleryFeedback);
+      eventSummaryInput.addEventListener('input', updateEventSummaryCount);
+      updateEventSummaryCount();
 
       loginForm.addEventListener('submit', async (event) => {
         event.preventDefault();
@@ -972,6 +984,7 @@ const weeklyVariableGroups = [
             throw new Error(await adminErrorMessage(response, 'Impossible de publier l’évènement.'));
           }
           eventForm.reset();
+          updateEventSummaryCount();
           await loadContent();
           showTemporaryFeedback(eventFeedback, 'Évènement publié.', 'success');
         } catch (error) {
