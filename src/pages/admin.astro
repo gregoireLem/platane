@@ -82,122 +82,153 @@ const weeklyVariableGroups = [
         </div>
 
         <form class="admin-editor-form" data-menu-form>
-          <div class="field-grid">
-            <div class="field">
-              <label for="menu-title">Titre</label>
-              <input id="menu-title" name="title" type="text" />
-            </div>
-            <div class="field">
-              <label for="menu-period">Période</label>
-              <input id="menu-period" name="period" type="text" />
-            </div>
-          </div>
-          <div class="field-grid">
-            <div class="field">
-              <label for="menu-updated">Mis à jour le</label>
-              <input id="menu-updated" name="updatedAt" type="text" placeholder="16 mai 2026" />
-            </div>
-            <div class="field">
-              <label for="menu-intro">Introduction</label>
-              <input id="menu-intro" name="intro" type="text" />
-            </div>
-          </div>
-          <div class="admin-variable-area">
-            <div class="admin-variable-area__heading">
-              <h3>Carte du moment</h3>
-              <p>5 entrées, 8 plats, 8 desserts, 6 douceurs et 10 assiettes à partager maximum.</p>
-            </div>
-            {menuVariableGroups.map((group) => (
-              <fieldset class="admin-variable-group" data-menu-variable-group={group.key}>
-                <legend>{group.title}</legend>
-                <div class="admin-variable-grid">
-                  {Array.from({ length: group.count }, (_, index) => (
-                    <div class="admin-variable-line">
-                      <div class="admin-variable-line__top">
-                        <div class="field">
-                          <label for={`menu-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
-                          <input
-                            id={`menu-${group.key}-${index + 1}`}
-                            name={`menu-${group.key}-${index + 1}`}
-                            type="text"
-                            placeholder={index === 0 ? 'Nom du plat' : 'rien'}
-                          />
-                        </div>
-                        <div class="field">
-                          <label for={`menu-${group.key}-${index + 1}-price`}>Prix</label>
-                          <input
-                            id={`menu-${group.key}-${index + 1}-price`}
-                            name={`menu-${group.key}-${index + 1}-price`}
-                            type="text"
-                            inputmode="decimal"
-                            placeholder="0 = masqué"
-                          />
-                        </div>
-                      </div>
-                      <div class="field">
-                        <label for={`menu-${group.key}-${index + 1}-description`}>Descriptif</label>
-                        <input
-                          id={`menu-${group.key}-${index + 1}-description`}
-                          name={`menu-${group.key}-${index + 1}-description`}
-                          type="text"
-                          placeholder="Producteur, garniture, cuisson..."
-                        />
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </fieldset>
-            ))}
-          </div>
+          <div class="admin-editor-workspace">
+            <nav class="admin-editor-nav" aria-label="Repères carte et menus">
+              <p class="admin-editor-nav__title">Repères</p>
+              <div class="admin-editor-nav__links">
+                <a href="#admin-menu-general">Infos générales</a>
+                <a href="#admin-menu-current">Carte du moment</a>
+                {menuVariableGroups.map((group) => (
+                  <a href={`#admin-menu-${group.key}`}>{group.title}</a>
+                ))}
+                <a href="#admin-menu-weekly">Menu de la semaine</a>
+                <a href="#admin-menu-notes">Notes</a>
+              </div>
+            </nav>
 
-          <div class="admin-variable-area">
-            <div class="admin-variable-area__heading">
-              <h3>Menu de la semaine</h3>
-              <p>Texte et prix de la formule affichée sur la page Menu.</p>
-            </div>
-            <div class="field-grid">
-              <div class="field">
-                <label for="weekly-menu-price">Prix de la formule</label>
-                <input id="weekly-menu-price" name="weeklyMenuPrice" type="text" inputmode="decimal" />
-              </div>
-              <div class="field">
-                <label for="weekly-menu-description">Texte de la formule</label>
-                <input id="weekly-menu-description" name="weeklyMenuDescription" type="text" />
-              </div>
-            </div>
-            {weeklyVariableGroups.map((group) => (
-              <fieldset class="admin-variable-group" data-weekly-variable-group={group.key}>
-                <legend>{group.title}</legend>
-                <div class="admin-variable-grid admin-variable-grid--compact">
-                  {Array.from({ length: group.count }, (_, index) => (
-                    <div class="admin-variable-line">
-                      <div class="field">
-                        <label for={`weekly-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
-                        <input
-                          id={`weekly-${group.key}-${index + 1}`}
-                          name={`weekly-${group.key}-${index + 1}`}
-                          type="text"
-                          placeholder={index === 0 ? 'Suggestion' : 'rien'}
-                        />
-                      </div>
-                      <div class="field">
-                        <label for={`weekly-${group.key}-${index + 1}-description`}>Descriptif</label>
-                        <input
-                          id={`weekly-${group.key}-${index + 1}-description`}
-                          name={`weekly-${group.key}-${index + 1}-description`}
-                          type="text"
-                          placeholder="Détail, accompagnement..."
-                        />
-                      </div>
-                    </div>
-                  ))}
+            <div class="admin-editor-main">
+              <div class="admin-variable-area admin-variable-area--general" id="admin-menu-general">
+                <div class="admin-variable-area__heading">
+                  <h3>Infos générales</h3>
+                  <p>Titre, période, date et introduction affichés en haut de la page Menu.</p>
                 </div>
-              </fieldset>
-            ))}
-          </div>
-          <div class="field">
-            <label for="menu-notes">Notes</label>
-            <textarea id="menu-notes" name="notes" rows="4" placeholder="Une note par ligne"></textarea>
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="menu-title">Titre</label>
+                    <input id="menu-title" name="title" type="text" />
+                  </div>
+                  <div class="field">
+                    <label for="menu-period">Période</label>
+                    <input id="menu-period" name="period" type="text" />
+                  </div>
+                </div>
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="menu-updated">Mis à jour le</label>
+                    <input id="menu-updated" name="updatedAt" type="text" placeholder="16 mai 2026" />
+                  </div>
+                  <div class="field">
+                    <label for="menu-intro">Introduction</label>
+                    <input id="menu-intro" name="intro" type="text" />
+                  </div>
+                </div>
+              </div>
+
+              <div class="admin-variable-area" id="admin-menu-current">
+                <div class="admin-variable-area__heading">
+                  <h3>Carte du moment</h3>
+                  <p>5 entrées, 8 plats, 8 desserts, 6 douceurs et 10 assiettes à partager maximum.</p>
+                </div>
+                {menuVariableGroups.map((group) => (
+                  <fieldset class="admin-variable-group" id={`admin-menu-${group.key}`} data-menu-variable-group={group.key}>
+                    <legend>{group.title}</legend>
+                    <div class="admin-variable-grid">
+                      {Array.from({ length: group.count }, (_, index) => (
+                        <div class="admin-variable-line">
+                          <div class="admin-variable-line__top">
+                            <div class="field">
+                              <label for={`menu-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
+                              <input
+                                id={`menu-${group.key}-${index + 1}`}
+                                name={`menu-${group.key}-${index + 1}`}
+                                type="text"
+                                placeholder={index === 0 ? 'Nom du plat' : 'rien'}
+                              />
+                            </div>
+                            <div class="field">
+                              <label for={`menu-${group.key}-${index + 1}-price`}>Prix</label>
+                              <input
+                                id={`menu-${group.key}-${index + 1}-price`}
+                                name={`menu-${group.key}-${index + 1}-price`}
+                                type="text"
+                                inputmode="decimal"
+                                placeholder="0 = masqué"
+                              />
+                            </div>
+                          </div>
+                          <div class="field">
+                            <label for={`menu-${group.key}-${index + 1}-description`}>Descriptif</label>
+                            <input
+                              id={`menu-${group.key}-${index + 1}-description`}
+                              name={`menu-${group.key}-${index + 1}-description`}
+                              type="text"
+                              placeholder="Producteur, garniture, cuisson..."
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </fieldset>
+                ))}
+              </div>
+
+              <div class="admin-variable-area" id="admin-menu-weekly">
+                <div class="admin-variable-area__heading">
+                  <h3>Menu de la semaine</h3>
+                  <p>Texte et prix de la formule affichée sur la page Menu.</p>
+                </div>
+                <div class="field-grid">
+                  <div class="field">
+                    <label for="weekly-menu-price">Prix de la formule</label>
+                    <input id="weekly-menu-price" name="weeklyMenuPrice" type="text" inputmode="decimal" />
+                  </div>
+                  <div class="field">
+                    <label for="weekly-menu-description">Texte de la formule</label>
+                    <input id="weekly-menu-description" name="weeklyMenuDescription" type="text" />
+                  </div>
+                </div>
+                {weeklyVariableGroups.map((group) => (
+                  <fieldset class="admin-variable-group" data-weekly-variable-group={group.key}>
+                    <legend>{group.title}</legend>
+                    <div class="admin-variable-grid admin-variable-grid--compact">
+                      {Array.from({ length: group.count }, (_, index) => (
+                        <div class="admin-variable-line">
+                          <div class="field">
+                            <label for={`weekly-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
+                            <input
+                              id={`weekly-${group.key}-${index + 1}`}
+                              name={`weekly-${group.key}-${index + 1}`}
+                              type="text"
+                              placeholder={index === 0 ? 'Suggestion' : 'rien'}
+                            />
+                          </div>
+                          <div class="field">
+                            <label for={`weekly-${group.key}-${index + 1}-description`}>Descriptif</label>
+                            <input
+                              id={`weekly-${group.key}-${index + 1}-description`}
+                              name={`weekly-${group.key}-${index + 1}-description`}
+                              type="text"
+                              placeholder="Détail, accompagnement..."
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </fieldset>
+                ))}
+              </div>
+
+              <div class="admin-variable-area" id="admin-menu-notes">
+                <div class="admin-variable-area__heading">
+                  <h3>Notes</h3>
+                  <p>Une note par ligne, affichée sous l’ardoise.</p>
+                </div>
+                <div class="field">
+                  <label for="menu-notes">Notes</label>
+                  <textarea id="menu-notes" name="notes" rows="4" placeholder="Une note par ligne"></textarea>
+                </div>
+              </div>
+            </div>
           </div>
           <div class="admin-form-actions">
             <button class="button button--primary" type="submit">Publier la carte</button>

@@ -1858,6 +1858,7 @@ p {
 }
 
 .admin-page {
+  width: min(1400px, calc(100vw - 2rem));
   display: grid;
   gap: 1.25rem;
   padding-top: 2rem;
@@ -1930,7 +1931,7 @@ p {
 }
 
 .admin-card {
-  padding: 1.2rem;
+  padding: clamp(1rem, 1.7vw, 1.45rem);
 }
 
 .admin-card__header {
@@ -2065,7 +2066,7 @@ p {
 
 .admin-editor-form {
   display: grid;
-  gap: 1rem;
+  gap: 1.1rem;
 }
 
 .admin-editor-form textarea {
@@ -2073,18 +2074,83 @@ p {
   font-family: inherit;
 }
 
-.admin-variable-area {
+.admin-editor-workspace {
+  display: grid;
+  grid-template-columns: minmax(12rem, 15rem) minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 1.5rem);
+  align-items: start;
+}
+
+.admin-editor-main {
   display: grid;
   gap: 1rem;
+  min-width: 0;
+}
+
+.admin-editor-nav {
+  position: sticky;
+  top: 6.25rem;
+  display: grid;
+  gap: 0.75rem;
   padding: 1rem;
   border: 1px solid rgba(122, 84, 63, 0.12);
   border-radius: 8px;
+  background: rgba(255, 252, 246, 0.78);
+  box-shadow: 0 12px 28px rgba(89, 38, 15, 0.08);
+}
+
+.admin-editor-nav__title {
+  margin: 0;
+  color: var(--terracotta-deep);
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.admin-editor-nav__links {
+  display: grid;
+  gap: 0.42rem;
+}
+
+.admin-editor-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 2.35rem;
+  padding: 0.55rem 0.7rem;
+  border-radius: 0.45rem;
+  color: var(--muted);
+  font-size: 0.94rem;
+  font-weight: 750;
+  line-height: 1.16;
+  text-decoration: none;
+}
+
+.admin-editor-nav a:hover,
+.admin-editor-nav a:focus-visible {
+  background: rgba(155, 98, 30, 0.1);
+  color: var(--text);
+}
+
+.admin-variable-area {
+  display: grid;
+  gap: 1rem;
+  padding: clamp(0.95rem, 1.6vw, 1.35rem);
+  border: 1px solid rgba(122, 84, 63, 0.12);
+  border-radius: 8px;
   background: rgba(255, 252, 246, 0.66);
+  scroll-margin-top: 7.25rem;
+}
+
+.admin-variable-area--general {
+  background: rgba(255, 248, 236, 0.82);
 }
 
 .admin-variable-area__heading {
   display: grid;
-  gap: 0.3rem;
+  gap: 0.35rem;
+  padding-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(122, 84, 63, 0.1);
 }
 
 .admin-variable-area__heading h3,
@@ -2095,7 +2161,7 @@ p {
 }
 
 .admin-variable-area__heading h3 {
-  font-size: 1.25rem;
+  font-size: clamp(1.45rem, 2vw, 1.85rem);
 }
 
 .admin-variable-area__heading p {
@@ -2105,41 +2171,46 @@ p {
 
 .admin-variable-group {
   display: grid;
-  gap: 0.75rem;
+  gap: 0.85rem;
   min-width: 0;
-  padding: 0;
+  padding-top: 0.15rem;
   border: 0;
+  scroll-margin-top: 7.25rem;
 }
 
 .admin-variable-group legend {
-  padding: 0;
-  font-size: 1.05rem;
+  width: 100%;
+  padding: 0.2rem 0 0.55rem;
+  border-bottom: 1px solid rgba(122, 84, 63, 0.12);
+  color: var(--terracotta-deep);
+  font-size: clamp(1.25rem, 1.8vw, 1.55rem);
 }
 
 .admin-variable-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 0.75rem;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 23rem), 1fr));
+  gap: 0.85rem;
 }
 
 .admin-variable-grid--compact {
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 20rem), 1fr));
 }
 
 .admin-variable-line {
   display: grid;
-  gap: 0.55rem;
+  gap: 0.65rem;
   min-width: 0;
-  padding: 0.75rem;
+  padding: 0.9rem;
   border: 1px solid rgba(122, 84, 63, 0.1);
   border-radius: 8px;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.62);
+  box-shadow: 0 8px 18px rgba(89, 38, 15, 0.045);
 }
 
 .admin-variable-line__top {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(6.5rem, 8rem);
-  gap: 0.55rem;
+  grid-template-columns: minmax(0, 1fr) minmax(7rem, 8.5rem);
+  gap: 0.65rem;
   align-items: end;
 }
 
@@ -2722,6 +2793,25 @@ p {
     min-height: 2.2rem;
   }
 
+  .admin-editor-workspace {
+    grid-template-columns: 1fr;
+  }
+
+  .admin-editor-nav {
+    position: relative;
+    top: auto;
+  }
+
+  .admin-editor-nav__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .admin-editor-nav a {
+    min-height: 2.2rem;
+  }
+
   .space-grid--compact {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
@@ -2997,6 +3087,22 @@ p {
   .admin-variable-grid,
   .admin-variable-grid--compact {
     grid-template-columns: 1fr;
+  }
+
+  .admin-editor-nav {
+    gap: 0.6rem;
+    padding: 0.75rem;
+  }
+
+  .admin-editor-nav__links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .admin-editor-nav a {
+    min-height: 2.15rem;
+    padding: 0.48rem 0.55rem;
+    font-size: 0.88rem;
   }
 
   .admin-variable-line__top {
