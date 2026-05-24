@@ -568,10 +568,20 @@ p {
 
 .home-spaces {
   padding-top: 0.8rem;
+  padding-bottom: 1.15rem;
 }
 
 .home-events {
-  padding-top: 0.4rem;
+  padding-top: 0.2rem;
+}
+
+.home-events__heading {
+  max-width: 54rem;
+  margin-bottom: 1.25rem;
+  padding: 1rem 1.15rem;
+  border: 1px solid rgba(122, 84, 63, 0.13);
+  border-radius: 8px;
+  background: rgba(255, 250, 243, 0.62);
 }
 
 .space-grid--compact {

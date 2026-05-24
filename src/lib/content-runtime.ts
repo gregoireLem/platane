@@ -254,9 +254,9 @@ const renderEvents = (events: BistroEvent[]) => {
   if (!events.length) return;
 
   node.innerHTML = `
-    <div class="section-heading" data-reveal>
+    <div class="section-heading home-events__heading is-visible">
       <p class="eyebrow">Évènements</p>
-      <h2>Ce qui se passe bientôt au Platane.</h2>
+      <h2>La programmation au Platane.</h2>
       <p class="lead">Concerts, rencontres, soirées et rendez-vous du village.</p>
     </div>
     <div class="live-event-grid">
