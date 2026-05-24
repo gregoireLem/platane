@@ -201,6 +201,15 @@ const isThisWeekend = (value: string) => {
   return eventDate >= friday && eventDate <= sunday;
 };
 
+const eventExcerpt = (value: string) => {
+  const text = String(value ?? '').trim();
+  if (text.length <= 180) return text;
+
+  const firstSentences = text.match(/[^.!?]+[.!?]+/g)?.slice(0, 2).join(' ').trim();
+  const excerpt = firstSentences && firstSentences.length <= 220 ? firstSentences : text.slice(0, 180).trim();
+  return `${excerpt.replace(/[.\s]+$/, '')}...`;
+};
+
 const renderSuggestions = (suggestions: EditorialContent['suggestions']) => {
   const node = document.querySelector<HTMLElement>('[data-live-suggestions]');
   if (!node) return;
@@ -253,9 +262,13 @@ const renderEvents = (events: BistroEvent[]) => {
     <div class="live-event-grid">
       ${events
         .slice(0, 3)
-        .map(
-          (event) => `
-            <article class="live-event-card">
+        .map((event, index) => {
+          const fullSummary = event.summary.trim();
+          const excerpt = eventExcerpt(fullSummary);
+          const canExpand = excerpt !== fullSummary;
+
+          return `
+            <article class="live-event-card" data-event-card>
               ${
                 event.imageUrl
                   ? `<img src="${escapeUrl(event.imageUrl)}" alt="${escapeHtml(event.title)}" loading="lazy" />`
@@ -265,7 +278,12 @@ const renderEvents = (events: BistroEvent[]) => {
                 ${isThisWeekend(event.eventDate) ? '<span class="live-event-card__badge">Ce week-end</span>' : ''}
                 <time>${escapeHtml(formatEventDate(event.eventDate))}${event.eventTime ? ` · ${escapeHtml(event.eventTime)}` : ''}</time>
                 <h3>${escapeHtml(event.title)}</h3>
-                <p>${escapeHtml(event.summary)}</p>
+                <p class="live-event-card__summary" id="event-summary-${index}" data-event-summary data-excerpt="${escapeHtml(excerpt)}" data-full="${escapeHtml(fullSummary)}">${escapeHtml(excerpt)}</p>
+                ${
+                  canExpand
+                    ? `<button class="live-event-card__toggle" type="button" aria-expanded="false" aria-controls="event-summary-${index}" data-event-toggle>Lire la suite</button>`
+                    : ''
+                }
                 ${
                   event.ctaUrl && event.ctaLabel
                     ? `<a class="button button--secondary" href="${escapeUrl(event.ctaUrl)}">${escapeHtml(event.ctaLabel)}</a>`
@@ -273,11 +291,29 @@ const renderEvents = (events: BistroEvent[]) => {
                 }
               </div>
             </article>
-          `
-        )
+          `;
+        })
         .join('')}
     </div>
   `;
+};
+
+const bindEventToggles = () => {
+  document.querySelectorAll<HTMLButtonElement>('[data-event-toggle]').forEach((button) => {
+    if (button.dataset.bound === 'true') return;
+    button.dataset.bound = 'true';
+    button.addEventListener('click', () => {
+      const card = button.closest<HTMLElement>('[data-event-card]');
+      const summary = card?.querySelector<HTMLElement>('[data-event-summary]');
+      if (!card || !summary) return;
+
+      const isExpanded = button.getAttribute('aria-expanded') === 'true';
+      button.setAttribute('aria-expanded', String(!isExpanded));
+      card.dataset.expanded = String(!isExpanded);
+      summary.textContent = isExpanded ? summary.dataset.excerpt ?? '' : summary.dataset.full ?? '';
+      button.textContent = isExpanded ? 'Lire la suite' : 'Réduire';
+    });
+  });
 };
 
 const renderGallery = (gallery: GalleryPhoto[]) => {
@@ -419,6 +455,7 @@ const hydrateEditorialContent = (content: EditorialContent) => {
   hydrateMenuDom(content.menu);
   renderSuggestions(content.suggestions);
   renderEvents(content.events);
+  bindEventToggles();
   renderGallery(content.gallery);
 };
 

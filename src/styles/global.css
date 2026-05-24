@@ -2394,14 +2394,14 @@ p {
 
 .live-event-card img {
   width: 100%;
-  aspect-ratio: 4 / 3;
+  aspect-ratio: 16 / 10;
   object-fit: cover;
 }
 
 .live-event-card > div {
   display: grid;
-  gap: 0.7rem;
-  padding: 1rem;
+  gap: 0.55rem;
+  padding: 0.9rem 1rem 1rem;
 }
 
 .live-event-card h3,
@@ -2415,6 +2415,32 @@ p {
 .live-event-card p {
   margin: 0;
   color: var(--muted);
+}
+
+.live-event-card__summary {
+  display: -webkit-box;
+  overflow: hidden;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  line-height: 1.45;
+}
+
+.live-event-card[data-expanded='true'] .live-event-card__summary {
+  display: block;
+  overflow: visible;
+}
+
+.live-event-card__toggle {
+  justify-self: start;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--terracotta-deep);
+  cursor: pointer;
+  font: inherit;
+  font-weight: 800;
+  text-decoration: underline;
+  text-underline-offset: 0.18rem;
 }
 
 .live-event-card__badge {
