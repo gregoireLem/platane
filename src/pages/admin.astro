@@ -278,7 +278,7 @@ const weeklyVariableGroups = [
             </div>
             <div class="field">
               <label for="event-summary">Résumé</label>
-              <textarea id="event-summary" name="summary" rows="6" maxlength="2000" required></textarea>
+              <textarea id="event-summary" name="summary" rows="8" maxlength="8000" required></textarea>
             </div>
             <div class="field">
               <label for="event-image">Photo</label>
@@ -715,7 +715,7 @@ const weeklyVariableGroups = [
 
         const fieldErrors = payload?.details?.fieldErrors ?? {};
         if (fieldErrors.summary?.length) {
-          return 'Le résumé est trop long. Maximum 2 000 caractères.';
+          return 'Le résumé est trop long. Maximum 8 000 caractères.';
         }
         if (fieldErrors.imageUrl?.length) {
           return 'La photo est trop lourde. Maximum 4 Mo.';
