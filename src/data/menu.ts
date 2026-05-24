@@ -22,8 +22,11 @@ export const weeklyMenu = {
   intro:
     'Une cuisine simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
   weeklyMenu: {
+    label: 'Menu de la semaine - midi',
     price: '17 €',
-    description: 'Entrée + plat ou plat + dessert'
+    description: 'Entrée + plat\nou plat + dessert',
+    supplementPrice: '+4 €',
+    supplementDescription: 'formule complète'
   },
   formulas: [
     {

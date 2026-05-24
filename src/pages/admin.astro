@@ -179,12 +179,28 @@ const weeklyVariableGroups = [
                 </div>
                 <div class="field-grid">
                   <div class="field">
+                    <label for="weekly-menu-label">Intitulé de la formule</label>
+                    <input id="weekly-menu-label" name="weeklyMenuLabel" type="text" />
+                  </div>
+                  <div class="field">
                     <label for="weekly-menu-price">Prix de la formule</label>
                     <input id="weekly-menu-price" name="weeklyMenuPrice" type="text" inputmode="decimal" />
                   </div>
+                </div>
+                <div class="field-grid">
                   <div class="field">
                     <label for="weekly-menu-description">Texte de la formule</label>
-                    <input id="weekly-menu-description" name="weeklyMenuDescription" type="text" />
+                    <textarea id="weekly-menu-description" name="weeklyMenuDescription" rows="2"></textarea>
+                  </div>
+                  <div class="field-grid admin-field-grid--compact">
+                    <div class="field">
+                      <label for="weekly-menu-supplement-price">Supplément</label>
+                      <input id="weekly-menu-supplement-price" name="weeklyMenuSupplementPrice" type="text" inputmode="decimal" />
+                    </div>
+                    <div class="field">
+                      <label for="weekly-menu-supplement-description">Texte supplément</label>
+                      <input id="weekly-menu-supplement-description" name="weeklyMenuSupplementDescription" type="text" />
+                    </div>
                   </div>
                 </div>
                 {weeklyVariableGroups.map((group) => (
@@ -564,11 +580,15 @@ const weeklyVariableGroups = [
       const formatPriceValue = (value) => {
         const price = lineValue(value);
         if (!price || price.includes('€')) return price;
-        return /^\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
+        return /^\+?\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
       };
       const normalizePriceValue = (value) => {
         const price = lineValue(value);
         return isVisiblePriceValue(price) ? formatPriceValue(price) : '';
+      };
+      const formatWeeklyMenuDescription = (value) => {
+        const description = lineValue(value);
+        return description && !description.includes('\n') ? description.replace(/\s+ou\s+/, '\nou ') : description;
       };
       const menuItemFromValue = (value, price = '') => ({ name: lineValue(value), price: normalizePriceValue(price), description: '' });
 
@@ -690,8 +710,11 @@ const weeklyVariableGroups = [
         setInputValue(menuForm, 'period', content.menu.period);
         setInputValue(menuForm, 'updatedAt', content.menu.updatedAt);
         setInputValue(menuForm, 'intro', content.menu.intro);
+        setInputValue(menuForm, 'weeklyMenuLabel', content.menu.weeklyMenu?.label ?? 'Menu de la semaine - midi');
         setInputValue(menuForm, 'weeklyMenuPrice', normalizePriceValue(content.menu.weeklyMenu?.price ?? '17 €'));
-        setInputValue(menuForm, 'weeklyMenuDescription', content.menu.weeklyMenu?.description ?? 'Entrée + plat ou plat + dessert');
+        setInputValue(menuForm, 'weeklyMenuDescription', formatWeeklyMenuDescription(content.menu.weeklyMenu?.description ?? 'Entrée + plat\nou plat + dessert'));
+        setInputValue(menuForm, 'weeklyMenuSupplementPrice', normalizePriceValue(content.menu.weeklyMenu?.supplementPrice ?? '+4 €'));
+        setInputValue(menuForm, 'weeklyMenuSupplementDescription', content.menu.weeklyMenu?.supplementDescription ?? 'formule complète');
         setInputValue(menuForm, 'notes', (content.menu.notes ?? []).join('\n'));
 
         menuVariableGroups.forEach((group) => {
@@ -779,8 +802,11 @@ const weeklyVariableGroups = [
           updatedAt: inputValue(menuForm, 'updatedAt').trim(),
           intro: inputValue(menuForm, 'intro').trim(),
           weeklyMenu: {
+            label: inputValue(menuForm, 'weeklyMenuLabel').trim() || 'Menu de la semaine - midi',
             price: normalizePriceValue(inputValue(menuForm, 'weeklyMenuPrice')) || '17 €',
-            description: inputValue(menuForm, 'weeklyMenuDescription').trim() || 'Entrée + plat ou plat + dessert'
+            description: inputValue(menuForm, 'weeklyMenuDescription').trim() || 'Entrée + plat\nou plat + dessert',
+            supplementPrice: normalizePriceValue(inputValue(menuForm, 'weeklyMenuSupplementPrice')) || '+4 €',
+            supplementDescription: inputValue(menuForm, 'weeklyMenuSupplementDescription').trim() || 'formule complète'
           },
           formulas: readWeeklyFormulas(),
           sections: readMenuSections(),

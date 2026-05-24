@@ -62,11 +62,16 @@ const shouldShowPrice = (value?: string) => {
 const formatPriceValue = (value?: string) => {
   const price = String(value ?? '').trim();
   if (!price || price.includes('€')) return price;
-  return /^\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
+  return /^\+?\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
 };
 
 const itemPrice = (item: unknown) =>
   item && typeof item === 'object' && 'price' in item ? formatPriceValue(String(item.price ?? '')) : '';
+
+const formatWeeklyMenuDescription = (value?: string) => {
+  const description = String(value ?? '').trim();
+  return description && !description.includes('\n') ? description.replace(/\s+ou\s+/, '\nou ') : description;
+};
 
 const parseWeeklyFormula = (description: string) => {
   const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());
@@ -89,8 +94,11 @@ const weeklyFormulaSections = weeklyFormulaGroups
 const hasWeeklyFormula = weeklyFormulaSections.length > 0;
 const sweetsSection = weeklyMenu.sections.find((section) => isSweetsSection(section.title));
 const ardoiseSections = weeklyMenu.sections.filter((section) => !isSweetsSection(section.title));
+const weeklyMenuLabel = weeklyMenu.weeklyMenu.label || 'Menu de la semaine - midi';
 const weeklyMenuPrice = formatPriceValue(weeklyMenu.weeklyMenu.price || '17 €');
-const weeklyMenuDescription = weeklyMenu.weeklyMenu.description || 'Entrée + plat ou plat + dessert';
+const weeklyMenuDescription = formatWeeklyMenuDescription(weeklyMenu.weeklyMenu.description || 'Entrée + plat\nou plat + dessert');
+const weeklyMenuSupplementPrice = formatPriceValue(weeklyMenu.weeklyMenu.supplementPrice || '+4 €');
+const weeklyMenuSupplementDescription = weeklyMenu.weeklyMenu.supplementDescription || 'formule complète';
 ---
 
 <BaseLayout
@@ -148,9 +156,13 @@ const weeklyMenuDescription = weeklyMenu.weeklyMenu.description || 'Entrée + pl
         <div class="menu-sheet__content">
           <section class="weekly-menu-card" id="menu-semaine" data-weekly-menu hidden={!hasWeeklyFormula}>
             <div class="weekly-menu-card__heading">
-              <p class="eyebrow">Menu de la semaine</p>
+              <p class="eyebrow" data-weekly-menu-label>{weeklyMenuLabel}</p>
               <h2 data-weekly-menu-price>{weeklyMenuPrice}</h2>
               <p data-weekly-menu-description>{weeklyMenuDescription}</p>
+              <p class="weekly-menu-card__supplement" data-weekly-menu-supplement>
+                <strong data-weekly-menu-supplement-price>{weeklyMenuSupplementPrice}</strong>
+                <span data-weekly-menu-supplement-description>{weeklyMenuSupplementDescription}</span>
+              </p>
             </div>
             <div class="weekly-menu-card__grid" data-weekly-menu-sections>
               {weeklyFormulaSections.map((section) => (

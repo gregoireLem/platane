@@ -110,7 +110,12 @@ const shouldShowPrice = (value: string | null | undefined) => !hiddenPriceValues
 const formatPriceValue = (value: string | null | undefined) => {
   const price = String(value ?? '').trim();
   if (!price || price.includes('€')) return price;
-  return /^\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
+  return /^\+?\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
+};
+
+const formatWeeklyMenuDescription = (value: string | null | undefined) => {
+  const description = String(value ?? '').trim();
+  return description && !description.includes('\n') ? description.replace(/\s+ou\s+/, '\nou ') : description;
 };
 
 const formatEventDate = (value: string) =>
@@ -318,8 +323,11 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
   const updatedLabel = menu.updatedAt ? `Mis à jour le ${menu.updatedAt}` : 'Menu mis à jour depuis l’admin';
   setText('[data-menu-updated-at]', updatedLabel);
 
+  setText('[data-weekly-menu-label]', menu.weeklyMenu?.label || 'Menu de la semaine - midi');
   setText('[data-weekly-menu-price]', formatPriceValue(menu.weeklyMenu?.price || '17 €'));
-  setText('[data-weekly-menu-description]', menu.weeklyMenu?.description || 'Entrée + plat ou plat + dessert');
+  setText('[data-weekly-menu-description]', formatWeeklyMenuDescription(menu.weeklyMenu?.description || 'Entrée + plat\nou plat + dessert'));
+  setText('[data-weekly-menu-supplement-price]', formatPriceValue(menu.weeklyMenu?.supplementPrice || '+4 €'));
+  setText('[data-weekly-menu-supplement-description]', menu.weeklyMenu?.supplementDescription || 'formule complète');
   renderMenuSectionNav(menu);
 
   const weeklyMenuCard = document.querySelector<HTMLElement>('[data-weekly-menu]');

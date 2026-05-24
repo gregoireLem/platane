@@ -21,12 +21,18 @@ const menuFormulaSchema = z.object({
 
 const weeklyMenuSchema = z
   .object({
+    label: z.string().trim().max(120).default('Menu de la semaine - midi'),
     price: z.string().trim().max(40).default('17 €'),
-    description: z.string().trim().max(220).default('Entrée + plat ou plat + dessert')
+    description: z.string().trim().max(220).default('Entrée + plat\nou plat + dessert'),
+    supplementPrice: z.string().trim().max(40).default('+4 €'),
+    supplementDescription: z.string().trim().max(160).default('formule complète')
   })
   .default({
+    label: 'Menu de la semaine - midi',
     price: '17 €',
-    description: 'Entrée + plat ou plat + dessert'
+    description: 'Entrée + plat\nou plat + dessert',
+    supplementPrice: '+4 €',
+    supplementDescription: 'formule complète'
   });
 
 export const editorialContentSchema = z.object({
@@ -58,8 +64,11 @@ export const defaultEditorialContent: EditorialContent = {
     intro:
       'Une cuisine simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
     weeklyMenu: {
+      label: 'Menu de la semaine - midi',
       price: '17 €',
-      description: 'Entrée + plat ou plat + dessert'
+      description: 'Entrée + plat\nou plat + dessert',
+      supplementPrice: '+4 €',
+      supplementDescription: 'formule complète'
     },
     formulas: [
       {

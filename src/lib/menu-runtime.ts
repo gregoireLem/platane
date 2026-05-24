@@ -21,8 +21,11 @@ export type RuntimeMenu = {
   updatedAt: string;
   intro: string;
   weeklyMenu: {
+    label: string;
     price: string;
     description: string;
+    supplementPrice: string;
+    supplementDescription: string;
   };
   formulas: RuntimeMenuFormula[];
   sections: RuntimeMenuSection[];
@@ -144,7 +147,7 @@ const shouldShowPrice = (value: string | null | undefined) => !hiddenPriceValues
 const formatPriceValue = (value: string | null | undefined) => {
   const price = String(value ?? '').trim();
   if (!price || price.includes('€')) return price;
-  return /^\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
+  return /^\+?\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
 };
 
 export const loadRemoteMenu = async (config: MenuRuntimeConfig): Promise<RuntimeMenu | null> => {
@@ -222,6 +225,11 @@ export const loadRemoteMenu = async (config: MenuRuntimeConfig): Promise<Runtime
       settings.get('description')?.[0] ??
       '',
     weeklyMenu: {
+      label:
+        settings.get('weekly_menu_label')?.[0] ??
+        settings.get('titre_menu_semaine')?.[0] ??
+        settings.get('menu_semaine_titre')?.[0] ??
+        'Menu de la semaine - midi',
       price:
         settings.get('weekly_menu_price')?.[0] ??
         settings.get('prix_menu_semaine')?.[0] ??
@@ -231,7 +239,17 @@ export const loadRemoteMenu = async (config: MenuRuntimeConfig): Promise<Runtime
         settings.get('weekly_menu_description')?.[0] ??
         settings.get('texte_menu_semaine')?.[0] ??
         settings.get('menu_semaine_texte')?.[0] ??
-        'Entrée + plat ou plat + dessert'
+        'Entrée + plat\nou plat + dessert',
+      supplementPrice:
+        settings.get('weekly_menu_supplement_price')?.[0] ??
+        settings.get('prix_supplement_menu_semaine')?.[0] ??
+        settings.get('menu_semaine_supplement_prix')?.[0] ??
+        '+4 €',
+      supplementDescription:
+        settings.get('weekly_menu_supplement_description')?.[0] ??
+        settings.get('texte_supplement_menu_semaine')?.[0] ??
+        settings.get('menu_semaine_supplement_texte')?.[0] ??
+        'formule complète'
     },
     formulas,
     sections,

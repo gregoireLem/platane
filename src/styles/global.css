@@ -1684,6 +1684,24 @@ p {
   color: rgba(255, 246, 230, 0.76);
 }
 
+.weekly-menu-card__heading [data-weekly-menu-description] {
+  white-space: pre-line;
+}
+
+.weekly-menu-card__supplement {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  align-items: baseline;
+  margin-top: 0.25rem;
+  color: #ffefd2;
+  font-weight: 700;
+}
+
+.weekly-menu-card__supplement strong {
+  font-size: 1.08rem;
+}
+
 .weekly-menu-card__grid {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
