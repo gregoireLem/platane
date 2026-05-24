@@ -20,6 +20,10 @@ export type RuntimeMenu = {
   period: string;
   updatedAt: string;
   intro: string;
+  weeklyMenu: {
+    price: string;
+    description: string;
+  };
   formulas: RuntimeMenuFormula[];
   sections: RuntimeMenuSection[];
   notes: string[];
@@ -217,6 +221,18 @@ export const loadRemoteMenu = async (config: MenuRuntimeConfig): Promise<Runtime
       settings.get('introduction')?.[0] ??
       settings.get('description')?.[0] ??
       '',
+    weeklyMenu: {
+      price:
+        settings.get('weekly_menu_price')?.[0] ??
+        settings.get('prix_menu_semaine')?.[0] ??
+        settings.get('menu_semaine_prix')?.[0] ??
+        '17 €',
+      description:
+        settings.get('weekly_menu_description')?.[0] ??
+        settings.get('texte_menu_semaine')?.[0] ??
+        settings.get('menu_semaine_texte')?.[0] ??
+        'Entrée + plat ou plat + dessert'
+    },
     formulas,
     sections,
     notes

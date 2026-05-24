@@ -299,6 +299,9 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
   const updatedLabel = menu.updatedAt ? `Mis à jour le ${menu.updatedAt}` : 'Menu mis à jour depuis l’admin';
   setText('[data-menu-updated-at]', updatedLabel);
 
+  setText('[data-weekly-menu-price]', formatPriceValue(menu.weeklyMenu?.price || '17 €'));
+  setText('[data-weekly-menu-description]', menu.weeklyMenu?.description || 'Entrée + plat ou plat + dessert');
+
   const weeklyMenuCard = document.querySelector<HTMLElement>('[data-weekly-menu]');
   const weeklyMenuSections = document.querySelector<HTMLElement>('[data-weekly-menu-sections]');
   if (weeklyMenuCard && weeklyMenuSections) {

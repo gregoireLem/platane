@@ -153,7 +153,17 @@ const weeklyVariableGroups = [
           <div class="admin-variable-area">
             <div class="admin-variable-area__heading">
               <h3>Menu de la semaine</h3>
-              <p>Formule affichée sur la page Menu : 17 € · entrée + plat ou plat + dessert.</p>
+              <p>Texte et prix de la formule affichée sur la page Menu.</p>
+            </div>
+            <div class="field-grid">
+              <div class="field">
+                <label for="weekly-menu-price">Prix de la formule</label>
+                <input id="weekly-menu-price" name="weeklyMenuPrice" type="text" inputmode="decimal" />
+              </div>
+              <div class="field">
+                <label for="weekly-menu-description">Texte de la formule</label>
+                <input id="weekly-menu-description" name="weeklyMenuDescription" type="text" />
+              </div>
             </div>
             {weeklyVariableGroups.map((group) => (
               <fieldset class="admin-variable-group" data-weekly-variable-group={group.key}>
@@ -649,6 +659,8 @@ const weeklyVariableGroups = [
         setInputValue(menuForm, 'period', content.menu.period);
         setInputValue(menuForm, 'updatedAt', content.menu.updatedAt);
         setInputValue(menuForm, 'intro', content.menu.intro);
+        setInputValue(menuForm, 'weeklyMenuPrice', normalizePriceValue(content.menu.weeklyMenu?.price ?? '17 €'));
+        setInputValue(menuForm, 'weeklyMenuDescription', content.menu.weeklyMenu?.description ?? 'Entrée + plat ou plat + dessert');
         setInputValue(menuForm, 'notes', (content.menu.notes ?? []).join('\n'));
 
         menuVariableGroups.forEach((group) => {
@@ -735,6 +747,10 @@ const weeklyVariableGroups = [
           period: inputValue(menuForm, 'period').trim(),
           updatedAt: inputValue(menuForm, 'updatedAt').trim(),
           intro: inputValue(menuForm, 'intro').trim(),
+          weeklyMenu: {
+            price: normalizePriceValue(inputValue(menuForm, 'weeklyMenuPrice')) || '17 €',
+            description: inputValue(menuForm, 'weeklyMenuDescription').trim() || 'Entrée + plat ou plat + dessert'
+          },
           formulas: readWeeklyFormulas(),
           sections: readMenuSections(),
           notes: splitLines(inputValue(menuForm, 'notes'))

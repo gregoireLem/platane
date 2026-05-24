@@ -21,6 +21,10 @@ export const weeklyMenu = {
   updatedAt: '18 mai 2026',
   intro:
     'Une cuisine simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
+  weeklyMenu: {
+    price: '17 €',
+    description: 'Entrée + plat ou plat + dessert'
+  },
   formulas: [
     {
       name: 'Le midi',

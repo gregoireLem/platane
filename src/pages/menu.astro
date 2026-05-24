@@ -89,6 +89,8 @@ const weeklyFormulaSections = weeklyFormulaGroups
 const hasWeeklyFormula = weeklyFormulaSections.length > 0;
 const sweetsSection = weeklyMenu.sections.find((section) => isSweetsSection(section.title));
 const ardoiseSections = weeklyMenu.sections.filter((section) => !isSweetsSection(section.title));
+const weeklyMenuPrice = formatPriceValue(weeklyMenu.weeklyMenu.price || '17 €');
+const weeklyMenuDescription = weeklyMenu.weeklyMenu.description || 'Entrée + plat ou plat + dessert';
 ---
 
 <BaseLayout
@@ -133,8 +135,8 @@ const ardoiseSections = weeklyMenu.sections.filter((section) => !isSweetsSection
       <section class="weekly-menu-card" id="menu-semaine" data-weekly-menu hidden={!hasWeeklyFormula}>
         <div class="weekly-menu-card__heading">
           <p class="eyebrow">Menu de la semaine</p>
-          <h2>17 €</h2>
-          <p>Entrée + plat ou plat + dessert</p>
+          <h2 data-weekly-menu-price>{weeklyMenuPrice}</h2>
+          <p data-weekly-menu-description>{weeklyMenuDescription}</p>
         </div>
         <div class="weekly-menu-card__grid" data-weekly-menu-sections>
           {weeklyFormulaSections.map((section) => (

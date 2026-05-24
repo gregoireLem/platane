@@ -19,12 +19,23 @@ const menuFormulaSchema = z.object({
   description: z.string().trim().max(600).optional().default('')
 });
 
+const weeklyMenuSchema = z
+  .object({
+    price: z.string().trim().max(40).default('17 €'),
+    description: z.string().trim().max(220).default('Entrée + plat ou plat + dessert')
+  })
+  .default({
+    price: '17 €',
+    description: 'Entrée + plat ou plat + dessert'
+  });
+
 export const editorialContentSchema = z.object({
   menu: z.object({
     title: z.string().trim().min(1).max(160).default('La cuisine du Platane'),
     period: z.string().trim().max(120).default('L’ardoise du moment'),
     updatedAt: z.string().trim().max(80).default(''),
     intro: z.string().trim().max(1000).default(''),
+    weeklyMenu: weeklyMenuSchema,
     formulas: z.array(menuFormulaSchema).max(12).default([]),
     sections: z.array(menuSectionSchema).max(12).default([]),
     notes: z.array(z.string().trim().max(500)).max(10).default([])
@@ -46,6 +57,10 @@ export const defaultEditorialContent: EditorialContent = {
     updatedAt: '18 mai 2026',
     intro:
       'Une cuisine simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
+    weeklyMenu: {
+      price: '17 €',
+      description: 'Entrée + plat ou plat + dessert'
+    },
     formulas: [
       {
         name: 'Le midi',
