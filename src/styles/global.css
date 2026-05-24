@@ -1355,6 +1355,10 @@ p {
   display: none;
 }
 
+#menu-ardoise {
+  width: min(1480px, calc(100vw - 2rem));
+}
+
 .menu-ardoise-heading__chips {
   display: flex;
   flex-wrap: wrap;
@@ -1381,7 +1385,7 @@ p {
 }
 
 .menu-sheet {
-  padding: clamp(1.4rem, 3vw, 2.5rem);
+  padding: clamp(1.4rem, 2.6vw, 3rem);
   border-radius: 1rem;
   border: 0.34rem solid rgba(102, 83, 37, 0.7);
   background:
@@ -1393,7 +1397,7 @@ p {
     inset 0 0 0 1px rgba(255, 239, 210, 0.16),
     inset 0 0 28px rgba(89, 38, 15, 0.1);
   position: relative;
-  overflow: hidden;
+  overflow: visible;
   color: #fff6e6;
 }
 
@@ -1435,8 +1439,10 @@ p {
 }
 
 .menu-sheet__ardoise h2 {
-  max-width: 16ch;
+  max-width: 18ch;
   color: #fff6e6;
+  font-size: clamp(2.4rem, 4.4vw, 4.4rem);
+  line-height: 0.92;
   text-shadow: none;
 }
 
@@ -1459,6 +1465,65 @@ p {
   grid-template-columns: 1fr;
 }
 
+.menu-sheet__body {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: minmax(11rem, 14.5rem) minmax(0, 1fr);
+  gap: clamp(1rem, 2vw, 2rem);
+  align-items: start;
+}
+
+.menu-sheet__content {
+  display: grid;
+  gap: 1.1rem;
+  min-width: 0;
+}
+
+.menu-section-nav {
+  position: sticky;
+  top: 9.25rem;
+  display: grid;
+  gap: 0.8rem;
+  padding: 1rem;
+  border: 1px solid rgba(255, 239, 210, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 246, 230, 0.08);
+}
+
+.menu-section-nav__title {
+  margin: 0;
+  color: #ffefd2;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.menu-section-nav__links {
+  display: grid;
+  gap: 0.45rem;
+}
+
+.menu-section-nav a {
+  display: flex;
+  align-items: center;
+  min-height: 2.35rem;
+  padding: 0.56rem 0.7rem;
+  border-radius: 0.45rem;
+  color: rgba(255, 246, 230, 0.82);
+  font-size: 0.94rem;
+  font-weight: 700;
+  line-height: 1.15;
+  text-decoration: none;
+}
+
+.menu-section-nav a:hover,
+.menu-section-nav a:focus-visible {
+  background: rgba(255, 239, 210, 0.16);
+  color: #fff6e6;
+}
+
 .menu-sheet__intro {
   position: relative;
   z-index: 2;
@@ -1469,6 +1534,7 @@ p {
   padding: 1.4rem 0 1.65rem;
   margin-bottom: 1.65rem;
   border-bottom: 1px solid rgba(255, 239, 210, 0.18);
+  scroll-margin-top: 10rem;
 }
 
 .menu-sheet__intro h2 {
@@ -1507,12 +1573,12 @@ p {
   display: grid;
   grid-template-columns: minmax(12rem, 0.35fr) minmax(0, 1fr);
   gap: 1.2rem;
-  margin-top: 1.4rem;
+  margin-top: 0;
   padding: 1.2rem;
   border: 1px solid rgba(255, 239, 210, 0.24);
   border-radius: 8px;
   background: rgba(255, 246, 230, 0.08);
-  scroll-margin-top: 7rem;
+  scroll-margin-top: 10rem;
 }
 
 .weekly-menu-card[hidden] {
@@ -1525,12 +1591,12 @@ p {
   display: grid;
   grid-template-columns: minmax(13rem, 0.36fr) minmax(0, 1fr);
   gap: 1.2rem;
-  margin-top: 1rem;
+  margin-top: 0;
   padding: 1.2rem;
   border: 1px solid rgba(255, 239, 210, 0.24);
   border-radius: 8px;
   background: rgba(255, 239, 210, 0.1);
-  scroll-margin-top: 7rem;
+  scroll-margin-top: 10rem;
 }
 
 .afternoon-sweets-card[hidden] {
@@ -1705,7 +1771,7 @@ p {
   z-index: 2;
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 1.6rem 2rem;
+  gap: 2.2rem 2.4rem;
 }
 
 .menu-sheet__signature {
@@ -1737,16 +1803,17 @@ p {
 .menu-group {
   display: grid;
   align-content: start;
-  gap: 1rem;
-  scroll-margin-top: 7rem;
+  gap: 1.05rem;
+  scroll-margin-top: 10rem;
 }
 
 .menu-group__title {
   padding-top: 0;
-  padding-bottom: 0.7rem;
+  padding-bottom: 0.85rem;
   border-bottom: 1px solid rgba(230, 198, 142, 0.68);
   color: #ffefd2;
-  font-size: clamp(1.85rem, 3vw, 2.6rem);
+  font-size: clamp(2.35rem, 3.7vw, 3.35rem);
+  line-height: 0.9;
   max-width: none;
 }
 
@@ -1757,7 +1824,7 @@ p {
 }
 
 .menu-list__item {
-  padding: 0.85rem 0;
+  padding: 1rem 0;
   border-bottom: 1px dashed rgba(255, 239, 210, 0.19);
 }
 
@@ -1774,7 +1841,7 @@ p {
 
 .menu-list__name {
   font-family: var(--font-display);
-  font-size: 1.28rem;
+  font-size: clamp(1.32rem, 1.55vw, 1.55rem);
   line-height: 1.05;
   color: #fff6e6;
 }
@@ -1783,6 +1850,7 @@ p {
   flex-shrink: 0;
   color: #ffefd2;
   font-weight: 700;
+  font-size: 1.02rem;
 }
 
 .menu-page__footer {
@@ -2614,6 +2682,7 @@ p {
   .menu-sections,
   .menu-columns,
   .menu-sheet__ardoise,
+  .menu-sheet__body,
   .menu-sheet__top,
   .photo-grid,
   .home-hero,
@@ -2636,6 +2705,21 @@ p {
 
   .menu-ardoise-heading__chips {
     justify-content: flex-start;
+  }
+
+  .menu-section-nav {
+    position: relative;
+    top: auto;
+  }
+
+  .menu-section-nav__links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.45rem;
+  }
+
+  .menu-section-nav a {
+    min-height: 2.2rem;
   }
 
   .space-grid--compact {
@@ -3108,6 +3192,27 @@ p {
     padding-bottom: 1.25rem;
   }
 
+  .menu-sheet__ardoise h2 {
+    font-size: clamp(2rem, 11vw, 2.8rem);
+  }
+
+  .menu-section-nav {
+    gap: 0.6rem;
+    padding: 0.75rem;
+  }
+
+  .menu-section-nav__links {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .menu-section-nav a {
+    align-items: center;
+    min-height: 2.15rem;
+    padding: 0.48rem 0.55rem;
+    font-size: 0.88rem;
+  }
+
   .menu-sheet__top {
     gap: 1.25rem;
     margin-bottom: 1.25rem;
@@ -3116,6 +3221,10 @@ p {
 
   .menu-columns {
     gap: 1.2rem;
+  }
+
+  .menu-group__title {
+    font-size: clamp(2.05rem, 10vw, 2.75rem);
   }
 
   .menu-sheet__signature {

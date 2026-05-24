@@ -163,6 +163,25 @@ const groupWeeklyFormulas = (formulas: RuntimeMenu['formulas']) =>
     }))
     .filter((section) => section.items.length);
 
+const renderMenuSectionNav = (menu: RuntimeMenu) => {
+  const node = document.querySelector<HTMLElement>('[data-menu-section-nav]');
+  if (!node) return;
+
+  const groupedWeeklyMenu = groupWeeklyFormulas(menu.formulas);
+  const sweetsSection = menu.sections.find((section) => isSweetsSection(section.title));
+  const sectionLinks = menu.sections
+    .filter((section) => !isSweetsSection(section.title))
+    .map((section) => `<a href="#${escapeHtml(menuSectionId(section.title))}">${escapeHtml(section.title)}</a>`)
+    .join('');
+
+  node.innerHTML = `
+    ${groupedWeeklyMenu.length ? '<a href="#menu-semaine">Menu de la semaine</a>' : ''}
+    ${sweetsSection ? '<a href="#douceurs-apres-midi">Douceurs</a>' : ''}
+    <a href="#ardoise-du-moment">L’ardoise</a>
+    ${sectionLinks}
+  `;
+};
+
 const isThisWeekend = (value: string) => {
   const eventDate = new Date(value);
   const now = new Date();
@@ -301,6 +320,7 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
 
   setText('[data-weekly-menu-price]', formatPriceValue(menu.weeklyMenu?.price || '17 €'));
   setText('[data-weekly-menu-description]', menu.weeklyMenu?.description || 'Entrée + plat ou plat + dessert');
+  renderMenuSectionNav(menu);
 
   const weeklyMenuCard = document.querySelector<HTMLElement>('[data-weekly-menu]');
   const weeklyMenuSections = document.querySelector<HTMLElement>('[data-weekly-menu-sections]');

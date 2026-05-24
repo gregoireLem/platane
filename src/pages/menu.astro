@@ -132,79 +132,95 @@ const weeklyMenuDescription = weeklyMenu.weeklyMenu.description || 'Entrée + pl
         </div>
       </div>
 
-      <section class="weekly-menu-card" id="menu-semaine" data-weekly-menu hidden={!hasWeeklyFormula}>
-        <div class="weekly-menu-card__heading">
-          <p class="eyebrow">Menu de la semaine</p>
-          <h2 data-weekly-menu-price>{weeklyMenuPrice}</h2>
-          <p data-weekly-menu-description>{weeklyMenuDescription}</p>
-        </div>
-        <div class="weekly-menu-card__grid" data-weekly-menu-sections>
-          {weeklyFormulaSections.map((section) => (
-            <article class="weekly-menu-card__section">
-              <h3>{section.title}</h3>
-              <ul>
-                {section.items.map((item) => (
-                  <li>
-                    <strong>{item.name}</strong>
-                    {item.detail && <span>{item.detail}</span>}
-                  </li>
-                ))}
-              </ul>
-            </article>
-          ))}
-        </div>
-      </section>
-
-      <section class="afternoon-sweets-card" id="douceurs-apres-midi" data-afternoon-sweets hidden={!sweetsSection}>
-        <div class="afternoon-sweets-card__heading">
-          <p class="eyebrow">Les douceurs de l’après-midi</p>
-          <h2>Gâteaux, glaces et pauses sucrées.</h2>
-        </div>
-        <ul class="afternoon-sweets-card__list" data-afternoon-sweets-list>
-          {sweetsSection?.items.map((item) => (
-            <li>
-              <div class="afternoon-sweets-card__item-head">
-                <strong>{item.name}</strong>
-                {shouldShowPrice(itemPrice(item)) && <span class="afternoon-sweets-card__price">{itemPrice(item)}</span>}
-              </div>
-              {item.description && <span>{item.description}</span>}
-            </li>
-          ))}
-        </ul>
-        <p class="afternoon-sweets-card__note">*fabrication artisanale par "Sylvie, Biscuits & cie"</p>
-      </section>
-
-      <div class="menu-sheet__intro" id="ardoise-du-moment">
-        <div>
-          <p class="eyebrow">L’ardoise du moment</p>
-          <h2>Une cuisine courte, locale et mouvante.</h2>
-        </div>
-        <ul class="menu-sheet__intro-copy" data-menu-notes>
-            {weeklyMenu.notes.map((note) => (
-              <li>{note}</li>
+      <div class="menu-sheet__body">
+        <nav class="menu-section-nav" aria-label="Navigation du menu">
+          <p class="menu-section-nav__title">Repères</p>
+          <div class="menu-section-nav__links" data-menu-section-nav>
+            {hasWeeklyFormula && <a href="#menu-semaine">Menu de la semaine</a>}
+            {sweetsSection && <a href="#douceurs-apres-midi">Douceurs</a>}
+            <a href="#ardoise-du-moment">L’ardoise</a>
+            {ardoiseSections.map((section) => (
+              <a href={`#${menuSectionId(section.title)}`}>{section.title}</a>
             ))}
-        </ul>
-      </div>
+          </div>
+        </nav>
 
-      <div class="menu-columns" data-menu-sections>
-        {ardoiseSections.map((section) => (
-          <article class="menu-group" id={menuSectionId(section.title)}>
-            <h2 class="menu-group__title">{section.title}</h2>
-            <ul class="menu-list">
-              {section.items.map((item) => (
-                <li class="menu-list__item">
-                  <div class="menu-list__head">
-                    <h3 class="menu-list__name">{item.name}</h3>
-                    {shouldShowPrice(itemPrice(item)) && (
-                      <span class="menu-list__price">{itemPrice(item)}</span>
-                    )}
+        <div class="menu-sheet__content">
+          <section class="weekly-menu-card" id="menu-semaine" data-weekly-menu hidden={!hasWeeklyFormula}>
+            <div class="weekly-menu-card__heading">
+              <p class="eyebrow">Menu de la semaine</p>
+              <h2 data-weekly-menu-price>{weeklyMenuPrice}</h2>
+              <p data-weekly-menu-description>{weeklyMenuDescription}</p>
+            </div>
+            <div class="weekly-menu-card__grid" data-weekly-menu-sections>
+              {weeklyFormulaSections.map((section) => (
+                <article class="weekly-menu-card__section">
+                  <h3>{section.title}</h3>
+                  <ul>
+                    {section.items.map((item) => (
+                      <li>
+                        <strong>{item.name}</strong>
+                        {item.detail && <span>{item.detail}</span>}
+                      </li>
+                    ))}
+                  </ul>
+                </article>
+              ))}
+            </div>
+          </section>
+
+          <section class="afternoon-sweets-card" id="douceurs-apres-midi" data-afternoon-sweets hidden={!sweetsSection}>
+            <div class="afternoon-sweets-card__heading">
+              <p class="eyebrow">Les douceurs de l’après-midi</p>
+              <h2>Gâteaux, glaces et pauses sucrées.</h2>
+            </div>
+            <ul class="afternoon-sweets-card__list" data-afternoon-sweets-list>
+              {sweetsSection?.items.map((item) => (
+                <li>
+                  <div class="afternoon-sweets-card__item-head">
+                    <strong>{item.name}</strong>
+                    {shouldShowPrice(itemPrice(item)) && <span class="afternoon-sweets-card__price">{itemPrice(item)}</span>}
                   </div>
-                  {item.description && <p class="menu-list__description">{item.description}</p>}
+                  {item.description && <span>{item.description}</span>}
                 </li>
               ))}
             </ul>
-          </article>
-        ))}
+            <p class="afternoon-sweets-card__note">*fabrication artisanale par "Sylvie, Biscuits & cie"</p>
+          </section>
+
+          <div class="menu-sheet__intro" id="ardoise-du-moment">
+            <div>
+              <p class="eyebrow">L’ardoise du moment</p>
+              <h2>Une cuisine courte, locale et mouvante.</h2>
+            </div>
+            <ul class="menu-sheet__intro-copy" data-menu-notes>
+                {weeklyMenu.notes.map((note) => (
+                  <li>{note}</li>
+                ))}
+            </ul>
+          </div>
+
+          <div class="menu-columns" data-menu-sections>
+            {ardoiseSections.map((section) => (
+              <article class="menu-group" id={menuSectionId(section.title)}>
+                <h2 class="menu-group__title">{section.title}</h2>
+                <ul class="menu-list">
+                  {section.items.map((item) => (
+                    <li class="menu-list__item">
+                      <div class="menu-list__head">
+                        <h3 class="menu-list__name">{item.name}</h3>
+                        {shouldShowPrice(itemPrice(item)) && (
+                          <span class="menu-list__price">{itemPrice(item)}</span>
+                        )}
+                      </div>
+                      {item.description && <p class="menu-list__description">{item.description}</p>}
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </div>
       </div>
 
       <div class="menu-sheet__signature">
