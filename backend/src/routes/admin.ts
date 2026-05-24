@@ -30,7 +30,7 @@ const loginSchema = z.object({
 const imageUrlSchema = z
   .string()
   .trim()
-  .max(2_500_000)
+  .max(5_600_000)
   .refine((value) => !value || value.startsWith('data:image/') || /^https?:\/\//.test(value), {
     message: 'Image invalide'
   })
@@ -41,8 +41,8 @@ const eventSchema = z.object({
   title: z.string().trim().min(2).max(160),
   eventDate: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
   eventTime: z.string().trim().max(20).optional().or(z.literal('')),
-  summary: z.string().trim().min(2).max(500),
-  details: z.string().trim().max(1500).optional().or(z.literal('')),
+  summary: z.string().trim().min(2).max(2000),
+  details: z.string().trim().max(2500).optional().or(z.literal('')),
   imageUrl: imageUrlSchema,
   ctaLabel: z.string().trim().max(80).optional().or(z.literal('')),
   ctaUrl: z.string().trim().max(500).optional().or(z.literal('')),

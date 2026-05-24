@@ -278,7 +278,7 @@ const weeklyVariableGroups = [
             </div>
             <div class="field">
               <label for="event-summary">Résumé</label>
-              <textarea id="event-summary" name="summary" rows="3" required></textarea>
+              <textarea id="event-summary" name="summary" rows="6" maxlength="2000" required></textarea>
             </div>
             <div class="field">
               <label for="event-image">Photo</label>
@@ -695,7 +695,7 @@ const weeklyVariableGroups = [
             resolve('');
             return;
           }
-          if (file.size > 1_800_000) {
+          if (file.size > 4_000_000) {
             reject(new Error('image-size'));
             return;
           }
@@ -704,6 +704,31 @@ const weeklyVariableGroups = [
           reader.addEventListener('error', () => reject(new Error('image-read')));
           reader.readAsDataURL(file);
         });
+
+      const adminErrorMessage = async (response, fallback) => {
+        let payload = null;
+        try {
+          payload = await response.json();
+        } catch (_error) {
+          return fallback;
+        }
+
+        const fieldErrors = payload?.details?.fieldErrors ?? {};
+        if (fieldErrors.summary?.length) {
+          return 'Le résumé est trop long. Maximum 2 000 caractères.';
+        }
+        if (fieldErrors.imageUrl?.length) {
+          return 'La photo est trop lourde. Maximum 4 Mo.';
+        }
+        if (fieldErrors.title?.length) {
+          return 'Le titre doit faire entre 2 et 160 caractères.';
+        }
+        if (fieldErrors.eventDate?.length) {
+          return 'La date de l’évènement est obligatoire.';
+        }
+
+        return fallback;
+      };
 
       const fillForms = (content) => {
         setInputValue(menuForm, 'title', content.menu.title);
@@ -943,12 +968,24 @@ const weeklyVariableGroups = [
               isPublished: true
             })
           });
-          if (!response.ok) throw new Error('event');
+          if (!response.ok) {
+            throw new Error(await adminErrorMessage(response, 'Impossible de publier l’évènement.'));
+          }
           eventForm.reset();
           await loadContent();
           showTemporaryFeedback(eventFeedback, 'Évènement publié.', 'success');
-        } catch (_error) {
-          setFeedback(eventFeedback, 'Impossible de publier l’évènement. Image max 1,8 Mo.', 'error');
+        } catch (error) {
+          const message =
+            error instanceof Error && error.message === 'image-size'
+              ? 'La photo est trop lourde. Maximum 4 Mo.'
+              : error instanceof Error
+                ? error.message
+                : 'Impossible de publier l’évènement.';
+          setFeedback(
+            eventFeedback,
+            message,
+            'error'
+          );
         } finally {
           setFormPending(eventForm, false);
         }
@@ -978,7 +1015,7 @@ const weeklyVariableGroups = [
           await loadContent();
           showTemporaryFeedback(galleryFeedback, 'Photo ajoutée.', 'success');
         } catch (_error) {
-          setFeedback(galleryFeedback, 'Impossible d’ajouter la photo. Image max 1,8 Mo.', 'error');
+          setFeedback(galleryFeedback, 'Impossible d’ajouter la photo. Image max 4 Mo.', 'error');
         } finally {
           setFormPending(galleryForm, false);
         }
