@@ -135,6 +135,39 @@ const weeklyVariableGroups = [
                     <div class="admin-variable-grid">
                       {Array.from({ length: group.count }, (_, index) => (
                         <div class="admin-variable-line">
+                          <div class="admin-variable-line__header">
+                            <strong>{`${group.title} ${index + 1}`}</strong>
+                            <div class="admin-variable-line__order" aria-label={`Changer l’ordre de ${group.title} ${index + 1}`}>
+                              <button
+                                class="admin-order-button"
+                                type="button"
+                                title="Monter"
+                                aria-label={`Monter ${group.title} ${index + 1}`}
+                                data-move-menu-item
+                                data-variable-prefix="menu"
+                                data-variable-group={group.key}
+                                data-variable-index={index + 1}
+                                data-variable-direction="-1"
+                                disabled={index === 0}
+                              >
+                                ↑
+                              </button>
+                              <button
+                                class="admin-order-button"
+                                type="button"
+                                title="Descendre"
+                                aria-label={`Descendre ${group.title} ${index + 1}`}
+                                data-move-menu-item
+                                data-variable-prefix="menu"
+                                data-variable-group={group.key}
+                                data-variable-index={index + 1}
+                                data-variable-direction="1"
+                                disabled={index === group.count - 1}
+                              >
+                                ↓
+                              </button>
+                            </div>
+                          </div>
                           <div class="admin-variable-line__top">
                             <div class="field">
                               <label for={`menu-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
@@ -209,6 +242,39 @@ const weeklyVariableGroups = [
                     <div class="admin-variable-grid admin-variable-grid--compact">
                       {Array.from({ length: group.count }, (_, index) => (
                         <div class="admin-variable-line">
+                          <div class="admin-variable-line__header">
+                            <strong>{`${group.title} ${index + 1}`}</strong>
+                            <div class="admin-variable-line__order" aria-label={`Changer l’ordre de ${group.title} ${index + 1}`}>
+                              <button
+                                class="admin-order-button"
+                                type="button"
+                                title="Monter"
+                                aria-label={`Monter ${group.title} ${index + 1}`}
+                                data-move-menu-item
+                                data-variable-prefix="weekly"
+                                data-variable-group={group.key}
+                                data-variable-index={index + 1}
+                                data-variable-direction="-1"
+                                disabled={index === 0}
+                              >
+                                ↑
+                              </button>
+                              <button
+                                class="admin-order-button"
+                                type="button"
+                                title="Descendre"
+                                aria-label={`Descendre ${group.title} ${index + 1}`}
+                                data-move-menu-item
+                                data-variable-prefix="weekly"
+                                data-variable-group={group.key}
+                                data-variable-index={index + 1}
+                                data-variable-direction="1"
+                                disabled={index === group.count - 1}
+                              >
+                                ↓
+                              </button>
+                            </div>
+                          </div>
                           <div class="field">
                             <label for={`weekly-${group.key}-${index + 1}`}>{`${group.title} ${index + 1}`}</label>
                             <input
@@ -569,6 +635,10 @@ const weeklyVariableGroups = [
           node.value = value;
         }
       };
+      const inputLike = (node) =>
+        node instanceof HTMLInputElement || node instanceof HTMLTextAreaElement || node instanceof HTMLSelectElement
+          ? node
+          : null;
 
       const menuVariableGroups = [
         { key: 'starter', title: 'Entrées', count: 5, aliases: ['entrees', 'entrées'] },
@@ -623,6 +693,33 @@ const weeklyVariableGroups = [
         return description && !description.includes('\n') ? description.replace(/\s+ou\s+/, '\nou ') : description;
       };
       const menuItemFromValue = (value, price = '') => ({ name: lineValue(value), price: normalizePriceValue(price), description: '' });
+      const variableGroupFor = (prefix, key) =>
+        (prefix === 'weekly' ? weeklyVariableGroups : menuVariableGroups).find((group) => group.key === key);
+      const variableFieldNames = (prefix, key, index) => [
+        `${prefix}-${key}-${index}`,
+        `${prefix}-${key}-${index}-description`,
+        `${prefix}-${key}-${index}-price`
+      ];
+      const swapVariableRows = (prefix, key, index, direction) => {
+        const group = variableGroupFor(prefix, key);
+        const targetIndex = index + direction;
+        if (!group || targetIndex < 1 || targetIndex > group.count) return;
+
+        variableFieldNames(prefix, key, index).forEach((sourceName, fieldIndex) => {
+          const targetName = variableFieldNames(prefix, key, targetIndex)[fieldIndex];
+          const source = inputLike(field(menuForm, sourceName));
+          const target = inputLike(field(menuForm, targetName));
+          if (!source || !target) return;
+
+          const sourceValue = source.value;
+          source.value = target.value;
+          target.value = sourceValue;
+        });
+
+        menuForm.dispatchEvent(new Event('input', { bubbles: true }));
+        const targetNameInput = inputLike(field(menuForm, `${prefix}-${key}-${targetIndex}`));
+        targetNameInput?.focus();
+      };
 
       const findSection = (sections, group) =>
         (sections ?? []).find((section) => {
@@ -934,6 +1031,18 @@ const weeklyVariableGroups = [
       resetFeedbackOnEdit(suggestionsForm, suggestionsFeedback);
       resetFeedbackOnEdit(eventForm, eventFeedback);
       resetFeedbackOnEdit(galleryForm, galleryFeedback);
+      menuForm.addEventListener('click', (event) => {
+        const target = event.target;
+        if (!(target instanceof HTMLElement)) return;
+        const button = target.closest('[data-move-menu-item]');
+        if (!(button instanceof HTMLButtonElement)) return;
+
+        const prefix = button.dataset.variablePrefix ?? '';
+        const key = button.dataset.variableGroup ?? '';
+        const index = Number(button.dataset.variableIndex ?? '0');
+        const direction = Number(button.dataset.variableDirection ?? '0');
+        swapVariableRows(prefix, key, index, direction);
+      });
       eventSummaryInput.addEventListener('input', updateEventSummaryCount);
       updateEventSummaryCount();
       eventCancelButton.addEventListener('click', () => {

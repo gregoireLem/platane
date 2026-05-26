@@ -2319,6 +2319,50 @@ p {
   box-shadow: 0 8px 18px rgba(89, 38, 15, 0.045);
 }
 
+.admin-variable-line__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.admin-variable-line__header strong {
+  color: var(--admin-section-color, var(--terracotta-deep));
+  font-weight: 900;
+  line-height: 1.2;
+}
+
+.admin-variable-line__order {
+  display: flex;
+  gap: 0.35rem;
+  flex-shrink: 0;
+}
+
+.admin-order-button {
+  display: inline-flex;
+  width: 2.25rem;
+  height: 2.25rem;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid rgba(var(--admin-section-rgb, 122, 84, 63), 0.2);
+  border-radius: 999px;
+  background: rgba(255, 252, 246, 0.88);
+  color: var(--admin-section-color, var(--terracotta-deep));
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.admin-order-button:not(:disabled):hover {
+  background: rgba(var(--admin-section-rgb, 122, 84, 63), 0.12);
+  transform: translateY(-1px);
+}
+
+.admin-order-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.34;
+}
+
 .admin-variable-line__top {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(7rem, 8.5rem);
