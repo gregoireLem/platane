@@ -105,21 +105,21 @@ const weeklyVariableGroups = [
                 <div class="field-grid">
                   <div class="field">
                     <label for="menu-title">Titre</label>
-                    <input id="menu-title" name="title" type="text" />
+                    <input id="menu-title" name="title" type="text" maxlength="160" required />
                   </div>
                   <div class="field">
                     <label for="menu-period">Période</label>
-                    <input id="menu-period" name="period" type="text" />
+                    <input id="menu-period" name="period" type="text" maxlength="120" />
                   </div>
                 </div>
                 <div class="field-grid">
                   <div class="field">
                     <label for="menu-updated">Mis à jour le</label>
-                    <input id="menu-updated" name="updatedAt" type="text" placeholder="16 mai 2026" />
+                    <input id="menu-updated" name="updatedAt" type="text" maxlength="80" placeholder="16 mai 2026" />
                   </div>
                   <div class="field">
                     <label for="menu-intro">Introduction</label>
-                    <input id="menu-intro" name="intro" type="text" />
+                    <input id="menu-intro" name="intro" type="text" maxlength="1000" />
                   </div>
                 </div>
               </div>
@@ -175,6 +175,7 @@ const weeklyVariableGroups = [
                                 id={`menu-${group.key}-${index + 1}`}
                                 name={`menu-${group.key}-${index + 1}`}
                                 type="text"
+                                maxlength="160"
                                 placeholder={index === 0 ? 'Nom du plat' : 'rien'}
                               />
                             </div>
@@ -185,6 +186,7 @@ const weeklyVariableGroups = [
                                 name={`menu-${group.key}-${index + 1}-price`}
                                 type="text"
                                 inputmode="decimal"
+                                maxlength="40"
                                 placeholder="0 = masqué"
                               />
                             </div>
@@ -195,6 +197,7 @@ const weeklyVariableGroups = [
                               id={`menu-${group.key}-${index + 1}-description`}
                               name={`menu-${group.key}-${index + 1}-description`}
                               type="text"
+                              maxlength="600"
                               placeholder="Producteur, garniture, cuisson..."
                             />
                           </div>
@@ -213,26 +216,26 @@ const weeklyVariableGroups = [
                 <div class="field-grid">
                   <div class="field">
                     <label for="weekly-menu-label">Intitulé de la formule</label>
-                    <input id="weekly-menu-label" name="weeklyMenuLabel" type="text" />
+                    <input id="weekly-menu-label" name="weeklyMenuLabel" type="text" maxlength="120" />
                   </div>
                   <div class="field">
                     <label for="weekly-menu-price">Prix de la formule</label>
-                    <input id="weekly-menu-price" name="weeklyMenuPrice" type="text" inputmode="decimal" />
+                    <input id="weekly-menu-price" name="weeklyMenuPrice" type="text" inputmode="decimal" maxlength="40" />
                   </div>
                 </div>
                 <div class="field-grid">
                   <div class="field">
                     <label for="weekly-menu-description">Texte de la formule</label>
-                    <textarea id="weekly-menu-description" name="weeklyMenuDescription" rows="2"></textarea>
+                    <textarea id="weekly-menu-description" name="weeklyMenuDescription" rows="2" maxlength="220"></textarea>
                   </div>
                   <div class="field-grid admin-field-grid--compact">
                     <div class="field">
                       <label for="weekly-menu-supplement-price">Supplément</label>
-                      <input id="weekly-menu-supplement-price" name="weeklyMenuSupplementPrice" type="text" inputmode="decimal" />
+                      <input id="weekly-menu-supplement-price" name="weeklyMenuSupplementPrice" type="text" inputmode="decimal" maxlength="40" />
                     </div>
                     <div class="field">
                       <label for="weekly-menu-supplement-description">Texte supplément</label>
-                      <input id="weekly-menu-supplement-description" name="weeklyMenuSupplementDescription" type="text" />
+                      <input id="weekly-menu-supplement-description" name="weeklyMenuSupplementDescription" type="text" maxlength="160" />
                     </div>
                   </div>
                 </div>
@@ -281,6 +284,7 @@ const weeklyVariableGroups = [
                               id={`weekly-${group.key}-${index + 1}`}
                               name={`weekly-${group.key}-${index + 1}`}
                               type="text"
+                              maxlength="160"
                               placeholder={index === 0 ? 'Suggestion' : 'rien'}
                             />
                           </div>
@@ -290,6 +294,7 @@ const weeklyVariableGroups = [
                               id={`weekly-${group.key}-${index + 1}-description`}
                               name={`weekly-${group.key}-${index + 1}-description`}
                               type="text"
+                              maxlength="436"
                               placeholder="Détail, accompagnement..."
                             />
                           </div>
@@ -307,7 +312,7 @@ const weeklyVariableGroups = [
                 </div>
                 <div class="field">
                   <label for="menu-notes">Notes</label>
-                  <textarea id="menu-notes" name="notes" rows="4" placeholder="Une note par ligne"></textarea>
+                  <textarea id="menu-notes" name="notes" rows="4" maxlength="5000" placeholder="Une note par ligne"></textarea>
                 </div>
               </div>
             </div>
@@ -330,7 +335,7 @@ const weeklyVariableGroups = [
           <form class="admin-editor-form" data-event-form>
             <div class="field">
               <label for="event-title">Titre</label>
-              <input id="event-title" name="title" type="text" required />
+              <input id="event-title" name="title" type="text" maxlength="160" required />
             </div>
             <div class="field-grid">
               <div class="field">
@@ -339,7 +344,7 @@ const weeklyVariableGroups = [
               </div>
               <div class="field">
                 <label for="event-time">Horaire</label>
-                <input id="event-time" name="eventTime" type="text" placeholder="20h30" />
+                <input id="event-time" name="eventTime" type="text" maxlength="20" placeholder="20h30" />
               </div>
             </div>
             <div class="field">
@@ -380,21 +385,21 @@ const weeklyVariableGroups = [
           <div class="field-grid">
             <div class="field">
               <label for="suggestion-dish">Plat du jour</label>
-              <input id="suggestion-dish" name="dish" type="text" />
+              <input id="suggestion-dish" name="dish" type="text" maxlength="180" />
             </div>
             <div class="field">
               <label for="suggestion-drink">Boisson du moment</label>
-              <input id="suggestion-drink" name="drink" type="text" />
+              <input id="suggestion-drink" name="drink" type="text" maxlength="180" />
             </div>
           </div>
           <div class="field-grid">
             <div class="field">
               <label for="suggestion-beer">Bière pression</label>
-              <input id="suggestion-beer" name="beer" type="text" />
+              <input id="suggestion-beer" name="beer" type="text" maxlength="180" />
             </div>
             <div class="field">
               <label for="suggestion-updated">Mis à jour le</label>
-              <input id="suggestion-updated" name="updatedAt" type="text" placeholder="Aujourd’hui" />
+              <input id="suggestion-updated" name="updatedAt" type="text" maxlength="80" placeholder="Aujourd’hui" />
             </div>
           </div>
           <div class="admin-form-actions">
@@ -415,7 +420,7 @@ const weeklyVariableGroups = [
           <form class="admin-editor-form" data-gallery-form>
             <div class="field">
               <label for="gallery-title">Titre</label>
-              <input id="gallery-title" name="title" type="text" required />
+              <input id="gallery-title" name="title" type="text" maxlength="160" required />
             </div>
             <div class="field">
               <label for="gallery-category">Catégorie</label>
@@ -835,6 +840,13 @@ const weeklyVariableGroups = [
         });
 
       const adminErrorMessage = async (response, fallback) => {
+        if (response.status === 401) {
+          return 'Session expirée. Reconnectez-vous puis republiez.';
+        }
+        if (response.status === 413) {
+          return 'Le contenu envoyé est trop volumineux.';
+        }
+
         let payload = null;
         try {
           payload = await response.json();
@@ -843,6 +855,63 @@ const weeklyVariableGroups = [
         }
 
         const fieldErrors = payload?.details?.fieldErrors ?? {};
+        const firstIssue = Array.isArray(payload?.issues) ? payload.issues[0] : null;
+        const issuePath = Array.isArray(firstIssue?.path) ? firstIssue.path : [];
+        const issueLimit = String(firstIssue?.message ?? '').match(/at most (\d+)/i)?.[1] ?? '';
+        const issueMinimum = String(firstIssue?.message ?? '').match(/at least (\d+)/i)?.[1] ?? '';
+        const issueLabel = (path) => {
+          if (path[0] === 'menu') {
+            if (path[1] === 'title') return 'Titre de la carte';
+            if (path[1] === 'period') return 'Période';
+            if (path[1] === 'updatedAt') return 'Date de mise à jour';
+            if (path[1] === 'intro') return 'Introduction';
+            if (path[1] === 'notes') return `Note ${Number(path[2] ?? 0) + 1}`;
+            if (path[1] === 'weeklyMenu') {
+              const labels = {
+                label: 'Intitulé de la formule',
+                price: 'Prix de la formule',
+                description: 'Texte de la formule',
+                supplementPrice: 'Supplément',
+                supplementDescription: 'Texte supplément'
+              };
+              return labels[path[2]] ?? 'Menu de la semaine';
+            }
+            if (path[1] === 'formulas') {
+              const row = Number(path[2] ?? 0) + 1;
+              const labels = { name: 'intitulé', price: 'prix', description: 'descriptif' };
+              return `Menu de la semaine ligne ${row} (${labels[path[3]] ?? 'champ'})`;
+            }
+            if (path[1] === 'sections') {
+              const section = Number(path[2] ?? 0) + 1;
+              const row = Number(path[4] ?? 0) + 1;
+              const labels = { name: 'nom', price: 'prix', description: 'descriptif' };
+              return `Carte section ${section}, ligne ${row} (${labels[path[5]] ?? 'champ'})`;
+            }
+          }
+          if (path[0] === 'suggestions') {
+            const labels = {
+              dish: 'Plat du jour',
+              drink: 'Boisson du moment',
+              beer: 'Bière pression',
+              updatedAt: 'Date de mise à jour'
+            };
+            return labels[path[1]] ?? 'Suggestion';
+          }
+          return '';
+        };
+        const label = issueLabel(issuePath);
+        if (label && issueLimit) {
+          return `${label} est trop long. Maximum ${issueLimit} caractères.`;
+        }
+        if (label && issueMinimum) {
+          return `${label} doit contenir au moins ${issueMinimum} caractère${Number(issueMinimum) > 1 ? 's' : ''}.`;
+        }
+        if (fieldErrors.menu?.length) {
+          return 'Un champ de la carte est invalide ou trop long. Vérifiez les textes de la carte et du menu de la semaine.';
+        }
+        if (fieldErrors.suggestions?.length) {
+          return 'Une suggestion est trop longue. Maximum 180 caractères par suggestion.';
+        }
         if (fieldErrors.summary?.length) {
           return 'Le résumé doit contenir au moins 2 caractères.';
         }
@@ -1104,11 +1173,11 @@ const weeklyVariableGroups = [
             method: 'PUT',
             body: JSON.stringify(editorialPayload())
           });
-          if (!response.ok) throw new Error('menu');
+          if (!response.ok) throw new Error(await adminErrorMessage(response, 'Impossible de publier la carte.'));
           await loadContent();
           showTemporaryFeedback(menuFeedback, 'Carte publiée.', 'success');
-        } catch (_error) {
-          setFeedback(menuFeedback, 'Impossible de publier la carte.', 'error');
+        } catch (error) {
+          setFeedback(menuFeedback, error instanceof Error ? error.message : 'Impossible de publier la carte.', 'error');
         } finally {
           setFormPending(menuForm, false);
         }
@@ -1124,11 +1193,17 @@ const weeklyVariableGroups = [
             method: 'PUT',
             body: JSON.stringify(editorialPayload())
           });
-          if (!response.ok) throw new Error('suggestions');
+          if (!response.ok) {
+            throw new Error(await adminErrorMessage(response, 'Impossible de publier les suggestions.'));
+          }
           await loadContent();
           showTemporaryFeedback(suggestionsFeedback, 'Suggestions publiées.', 'success');
-        } catch (_error) {
-          setFeedback(suggestionsFeedback, 'Impossible de publier les suggestions.', 'error');
+        } catch (error) {
+          setFeedback(
+            suggestionsFeedback,
+            error instanceof Error ? error.message : 'Impossible de publier les suggestions.',
+            'error'
+          );
         } finally {
           setFormPending(suggestionsForm, false);
         }

@@ -41,7 +41,12 @@ app.use((error: unknown, _req: express.Request, res: express.Response, _next: ex
   if (error instanceof ZodError) {
     return res.status(400).json({
       error: 'VALIDATION_ERROR',
-      details: error.flatten()
+      details: error.flatten(),
+      issues: error.issues.map((issue) => ({
+        path: issue.path,
+        message: issue.message,
+        code: issue.code
+      }))
     });
   }
 
