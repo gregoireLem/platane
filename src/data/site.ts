@@ -8,11 +8,11 @@ export const site = {
   phoneRaw: '0689890650',
   reservationApiUrl: import.meta.env.PUBLIC_RESERVATION_API_URL || 'http://127.0.0.1:8787',
   reservationUrl: 'https://tally.so/r/GxoaNj',
-  location: '32 chemin des bois, 07110 Montreal',
+  location: '87 route de Largentière, 07110 Montréal',
   mapsUrl:
-    'https://www.google.com/maps/search/?api=1&query=32+chemin+des+bois,+07110+Montreal',
+    'https://www.google.com/maps/search/?api=1&query=87+route+de+Largenti%C3%A8re,+07110+Montr%C3%A9al',
   mapsEmbedUrl:
-    'https://www.google.com/maps?q=32+chemin+des+bois,+07110+Montreal&z=16&output=embed',
+    'https://www.google.com/maps?q=87+route+de+Largenti%C3%A8re,+07110+Montr%C3%A9al&z=16&output=embed',
   openingHours: [
     { day: 'Lundi', hours: 'Fermé' },
     { day: 'Mardi', hours: '8h30 - 22h' },
