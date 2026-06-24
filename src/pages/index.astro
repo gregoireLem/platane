@@ -2,7 +2,6 @@
 import ContactForm from '../components/ContactForm.astro';
 import ContentRuntime from '../components/ContentRuntime.astro';
 import Icon from '../components/Icon.astro';
-import ReservationForm from '../components/ReservationForm.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { site } from '../data/site';
 ---
@@ -122,8 +121,8 @@ import { site } from '../data/site';
         <p class="eyebrow">Réservation</p>
         <h2>Réserver une table simplement.</h2>
         <p>
-          Envoyez votre demande avec la date, l’heure et le nombre de personnes. Le formulaire
-          vérifie les places restantes et l’équipe confirme ensuite la réservation.
+          Choisissez votre créneau directement sur notre page de réservation SumUp. Vous pouvez
+          aussi nous appeler pour une grande table ou une demande particulière.
         </p>
         <div class="hours-card">
           <strong>Horaires d’ouverture</strong>
@@ -137,7 +136,24 @@ import { site } from '../data/site';
           </ul>
         </div>
       </div>
-      <ReservationForm />
+      <div class="reservation-card">
+        <p class="eyebrow">Booking SumUp</p>
+        <h3>Réservation en ligne</h3>
+        <p>
+          Le calendrier SumUp vous permet de sélectionner la date, l’horaire et le nombre de
+          personnes pour votre venue.
+        </p>
+        <div class="reservation-form__actions">
+          <a class="button button--primary" href={site.reservationUrl} target="_blank" rel="noreferrer">
+            Ouvrir la réservation
+            <Icon name="calendar" />
+          </a>
+          <a class="button button--secondary" href={`tel:${site.phoneRaw}`}>
+            Appeler le restaurant
+            <Icon name="phone" />
+          </a>
+        </div>
+      </div>
     </div>
   </section>
 

@@ -7,7 +7,7 @@ export const site = {
   phoneDisplay: '06 89 89 06 50',
   phoneRaw: '0689890650',
   reservationApiUrl: import.meta.env.PUBLIC_RESERVATION_API_URL || 'http://127.0.0.1:8787',
-  reservationUrl: 'https://tally.so/r/GxoaNj',
+  reservationUrl: 'https://www.sumupbookings.com/au-platane',
   location: '87 route de Largentière, 07110 Montréal',
   mapsUrl:
     'https://www.google.com/maps/search/?api=1&query=87+route+de+Largenti%C3%A8re,+07110+Montr%C3%A9al',
