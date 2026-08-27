@@ -8,5 +8,5 @@ export const menuSource = {
 };
 
 export const menuSourceLabel = menuSource.googleSheetId
-  ? 'Menu synchronisé depuis Google Sheets'
-  : 'Menu de démonstration local';
+  ? 'Carte synchronisée depuis Google Sheets'
+  : 'Carte de démonstration locale';

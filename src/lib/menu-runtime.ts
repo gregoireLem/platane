@@ -212,8 +212,8 @@ export const loadRemoteMenu = async (config: MenuRuntimeConfig): Promise<Runtime
   if (!formulas.length && !sections.length) return null;
 
   return {
-    title: settings.get('title')?.[0] ?? settings.get('titre')?.[0] ?? 'Le menu',
-    period: settings.get('period')?.[0] ?? settings.get('periode')?.[0] ?? 'Semaine en cours',
+    title: settings.get('title')?.[0] ?? settings.get('titre')?.[0] ?? 'La carte',
+    period: settings.get('period')?.[0] ?? settings.get('periode')?.[0] ?? 'L’ardoise du moment',
     updatedAt:
       settings.get('updated_at')?.[0] ??
       settings.get('updated')?.[0] ??
@@ -229,27 +229,27 @@ export const loadRemoteMenu = async (config: MenuRuntimeConfig): Promise<Runtime
         settings.get('weekly_menu_label')?.[0] ??
         settings.get('titre_menu_semaine')?.[0] ??
         settings.get('menu_semaine_titre')?.[0] ??
-        'Menu de la semaine - midi',
+        'Carte à l’ardoise',
       price:
         settings.get('weekly_menu_price')?.[0] ??
         settings.get('prix_menu_semaine')?.[0] ??
         settings.get('menu_semaine_prix')?.[0] ??
-        '17 €',
+        '',
       description:
         settings.get('weekly_menu_description')?.[0] ??
         settings.get('texte_menu_semaine')?.[0] ??
         settings.get('menu_semaine_texte')?.[0] ??
-        'Entrée + plat\nou plat + dessert',
+        'Les propositions changent régulièrement selon les arrivages.',
       supplementPrice:
         settings.get('weekly_menu_supplement_price')?.[0] ??
         settings.get('prix_supplement_menu_semaine')?.[0] ??
         settings.get('menu_semaine_supplement_prix')?.[0] ??
-        '+4 €',
+        '',
       supplementDescription:
         settings.get('weekly_menu_supplement_description')?.[0] ??
         settings.get('texte_supplement_menu_semaine')?.[0] ??
         settings.get('menu_semaine_supplement_texte')?.[0] ??
-        'formule complète'
+        ''
     },
     formulas,
     sections,
@@ -376,9 +376,9 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
   setText('[data-menu-title]', menu.title);
   setText('[data-menu-period]', menu.period);
   setText('[data-menu-intro]', menu.intro);
-  setText('[data-menu-source-badge]', 'Menu synchronisé depuis Google Sheets');
+  setText('[data-menu-source-badge]', 'Carte synchronisée depuis Google Sheets');
 
-  const updatedLabel = menu.updatedAt ? `Mis à jour le ${menu.updatedAt}` : 'Menu mis à jour automatiquement';
+  const updatedLabel = menu.updatedAt ? `Mis à jour le ${menu.updatedAt}` : 'Carte mise à jour automatiquement';
   setText('[data-menu-updated-at]', updatedLabel);
 
   const previewFormulas = document.querySelector<HTMLElement>('[data-menu-preview-formulas]');

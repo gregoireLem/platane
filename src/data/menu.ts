@@ -20,26 +20,15 @@ export const weeklyMenu = {
   period: 'L’ardoise du moment',
   updatedAt: '18 mai 2026',
   intro:
-    'Une cuisine simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
+    'Une carte à l’ardoise, simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
   weeklyMenu: {
-    label: 'Menu de la semaine - midi',
-    price: '17 €',
-    description: 'Entrée + plat\nou plat + dessert',
-    supplementPrice: '+4 €',
-    supplementDescription: 'formule complète'
+    label: 'Carte à l’ardoise',
+    price: '',
+    description: 'Les propositions changent régulièrement selon les arrivages.',
+    supplementPrice: '',
+    supplementDescription: ''
   },
-  formulas: [
-    {
-      name: 'Le midi',
-      description:
-        'Une formule du jour pensée pour les habitants, artisans, travailleurs du secteur et visiteurs de passage. Entrée + plat + dessert, dans un esprit généreux, simple et fait maison.'
-    },
-    {
-      name: 'Le soir',
-      description:
-        'Une cuisine conviviale avec des assiettes à partager, quelques tapas, du bon vin et des produits du coin.'
-    }
-  ] as MenuFormula[],
+  formulas: [] as MenuFormula[],
   sections: [
     {
       title: 'Entrées',
@@ -107,7 +96,7 @@ export const weeklyMenu = {
       ]
     },
     {
-      title: 'Le soir à partager',
+      title: 'À partager',
       items: [
         {
           name: 'Les frites du bistrot'
@@ -153,6 +142,6 @@ export const weeklyMenu = {
   ] satisfies MenuSection[],
   notes: [
     'La carte fonctionne comme une ardoise : courte, vivante et amenée à évoluer régulièrement selon les arrivages, les producteurs et les envies du moment.',
-    'Le midi, une formule du jour ; le soir, des assiettes à partager, quelques tapas, du bon vin et des produits du coin.'
+    'Pour connaître les plats et formules disponibles aujourd’hui, appelez-nous : l’ardoise peut changer d’un service à l’autre.'
   ]
 } as const;

@@ -4,12 +4,7 @@ import Icon from '../components/Icon.astro';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import { weeklyMenu } from '../data/menu';
 import { menuSourceLabel } from '../data/menu-source';
-
-const weeklyFormulaGroups = [
-  { key: 'starter', title: 'Entrées', aliases: ['entrée', 'entree'] },
-  { key: 'main', title: 'Plats', aliases: ['plat'] },
-  { key: 'dessert', title: 'Desserts', aliases: ['dessert'] }
-];
+import { site } from '../data/site';
 
 const normalizeMenuLabel = (value: string) =>
   value
@@ -68,46 +63,17 @@ const formatPriceValue = (value?: string) => {
 const itemPrice = (item: unknown) =>
   item && typeof item === 'object' && 'price' in item ? formatPriceValue(String(item.price ?? '')) : '';
 
-const formatWeeklyMenuDescription = (value?: string) => {
-  const description = String(value ?? '').trim();
-  return description && !description.includes('\n') ? description.replace(/\s+ou\s+/, '\nou ') : description;
-};
-
-const parseWeeklyFormula = (description: string) => {
-  const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());
-  return { name, detail };
-};
-
-const weeklyFormulaSections = weeklyFormulaGroups
-  .map((group) => ({
-    title: group.title,
-    items: weeklyMenu.formulas
-      .filter((formula) => {
-        const name = normalizeMenuLabel(formula.name);
-        return group.aliases.some((alias) => name.includes(alias));
-      })
-      .map((formula) => parseWeeklyFormula(formula.description))
-      .filter((item) => item.name)
-  }))
-  .filter((section) => section.items.length);
-
-const hasWeeklyFormula = weeklyFormulaSections.length > 0;
 const sweetsSection = weeklyMenu.sections.find((section) => isSweetsSection(section.title));
 const ardoiseSections = weeklyMenu.sections.filter((section) => !isSweetsSection(section.title));
-const weeklyMenuLabel = weeklyMenu.weeklyMenu.label || 'Menu de la semaine - midi';
-const weeklyMenuPrice = formatPriceValue(weeklyMenu.weeklyMenu.price || '17 €');
-const weeklyMenuDescription = formatWeeklyMenuDescription(weeklyMenu.weeklyMenu.description || 'Entrée + plat\nou plat + dessert');
-const weeklyMenuSupplementPrice = formatPriceValue(weeklyMenu.weeklyMenu.supplementPrice || '+4 €');
-const weeklyMenuSupplementDescription = weeklyMenu.weeklyMenu.supplementDescription || 'formule complète';
 ---
 
 <BaseLayout
-  title="Le menu"
-  description="Le menu du moment d’Au Platane, pensé pour évoluer au rythme des semaines et des produits."
+  title="La carte"
+  description="La carte à l’ardoise d’Au Platane, courte, locale et amenée à changer régulièrement."
 >
   <section class="section menu-page">
     <div class="menu-page__intro" data-reveal>
-      <p class="eyebrow">Le menu</p>
+      <p class="eyebrow">La carte</p>
       <div class="menu-page__brand-chip">
         <img src="/brand/logo-alt-black.jpg" alt="" />
         <span>Bar . Restaurant . Salon de thé</span>
@@ -134,19 +100,18 @@ const weeklyMenuSupplementDescription = weeklyMenu.weeklyMenu.supplementDescript
           <h2>Une carte courte, vivante et pensée au rythme du lieu.</h2>
         </div>
         <div class="menu-ardoise-heading__chips">
-          <a href="#menu-semaine">Menu de la semaine</a>
-          <a href="#douceurs-apres-midi">Les douceurs de l’après-midi</a>
           <a href="#ardoise-du-moment">L’ardoise du moment</a>
+          {sweetsSection && <a href="#douceurs-apres-midi">Les douceurs de l’après-midi</a>}
+          <a href={`tel:${site.phoneRaw}`}>Appeler</a>
         </div>
       </div>
 
       <div class="menu-sheet__body">
-        <nav class="menu-section-nav" aria-label="Navigation du menu">
+        <nav class="menu-section-nav" aria-label="Navigation de la carte">
           <p class="menu-section-nav__title">Repères</p>
           <div class="menu-section-nav__links" data-menu-section-nav>
-            {hasWeeklyFormula && <a href="#menu-semaine">Menu de la semaine</a>}
-            {sweetsSection && <a href="#douceurs-apres-midi">Douceurs</a>}
             <a href="#ardoise-du-moment">L’ardoise</a>
+            {sweetsSection && <a href="#douceurs-apres-midi">Douceurs</a>}
             {ardoiseSections.map((section) => (
               <a href={`#${menuSectionId(section.title)}`}>{section.title}</a>
             ))}
@@ -154,33 +119,6 @@ const weeklyMenuSupplementDescription = weeklyMenu.weeklyMenu.supplementDescript
         </nav>
 
         <div class="menu-sheet__content">
-          <section class="weekly-menu-card" id="menu-semaine" data-weekly-menu hidden={!hasWeeklyFormula}>
-            <div class="weekly-menu-card__heading">
-              <p class="eyebrow" data-weekly-menu-label>{weeklyMenuLabel}</p>
-              <h2 data-weekly-menu-price>{weeklyMenuPrice}</h2>
-              <p data-weekly-menu-description>{weeklyMenuDescription}</p>
-              <p class="weekly-menu-card__supplement" data-weekly-menu-supplement>
-                <strong data-weekly-menu-supplement-price>{weeklyMenuSupplementPrice}</strong>
-                <span data-weekly-menu-supplement-description>{weeklyMenuSupplementDescription}</span>
-              </p>
-            </div>
-            <div class="weekly-menu-card__grid" data-weekly-menu-sections>
-              {weeklyFormulaSections.map((section) => (
-                <article class="weekly-menu-card__section">
-                  <h3>{section.title}</h3>
-                  <ul>
-                    {section.items.map((item) => (
-                      <li>
-                        <strong>{item.name}</strong>
-                        {item.detail && <span>{item.detail}</span>}
-                      </li>
-                    ))}
-                  </ul>
-                </article>
-              ))}
-            </div>
-          </section>
-
           <section class="afternoon-sweets-card" id="douceurs-apres-midi" data-afternoon-sweets hidden={!sweetsSection}>
             <div class="afternoon-sweets-card__heading">
               <p class="eyebrow">Les douceurs de l’après-midi</p>
@@ -203,7 +141,7 @@ const weeklyMenuSupplementDescription = weeklyMenu.weeklyMenu.supplementDescript
           <div class="menu-sheet__intro" id="ardoise-du-moment">
             <div>
               <p class="eyebrow">L’ardoise du moment</p>
-              <h2>Une cuisine courte, locale et mouvante.</h2>
+              <h2>Une ardoise qui change régulièrement.</h2>
             </div>
             <ul class="menu-sheet__intro-copy" data-menu-notes>
                 {weeklyMenu.notes.map((note) => (
@@ -246,7 +184,7 @@ const weeklyMenuSupplementDescription = weeklyMenu.weeklyMenu.supplementDescript
 
   <section class="section menu-page__footer">
     <div class="button-row" data-reveal>
-      <a class="button button--primary" href="/#contact">Prendre contact</a>
+      <a class="button button--primary" href={`tel:${site.phoneRaw}`}>Appeler le {site.phoneDisplay}</a>
       <a class="button button--secondary" href="/">Retour à l’accueil</a>
     </div>
   </section>

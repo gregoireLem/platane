@@ -21,18 +21,18 @@ const menuFormulaSchema = z.object({
 
 const weeklyMenuSchema = z
   .object({
-    label: z.string().trim().max(120).default('Menu de la semaine - midi'),
-    price: z.string().trim().max(40).default('17 €'),
-    description: z.string().trim().max(220).default('Entrée + plat\nou plat + dessert'),
-    supplementPrice: z.string().trim().max(40).default('+4 €'),
-    supplementDescription: z.string().trim().max(160).default('formule complète')
+    label: z.string().trim().max(120).default('Carte à l’ardoise'),
+    price: z.string().trim().max(40).default(''),
+    description: z.string().trim().max(220).default('Les propositions changent régulièrement selon les arrivages.'),
+    supplementPrice: z.string().trim().max(40).default(''),
+    supplementDescription: z.string().trim().max(160).default('')
   })
   .default({
-    label: 'Menu de la semaine - midi',
-    price: '17 €',
-    description: 'Entrée + plat\nou plat + dessert',
-    supplementPrice: '+4 €',
-    supplementDescription: 'formule complète'
+    label: 'Carte à l’ardoise',
+    price: '',
+    description: 'Les propositions changent régulièrement selon les arrivages.',
+    supplementPrice: '',
+    supplementDescription: ''
   });
 
 export const editorialContentSchema = z.object({
@@ -62,28 +62,15 @@ export const defaultEditorialContent: EditorialContent = {
     period: 'L’ardoise du moment',
     updatedAt: '18 mai 2026',
     intro:
-      'Une cuisine simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
+      'Une carte à l’ardoise, simple, locale et faite sur place à partir de produits frais, pensée au rythme des arrivages et du territoire.',
     weeklyMenu: {
-      label: 'Menu de la semaine - midi',
-      price: '17 €',
-      description: 'Entrée + plat\nou plat + dessert',
-      supplementPrice: '+4 €',
-      supplementDescription: 'formule complète'
+      label: 'Carte à l’ardoise',
+      price: '',
+      description: 'Les propositions changent régulièrement selon les arrivages.',
+      supplementPrice: '',
+      supplementDescription: ''
     },
-    formulas: [
-      {
-        name: 'Le midi',
-        price: '',
-        description:
-          'Une formule du jour pensée pour les habitants, artisans, travailleurs du secteur et visiteurs de passage. Entrée + plat + dessert, dans un esprit généreux, simple et fait maison.'
-      },
-      {
-        name: 'Le soir',
-        price: '',
-        description:
-          'Une cuisine conviviale avec des assiettes à partager, quelques tapas, du bon vin et des produits du coin.'
-      }
-    ],
+    formulas: [],
     sections: [
       {
         title: 'Entrées',
@@ -145,7 +132,7 @@ export const defaultEditorialContent: EditorialContent = {
         ]
       },
       {
-        title: 'Le soir à partager',
+        title: 'À partager',
         items: [
           { name: 'Les frites du bistrot', price: '', description: '' },
           { name: 'Cromesquis de chèvre « Le Piqueberle »', price: '', description: '' },
@@ -164,7 +151,7 @@ export const defaultEditorialContent: EditorialContent = {
     ],
     notes: [
       'La carte fonctionne comme une ardoise : courte, vivante et amenée à évoluer régulièrement selon les arrivages, les producteurs et les envies du moment.',
-      'Le midi, une formule du jour ; le soir, des assiettes à partager, quelques tapas, du bon vin et des produits du coin.'
+      'Pour connaître les plats et formules disponibles aujourd’hui, appelez-nous : l’ardoise peut changer d’un service à l’autre.'
     ]
   },
   suggestions: {

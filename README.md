@@ -9,13 +9,13 @@ npm install
 npm run dev
 ```
 
-## Modifier le menu
+## Modifier la carte
 
 Le site peut fonctionner de 2 façons.
 
 ### Option 1. Google Sheets
 
-C’est l’option recommandée si vous ne voulez **pas utiliser Git** pour modifier le menu.
+C’est l’option recommandée si vous ne voulez **pas utiliser Git** pour modifier la carte.
 
 Le site sait lire une Google Sheet publique avec 3 onglets :
 
@@ -35,18 +35,18 @@ Colonnes attendues :
 
 | key | value |
 | --- | --- |
-| title | Menu du moment |
-| period | Semaine du 24 avril |
+| title | La cuisine du Platane |
+| period | L’ardoise du moment |
 | updated_at | 24 avril 2026 |
-| intro | Carte courte et de saison |
+| intro | Carte à l’ardoise, courte et de saison |
 | note | La carte change selon le marché |
-| note | Une option végétarienne est disponible |
+| note | Appelez pour connaître les propositions du moment |
 
 #### Onglet `Formules`
 
 | name | price | description | active |
 | --- | --- | --- | --- |
-| Formule déjeuner | 24 € | Entrée, plat, dessert | 1 |
+| Formule du moment | 24 € | Selon l’ardoise du jour | 1 |
 | Pause salon de thé | 8 € | Boisson chaude et douceur | 1 |
 
 #### Onglet `Carte`
@@ -66,7 +66,7 @@ Si la Google Sheet n’est pas encore configurée, le site utilise [`src/data/me
 
 Vous pouvez y changer :
 
-- `period` pour la semaine ou le jour affiché
+- `period` pour la période ou l’ardoise affichée
 - `updatedAt` pour la date de mise à jour
 - `formulas` pour les formules
 - `sections` pour les entrées, plats, desserts, boissons

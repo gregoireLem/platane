@@ -113,23 +113,12 @@ const formatPriceValue = (value: string | null | undefined) => {
   return /^\+?\d+(?:[,.]\d{1,2})?$/.test(price) ? `${price} €` : price;
 };
 
-const formatWeeklyMenuDescription = (value: string | null | undefined) => {
-  const description = String(value ?? '').trim();
-  return description && !description.includes('\n') ? description.replace(/\s+ou\s+/, '\nou ') : description;
-};
-
 const formatEventDate = (value: string) =>
   new Intl.DateTimeFormat('fr-FR', {
     weekday: 'long',
     day: 'numeric',
     month: 'long'
   }).format(new Date(value));
-
-const weeklyFormulaGroups = [
-  { title: 'Entrées', aliases: ['entrée', 'entree'] },
-  { title: 'Plats', aliases: ['plat'] },
-  { title: 'Desserts', aliases: ['dessert'] }
-];
 
 const normalizeMenuLabel = (value: string) =>
   value
@@ -149,40 +138,36 @@ const isSweetsSection = (title: string) => {
   return normalized.includes('douceurs') || normalized.includes('apres-midi');
 };
 
-const parseWeeklyFormula = (description: string) => {
-  const [name = '', detail = ''] = description.split(/\s+-\s+/, 2).map((item) => item.trim());
-  return { name, detail };
+const publicMenuSectionTitle = (title: string) => {
+  const normalized = normalizeMenuLabel(title);
+  return normalized.includes('soir') && normalized.includes('partager') ? 'À partager' : title;
 };
 
-const groupWeeklyFormulas = (formulas: RuntimeMenu['formulas']) =>
-  weeklyFormulaGroups
-    .map((group) => ({
-      title: group.title,
-      items: formulas
-        .filter((formula) => {
-          const name = normalizeMenuLabel(formula.name);
-          return group.aliases.some((alias) => name.includes(alias));
-        })
-        .map((formula) => parseWeeklyFormula(formula.description))
-        .filter((item) => item.name)
-    }))
-    .filter((section) => section.items.length);
+const publicMenuNote = (note: string) => {
+  const normalized = normalizeMenuLabel(note);
+  if (normalized.includes('tapas') || normalized.includes('menu de la semaine')) {
+    return 'Pour connaître les plats et formules disponibles aujourd’hui, appelez-nous : l’ardoise peut changer d’un service à l’autre.';
+  }
+
+  return note;
+};
 
 const renderMenuSectionNav = (menu: RuntimeMenu) => {
   const node = document.querySelector<HTMLElement>('[data-menu-section-nav]');
   if (!node) return;
 
-  const groupedWeeklyMenu = groupWeeklyFormulas(menu.formulas);
   const sweetsSection = menu.sections.find((section) => isSweetsSection(section.title));
   const sectionLinks = menu.sections
     .filter((section) => !isSweetsSection(section.title))
-    .map((section) => `<a href="#${escapeHtml(menuSectionId(section.title))}">${escapeHtml(section.title)}</a>`)
+    .map(
+      (section) =>
+        `<a href="#${escapeHtml(menuSectionId(section.title))}">${escapeHtml(publicMenuSectionTitle(section.title))}</a>`
+    )
     .join('');
 
   node.innerHTML = `
-    ${groupedWeeklyMenu.length ? '<a href="#menu-semaine">Menu de la semaine</a>' : ''}
-    ${sweetsSection ? '<a href="#douceurs-apres-midi">Douceurs</a>' : ''}
     <a href="#ardoise-du-moment">L’ardoise</a>
+    ${sweetsSection ? '<a href="#douceurs-apres-midi">Douceurs</a>' : ''}
     ${sectionLinks}
   `;
 };
@@ -354,45 +339,12 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
   setText('[data-menu-title]', menu.title);
   setText('[data-menu-period]', menu.period);
   setText('[data-menu-intro]', menu.intro);
-  setText('[data-menu-source-badge]', 'Menu synchronisé depuis l’admin');
+  setText('[data-menu-source-badge]', 'Carte synchronisée depuis l’admin');
 
-  const updatedLabel = menu.updatedAt ? `Mis à jour le ${menu.updatedAt}` : 'Menu mis à jour depuis l’admin';
+  const updatedLabel = menu.updatedAt ? `Mis à jour le ${menu.updatedAt}` : 'Carte mise à jour depuis l’admin';
   setText('[data-menu-updated-at]', updatedLabel);
 
-  setText('[data-weekly-menu-label]', menu.weeklyMenu?.label || 'Menu de la semaine - midi');
-  setText('[data-weekly-menu-price]', formatPriceValue(menu.weeklyMenu?.price || '17 €'));
-  setText('[data-weekly-menu-description]', formatWeeklyMenuDescription(menu.weeklyMenu?.description || 'Entrée + plat\nou plat + dessert'));
-  setText('[data-weekly-menu-supplement-price]', formatPriceValue(menu.weeklyMenu?.supplementPrice || '+4 €'));
-  setText('[data-weekly-menu-supplement-description]', menu.weeklyMenu?.supplementDescription || 'formule complète');
   renderMenuSectionNav(menu);
-
-  const weeklyMenuCard = document.querySelector<HTMLElement>('[data-weekly-menu]');
-  const weeklyMenuSections = document.querySelector<HTMLElement>('[data-weekly-menu-sections]');
-  if (weeklyMenuCard && weeklyMenuSections) {
-    const groupedWeeklyMenu = groupWeeklyFormulas(menu.formulas);
-    weeklyMenuCard.hidden = groupedWeeklyMenu.length === 0;
-    weeklyMenuSections.innerHTML = groupedWeeklyMenu
-      .map(
-        (section) => `
-          <article class="weekly-menu-card__section">
-            <h3>${escapeHtml(section.title)}</h3>
-            <ul>
-              ${section.items
-                .map(
-                  (item) => `
-                    <li>
-                      <strong>${escapeHtml(item.name)}</strong>
-                      ${item.detail ? `<span>${escapeHtml(item.detail)}</span>` : ''}
-                    </li>
-                  `
-                )
-                .join('')}
-            </ul>
-          </article>
-        `
-      )
-      .join('');
-  }
 
   const sweetsCard = document.querySelector<HTMLElement>('[data-afternoon-sweets]');
   const sweetsList = document.querySelector<HTMLElement>('[data-afternoon-sweets-list]');
@@ -423,7 +375,7 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
       .map(
         (section) => `
           <article class="menu-group is-visible" id="${escapeHtml(menuSectionId(section.title))}" data-reveal>
-            <h2 class="menu-group__title">${escapeHtml(section.title)}</h2>
+            <h2 class="menu-group__title">${escapeHtml(publicMenuSectionTitle(section.title))}</h2>
             <ul class="menu-list">
               ${section.items
                 .map(
@@ -447,7 +399,7 @@ const hydrateMenuDom = (menu: RuntimeMenu) => {
 
   const notes = document.querySelector<HTMLElement>('[data-menu-notes]');
   if (notes) {
-    notes.innerHTML = menu.notes.map((note) => `<li>${escapeHtml(note)}</li>`).join('');
+    notes.innerHTML = menu.notes.map((note) => `<li>${escapeHtml(publicMenuNote(note))}</li>`).join('');
   }
 };
 

@@ -11,9 +11,9 @@ const menuVariableGroups = [
   { key: 'sweet', title: 'Les douceurs de l’après-midi', count: 6 }
 ];
 const weeklyVariableGroups = [
-  { key: 'starter', title: 'Entrées de la semaine', count: 2 },
-  { key: 'main', title: 'Plats de la semaine', count: 2 },
-  { key: 'dessert', title: 'Desserts de la semaine', count: 2 }
+  { key: 'starter', title: 'Entrées du moment', count: 2 },
+  { key: 'main', title: 'Plats du moment', count: 2 },
+  { key: 'dessert', title: 'Desserts du moment', count: 2 }
 ];
 ---
 
@@ -67,7 +67,7 @@ const weeklyVariableGroups = [
         <p>Choisissez l’espace à mettre à jour. Les changements sont visibles sur le site sans rebuild.</p>
       </div>
       <div class="admin-view-switcher" data-admin-view-switcher>
-        <button class="button button--primary" type="button" data-admin-view-target="menu">Carte & menus</button>
+        <button class="button button--primary" type="button" data-admin-view-target="menu">Carte à l’ardoise</button>
         <button class="button button--secondary" type="button" data-admin-view-target="events">Évènements</button>
         <button class="button button--secondary" type="button" data-admin-view-target="suggestions">Suggestions</button>
         <button class="button button--secondary" type="button" data-admin-view-target="gallery">Galerie</button>
@@ -77,13 +77,13 @@ const weeklyVariableGroups = [
     <section class="admin-view-panel" data-admin-view="menu" hidden>
       <section class="admin-card">
         <div class="admin-card__header">
-          <h2>Modifier la carte et les menus</h2>
+          <h2>Modifier la carte à l’ardoise</h2>
           <p>Remplissez les variables utiles. Une ligne contenant <strong>rien</strong> ou <strong>none</strong> ne s’affichera pas sur le site.</p>
         </div>
 
         <form class="admin-editor-form" data-menu-form>
           <div class="admin-editor-workspace">
-            <nav class="admin-editor-nav" aria-label="Repères carte et menus">
+            <nav class="admin-editor-nav" aria-label="Repères de la carte à l’ardoise">
               <p class="admin-editor-nav__title">Repères</p>
               <div class="admin-editor-nav__links">
                 <a href="#admin-menu-general">Infos générales</a>
@@ -91,7 +91,7 @@ const weeklyVariableGroups = [
                 {menuVariableGroups.map((group) => (
                   <a href={`#admin-menu-${group.key}`}>{group.title}</a>
                 ))}
-                <a href="#admin-menu-weekly">Menu de la semaine</a>
+                <a href="#admin-menu-weekly">Propositions du moment</a>
                 <a href="#admin-menu-notes">Notes</a>
               </div>
             </nav>
@@ -210,8 +210,8 @@ const weeklyVariableGroups = [
 
               <div class="admin-variable-area" id="admin-menu-weekly">
                 <div class="admin-variable-area__heading">
-                  <h3>Menu de la semaine</h3>
-                  <p>Texte et prix de la formule affichée sur la page Menu.</p>
+                  <h3>Propositions du moment</h3>
+                  <p>Texte et prix d’une éventuelle formule affichée sur la page Menu.</p>
                 </div>
                 <div class="field-grid">
                   <div class="field">
@@ -649,13 +649,13 @@ const weeklyVariableGroups = [
         { key: 'starter', title: 'Entrées', count: 5, aliases: ['entrees', 'entrées'] },
         { key: 'main', title: 'Plats', count: 8, aliases: ['plats'] },
         { key: 'dessert', title: 'Desserts', count: 8, aliases: ['desserts'] },
-        { key: 'share', title: 'Le soir à partager', count: 10, aliases: ['a partager', 'à partager', 'partager', 'le soir a partager'] },
+        { key: 'share', title: 'À partager', count: 10, aliases: ['a partager', 'à partager', 'partager', 'le soir a partager'] },
         { key: 'sweet', title: 'Les douceurs de l’après-midi', count: 6, aliases: ['douceurs', 'apres-midi', 'après-midi', 'gateaux', 'gâteaux'] }
       ];
       const weeklyVariableGroups = [
-        { key: 'starter', title: 'Entrées de la semaine', count: 2, aliases: ['entrees de la semaine', 'entrées de la semaine'] },
-        { key: 'main', title: 'Plats de la semaine', count: 2, aliases: ['plats de la semaine'] },
-        { key: 'dessert', title: 'Desserts de la semaine', count: 2, aliases: ['desserts de la semaine'] }
+        { key: 'starter', title: 'Entrées du moment', count: 2, aliases: ['entrees du moment', 'entrées du moment', 'entrees de la semaine', 'entrées de la semaine'] },
+        { key: 'main', title: 'Plats du moment', count: 2, aliases: ['plats du moment', 'plats de la semaine'] },
+        { key: 'dessert', title: 'Desserts du moment', count: 2, aliases: ['desserts du moment', 'desserts de la semaine'] }
       ];
       const hiddenMenuValues = new Set(['', 'rien', 'none', 'neant', 'néant', 'vide', '-', '—']);
       const hiddenPriceValues = new Set([
@@ -874,12 +874,12 @@ const weeklyVariableGroups = [
                 supplementPrice: 'Supplément',
                 supplementDescription: 'Texte supplément'
               };
-              return labels[path[2]] ?? 'Menu de la semaine';
+              return labels[path[2]] ?? 'Propositions du moment';
             }
             if (path[1] === 'formulas') {
               const row = Number(path[2] ?? 0) + 1;
               const labels = { name: 'intitulé', price: 'prix', description: 'descriptif' };
-              return `Menu de la semaine ligne ${row} (${labels[path[3]] ?? 'champ'})`;
+              return `Propositions du moment ligne ${row} (${labels[path[3]] ?? 'champ'})`;
             }
             if (path[1] === 'sections') {
               const section = Number(path[2] ?? 0) + 1;
@@ -907,7 +907,7 @@ const weeklyVariableGroups = [
           return `${label} doit contenir au moins ${issueMinimum} caractère${Number(issueMinimum) > 1 ? 's' : ''}.`;
         }
         if (fieldErrors.menu?.length) {
-          return 'Un champ de la carte est invalide ou trop long. Vérifiez les textes de la carte et du menu de la semaine.';
+          return 'Un champ de la carte est invalide ou trop long. Vérifiez les textes de la carte à l’ardoise.';
         }
         if (fieldErrors.suggestions?.length) {
           return 'Une suggestion est trop longue. Maximum 180 caractères par suggestion.';
@@ -933,11 +933,11 @@ const weeklyVariableGroups = [
         setInputValue(menuForm, 'period', content.menu.period);
         setInputValue(menuForm, 'updatedAt', content.menu.updatedAt);
         setInputValue(menuForm, 'intro', content.menu.intro);
-        setInputValue(menuForm, 'weeklyMenuLabel', content.menu.weeklyMenu?.label ?? 'Menu de la semaine - midi');
-        setInputValue(menuForm, 'weeklyMenuPrice', normalizePriceValue(content.menu.weeklyMenu?.price ?? '17 €'));
-        setInputValue(menuForm, 'weeklyMenuDescription', formatWeeklyMenuDescription(content.menu.weeklyMenu?.description ?? 'Entrée + plat\nou plat + dessert'));
-        setInputValue(menuForm, 'weeklyMenuSupplementPrice', normalizePriceValue(content.menu.weeklyMenu?.supplementPrice ?? '+4 €'));
-        setInputValue(menuForm, 'weeklyMenuSupplementDescription', content.menu.weeklyMenu?.supplementDescription ?? 'formule complète');
+        setInputValue(menuForm, 'weeklyMenuLabel', content.menu.weeklyMenu?.label ?? 'Carte à l’ardoise');
+        setInputValue(menuForm, 'weeklyMenuPrice', normalizePriceValue(content.menu.weeklyMenu?.price ?? ''));
+        setInputValue(menuForm, 'weeklyMenuDescription', formatWeeklyMenuDescription(content.menu.weeklyMenu?.description ?? 'Les propositions changent régulièrement selon les arrivages.'));
+        setInputValue(menuForm, 'weeklyMenuSupplementPrice', normalizePriceValue(content.menu.weeklyMenu?.supplementPrice ?? ''));
+        setInputValue(menuForm, 'weeklyMenuSupplementDescription', content.menu.weeklyMenu?.supplementDescription ?? '');
         setInputValue(menuForm, 'notes', (content.menu.notes ?? []).join('\n'));
 
         menuVariableGroups.forEach((group) => {
@@ -1064,11 +1064,11 @@ const weeklyVariableGroups = [
           updatedAt: inputValue(menuForm, 'updatedAt').trim(),
           intro: inputValue(menuForm, 'intro').trim(),
           weeklyMenu: {
-            label: inputValue(menuForm, 'weeklyMenuLabel').trim() || 'Menu de la semaine - midi',
-            price: normalizePriceValue(inputValue(menuForm, 'weeklyMenuPrice')) || '17 €',
-            description: inputValue(menuForm, 'weeklyMenuDescription').trim() || 'Entrée + plat\nou plat + dessert',
-            supplementPrice: normalizePriceValue(inputValue(menuForm, 'weeklyMenuSupplementPrice')) || '+4 €',
-            supplementDescription: inputValue(menuForm, 'weeklyMenuSupplementDescription').trim() || 'formule complète'
+            label: inputValue(menuForm, 'weeklyMenuLabel').trim() || 'Carte à l’ardoise',
+            price: normalizePriceValue(inputValue(menuForm, 'weeklyMenuPrice')),
+            description: inputValue(menuForm, 'weeklyMenuDescription').trim() || 'Les propositions changent régulièrement selon les arrivages.',
+            supplementPrice: normalizePriceValue(inputValue(menuForm, 'weeklyMenuSupplementPrice')),
+            supplementDescription: inputValue(menuForm, 'weeklyMenuSupplementDescription').trim()
           },
           formulas: readWeeklyFormulas(),
           sections: readMenuSections(),
