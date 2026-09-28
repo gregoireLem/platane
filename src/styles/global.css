@@ -443,6 +443,7 @@ p {
 
 .home-hero__media img {
   aspect-ratio: 5 / 4;
+  object-position: center 75%;
 }
 
 .home-hero__caption {
