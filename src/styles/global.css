@@ -450,7 +450,7 @@ p {
   position: absolute;
   left: 1rem;
   right: 1rem;
-  bottom: 1rem;
+  top: 1rem;
   display: grid;
   gap: 0.1rem;
   padding: 0.9rem 1rem;
