@@ -1181,6 +1181,20 @@ p {
 
 .hours-list li span {
   color: var(--muted);
+  flex-shrink: 0;
+}
+
+.hours-note {
+  display: block;
+  margin-top: 0.3rem;
+  font-size: 0.85em;
+  font-weight: 400;
+  line-height: 1.5;
+}
+
+.service-hours {
+  margin: 0.75rem 0 0;
+  line-height: 1.6;
 }
 
 .hours-list li strong {
@@ -1293,6 +1307,13 @@ p {
 .site-footer__hours {
   color: rgba(255, 239, 210, 0.7);
   font-size: 0.92rem;
+}
+
+ul.site-footer__hours {
+  list-style: none;
+  padding: 0;
+  display: grid;
+  gap: 0.35rem;
 }
 
 .site-footer__links {

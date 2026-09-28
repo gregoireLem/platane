@@ -8,7 +8,12 @@ import { site } from '../data/site';
     <div class="site-footer__brand">
       <img class="site-footer__logo" src="/brand/logo-vertical-light.jpg" alt="Au Platane" />
       <p class="site-footer__label">{site.label}</p>
-      <p class="site-footer__hours">Mar - Jeu 8h30 - 22h • Ven - Sam 8h30 - 23h • Dim 8h30 - 18h30</p>
+      <ul class="site-footer__hours">
+        {site.openingHours.map((item) => (
+          <li>{item.day} — {item.hours}{'note' in item && <small class="hours-note">{item.note}</small>}</li>
+        ))}
+      </ul>
+      <p class="site-footer__hours"><strong>Horaires de service</strong><br />{site.serviceHours}</p>
     </div>
 
     <div class="site-footer__links">

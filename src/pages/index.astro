@@ -130,10 +130,11 @@ import { site } from '../data/site';
             {site.openingHours.map((item) => (
               <li>
                 <span>{item.day}</span>
-                <strong>{item.hours}</strong>
+                <strong>{item.hours}{'note' in item && <small class="hours-note">{item.note}</small>}</strong>
               </li>
             ))}
           </ul>
+          <p class="service-hours"><strong>Horaires de service</strong><br />{site.serviceHours}</p>
         </div>
       </div>
       <div class="reservation-card">
@@ -210,10 +211,11 @@ import { site } from '../data/site';
               {site.openingHours.map((item) => (
                 <li>
                   <span>{item.day}</span>
-                  <strong>{item.hours}</strong>
+                  <strong>{item.hours}{'note' in item && <small class="hours-note">{item.note}</small>}</strong>
                 </li>
               ))}
             </ul>
+            <p class="service-hours"><strong>Horaires de service</strong><br />{site.serviceHours}</p>
           </div>
         </div>
       </aside>

@@ -15,13 +15,14 @@ export const site = {
     'https://www.google.com/maps?q=87+route+de+Largenti%C3%A8re,+07110+Montr%C3%A9al&z=16&output=embed',
   openingHours: [
     { day: 'Lundi', hours: 'Fermé' },
-    { day: 'Mardi', hours: '8h30 - 22h' },
-    { day: 'Mercredi', hours: '8h30 - 22h' },
-    { day: 'Jeudi', hours: '8h30 - 22h' },
-    { day: 'Vendredi', hours: '8h30 - 23h (hors évènement)' },
-    { day: 'Samedi', hours: '8h30 - 23h (hors évènement)' },
-    { day: 'Dimanche', hours: '8h30 - 18h30' }
+    { day: 'Mardi', hours: 'Fermé' },
+    { day: 'Mercredi', hours: '11h - 14h', note: 'Burgers à emporter le soir de 19h à 20h30' },
+    { day: 'Jeudi', hours: '11h - 14h' },
+    { day: 'Vendredi', hours: '11h - 14h et 17h - 22h' },
+    { day: 'Samedi', hours: '11h - 22h' },
+    { day: 'Dimanche', hours: '11h - 18h' }
   ],
+  serviceHours: 'Le midi de 12h à 13h30 et le soir de 19h à 20h30.',
   spaces: [
     {
       title: 'Restaurant',
