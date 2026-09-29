@@ -15,11 +15,11 @@ export const site = {
   openingHours: [
     { day: 'Lundi', hours: 'Fermé' },
     { day: 'Mardi', hours: 'Fermé' },
-    { day: 'Mercredi', hours: '11h - 14h', note: 'Burgers à emporter le soir de 19h à 20h30' },
-    { day: 'Jeudi', hours: '11h - 14h' },
-    { day: 'Vendredi', hours: '11h - 14h et 17h - 22h' },
-    { day: 'Samedi', hours: '11h - 22h' },
-    { day: 'Dimanche', hours: '11h - 18h' }
+    { day: 'Mercredi', hours: '10h - 14h', note: 'Burgers à emporter le soir de 19h à 20h30' },
+    { day: 'Jeudi', hours: '10h - 14h' },
+    { day: 'Vendredi', hours: '10h - 14h et 17h - 22h' },
+    { day: 'Samedi', hours: '10h - 22h' },
+    { day: 'Dimanche', hours: '10h - 18h' }
   ],
   serviceHours: 'Le midi de 12h à 13h30 et le soir de 19h à 20h30.',
   spaces: [
