@@ -70,7 +70,7 @@ import { site } from '../data/site';
     </div>
 
     <figure class="home-story__portrait" data-reveal>
-      <img src="/images/elisa-flo-new.png" alt="Elisa et Flo devant le platane et la maison du lieu" loading="lazy" />
+      <img src="/images/elisa-flo-terrasse.jpg" alt="Elisa et Flo sur la terrasse du Platane, devant les tables dressées" loading="lazy" />
       <figcaption>
         <strong>Elisa & Flo</strong>
         <span>Attachés au village et à une hospitalité simple, locale et vivante.</span>
@@ -121,8 +121,8 @@ import { site } from '../data/site';
         <p class="eyebrow">Réservation</p>
         <h2>Réserver une table simplement.</h2>
         <p>
-          Choisissez votre créneau directement sur notre page de réservation SumUp. Vous pouvez
-          aussi nous appeler pour une grande table ou une demande particulière.
+          Les réservations se font uniquement par téléphone. Appelez-nous pour réserver
+          votre table, pour un groupe ou pour une demande particulière.
         </p>
         <div class="hours-card">
           <strong>Horaires d’ouverture</strong>
@@ -138,18 +138,14 @@ import { site } from '../data/site';
         </div>
       </div>
       <div class="reservation-card">
-        <p class="eyebrow">Booking SumUp</p>
-        <h3>Réservation en ligne</h3>
+        <p class="eyebrow">Par téléphone uniquement</p>
+        <h3>Appelez-nous pour réserver</h3>
         <p>
-          Le calendrier SumUp vous permet de sélectionner la date, l’horaire et le nombre de
-          personnes pour votre venue.
+          Contactez-nous au <a href={`tel:${site.phoneRaw}`}>{site.phoneDisplay}</a>
+          pour convenir de la date, de l’horaire et du nombre de personnes.
         </p>
         <div class="reservation-form__actions">
-          <a class="button button--primary" href={site.reservationUrl} target="_blank" rel="noreferrer">
-            Ouvrir la réservation
-            <Icon name="calendar" />
-          </a>
-          <a class="button button--secondary" href={`tel:${site.phoneRaw}`}>
+          <a class="button button--primary" href={`tel:${site.phoneRaw}`}>
             Appeler le restaurant
             <Icon name="phone" />
           </a>
